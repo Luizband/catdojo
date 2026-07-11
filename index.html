@@ -324,6 +324,14 @@
                 btnRegistro.textContent = "Fundar Clã Agora!";
             }
         });
+        // Ativa o instalador do PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('PWA configurado com sucesso!'))
+                    .catch(err => console.error('Erro ao configurar PWA:', err));
+            });
+        }
     </script>
 </body>
 </html>
