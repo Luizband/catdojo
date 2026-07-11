@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CatDojo - Entrada</title>
+    <style>
+        /* RESET BÁSICO */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #2c2c2c;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* CONTAINER PRINCIPAL COM O FUNDO (Igual ao Dojo) */
+        #app {
+            width: 100%;
+            max-width: 414px;
+            height: 100%;
+            position: relative;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center; /* Centraliza o painel de login no meio da tela */
+            justify-content: center;
+            
+            background-image: url('fundo.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        #app::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6); /* Fundo um pouco mais escuro para dar destaque ao login */
+            z-index: 1;
+        }
+
+        /* PAINEL DE PERGAMINHO (Onde ficam os inputs) */
+        .painel-login {
+            position: relative;
+            z-index: 2;
+            width: 85%;
+            background-color: #f1ddb0; /* Cor base do pergaminho */
+            border: 3px solid #5a4231;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            
+            /* Sombra projetada + Sombra interna para dar textura de papel amassado/antigo */
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.5), inset 0px 0px 20px rgba(139, 90, 43, 0.15);
+        }
+
+        .logo-titulo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .logo-titulo img {
+            width: 50px;
+        }
+
+        .logo-titulo h1 {
+            color: #2a2a2a;
+            font-size: 2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 0px #dfc495;
+        }
+
+        /* CAMPOS DE TEXTO (Inputs) */
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background-color: #fdf5e6; /* Pergaminho mais claro */
+            border: 2px solid #a68a61;
+            border-radius: 6px;
+            font-size: 1em;
+            color: #2a2a2a;
+            font-weight: bold;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        input::placeholder {
+            color: #bfa580;
+        }
+
+        input:focus {
+            border-color: #5a4231;
+        }
+
+        /* BOTÕES ESTILO PERGAMINHO / MADEIRA */
+        .btn-pergaminho {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background-color: #dfc495;
+            color: #2a2a2a;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 2px solid #5a4231;
+            border-radius: 8px;
+            cursor: pointer;
+            
+            /* O segredo tátil: Sombra dura abaixo do botão imitando espessura */
+            box-shadow: 0px 4px 0px #5a4231;
+            transition: all 0.1s;
+        }
+
+        .btn-pergaminho:active {
+            /* Efeito de botão sendo afundado */
+            box-shadow: 0px 0px 0px #5a4231;
+            transform: translateY(4px);
+        }
+
+        .btn-secundario {
+            background-color: transparent;
+            border: 2px dashed #a68a61;
+            box-shadow: none;
+            margin-top: 15px;
+            color: #5a4231;
+        }
+
+        .btn-secundario:active {
+            transform: scale(0.98);
+        }
+
+        .divisor {
+            margin: 20px 0;
+            height: 2px;
+            background-color: #a68a61;
+            position: relative;
+        }
+
+        .divisor span {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f1ddb0;
+            padding: 0 10px;
+            color: #a68a61;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="painel-login">
+            
+            <div class="logo-titulo">
+                <img src="icones/Dojo.png" alt="Logo CatDojo">
+                <h1>CatDojo</h1>
+            </div>
+            
+            <input type="text" id="nomeCla" placeholder="Nome do Clã (Apenas p/ Registro)">
+            <input type="email" id="email" placeholder="E-mail">
+            <input type="password" id="senha" placeholder="Senha">
+            
+            <button class="btn-pergaminho" id="btnLogin">Entrar no Dojo</button>
+            
+            <div class="divisor">
+                <span>OU</span>
+            </div>
+            
+            <button class="btn-pergaminho btn-secundario" id="btnRegistro">Fundar Novo Clã</button>
+
+        </div>
+    </div>
+
+    <script type="module">
+        // A lógica do Firebase será injetada aqui!
+    </script>
+</body>
+</html>
