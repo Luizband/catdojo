@@ -30,7 +30,6 @@
             display: flex;
             flex-direction: column;
             
-            /* Aplicando a imagem de fundo */
             background-image: url('imagens/fundo.png');
             background-size: cover;
             background-position: center;
@@ -41,8 +40,8 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.4); /* Escurece 40% */
-            z-index: 1; /* Fica acima do fundo, mas abaixo do conteúdo */
+            background-color: rgba(0, 0, 0, 0.4); 
+            z-index: 1; 
         }
 
         /* Tudo dentro do app precisa ficar acima da camada escura */
@@ -119,7 +118,7 @@
             gap: 5px;
         }
 
-        /* BOTÕES DO TOPO (Pílulas de Config/Diário com Efeito 3D) */
+        /* BOTÕES DO TOPO (Efeito 3D) */
         .botoes-topo img {
             width: 40px;
             background-color: #dfc495;
@@ -143,10 +142,10 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Ajustado para dar espaço para a sombra */
+            gap: 15px; 
         }
         
-        /* CARDS PRINCIPAIS (Dormitório, Tatame com textura e 3D) */
+        /* CARDS PRINCIPAIS */
         .card {
             background-color: #f1ddb0; 
             border: 3px solid #5a4231;
@@ -228,9 +227,61 @@
             margin-bottom: 3px;
         }
 
-        /* Efeito de brilho no menu ativo */
         .nav-item.ativo img {
             filter: drop-shadow(0px 0px 8px #ffeb99);
+        }
+
+        /* MODAL SELEÇÃO DE AVATAR (PRIMEIRO ACESSO) */
+        .modal-avatar {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.75);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .painel-avatar {
+            background-color: #f1ddb0;
+            border: 3px solid #5a4231;
+            border-radius: 12px;
+            width: 85%;
+            max-width: 360px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.5), inset 0px 0px 20px rgba(139, 90, 43, 0.15);
+        }
+        
+        .painel-avatar h3 {
+            color: #2a2a2a;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+        
+        .grid-avatars {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .grid-avatars img {
+            width: 100%;
+            border: 2px solid #a68a61;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #fdf5e6;
+            transition: transform 0.1s;
+        }
+        
+        .grid-avatars img:active {
+            border-color: #5a4231;
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -240,13 +291,15 @@
             
             <header>
                 <div class="perfil-info">
-                    <div class="foto-cla">FOTO</div>
+                    <div class="foto-cla" id="fotoClaContainer" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                        <span id="placeholderFoto">FOTO</span>
+                    </div>
                     <div class="dados-cla">
-                        <h2>CLÃ 'NOME DO CLÃ'</h2>
-                        <p>Mestre 'nome do jogador'</p>
+                        <h2 id="exibeNomeCla">CARREGANDO...</h2>
+                        <p>Mestre <span id="exibeNomeMestre">...</span></p>
                         <div class="economia">
-                            <div><img src="icones/moeda.png" alt="Moedas"> 50</div>
-                            <div><img src="icones/rep.png" alt="Reputação"> 0/500</div>
+                            <div><img src="icones/moeda.png" alt="Moedas"> <span id="exibeMoedas">0</span></div>
+                            <div><img src="icones/rep.png" alt="Reputação"> <span id="exibeReputacao">0/500</span></div>
                         </div>
                     </div>
                 </div>
@@ -302,6 +355,17 @@
                         <img src="icones/deposito.png" alt="Depósito">
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="card-info">
+                        <h3>Enfermaria</h3>
+                        <p>Enfermaria nível 1</p>
+                        <p class="alerta-vermelho">0 Gatos esperando tratamento</p>
+                    </div>
+                    <div class="card-icone">
+                        <img src="icones/enfermaria.png" alt="Enfermaria">
+                    </div>
+                </div>
             </main>
 
             <nav>
@@ -325,5 +389,92 @@
 
         </div>
     </div>
+
+    <div id="modalAvatar" class="modal-avatar" style="display: none;">
+        <div class="painel-avatar">
+            <h3>Escolha o Brasão do Clã</h3>
+            <div class="grid-avatars" id="listaAvatars">
+                </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const exibeNomeCla = document.getElementById('exibeNomeCla');
+        const exibeNomeMestre = document.getElementById('exibeNomeMestre');
+        const exibeMoedas = document.getElementById('exibeMoedas');
+        const exibeReputacao = document.getElementById('exibeReputacao');
+        const fotoClaContainer = document.getElementById('fotoClaContainer');
+        const modalAvatar = document.getElementById('modalAvatar');
+        const listaAvatars = document.getElementById('listaAvatars');
+
+        let jogadorUid = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                jogadorUid = user.uid;
+                await carregarDadosDoDojo(user.uid);
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function carregarDadosDoDojo(uid) {
+            try {
+                const docRef = doc(db, "Clas", uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const dados = docSnap.data();
+
+                    exibeNomeCla.textContent = dados.nomeCla ? dados.nomeCla.toUpperCase() : "SEM NOME";
+                    exibeNomeMestre.textContent = dados.nomeMestre || "...";
+                    exibeMoedas.textContent = dados.moedas !== undefined ? dados.moedas : 50;
+                    exibeReputacao.textContent = `${dados.reputacao || 0}/500`;
+
+                    if (dados.avatar) {
+                        mostrarAvatarNaTela(dados.avatar);
+                    } else {
+                        abrirSeletorDeAvatar();
+                    }
+                }
+            } catch (error) {
+                console.error("Erro ao carregar os dados do banco:", error);
+            }
+        }
+
+        function mostrarAvatarNaTela(caminhoImg) {
+            fotoClaContainer.innerHTML = `<img src="${caminhoImg}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+        }
+
+        function abrirSeletorDeAvatar() {
+            modalAvatar.style.display = 'flex';
+            listaAvatars.innerHTML = ''; 
+
+            for (let i = 1; i <= 10; i++) {
+                const caminhoAvatar = `imagens/avatar${i}.png`;
+                const imgNode = document.createElement('img');
+                imgNode.src = caminhoAvatar;
+                imgNode.alt = `Brasão ${i}`;
+                
+                imgNode.addEventListener('click', async () => {
+                    try {
+                        const docRef = doc(db, "Clas", jogadorUid);
+                        await updateDoc(docRef, { avatar: caminhoAvatar });
+                        mostrarAvatarNaTela(caminhoAvatar);
+                        modalAvatar.style.display = 'none';
+                    } catch (error) {
+                        console.error("Erro ao salvar o brasão selecionado:", error);
+                        alert("Não foi possível salvar seu brasão. Tente clicar novamente.");
+                    }
+                });
+
+                listaAvatars.appendChild(imgNode);
+            }
+        }
+    </script>
 </body>
 </html>
