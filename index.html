@@ -58,7 +58,7 @@
             box-shadow: 0px 10px 20px rgba(0,0,0,0.5), inset 0px 0px 20px rgba(139, 90, 43, 0.15);
         }
 
-        /* LOGO (Metade do tamanho original) */
+        /* LOGO (Metade do tamanho) */
         .logo-titulo {
             margin-bottom: 25px;
         }
@@ -140,15 +140,16 @@
             transform: translateY(4px);
         }
 
-        .btn-secundario {
+        /* Estilo Secundário Dinâmico */
+        .btn-pergaminho.btn-secundario {
             background-color: transparent;
             border: 2px dashed #a68a61;
             box-shadow: none;
-            margin-top: 15px;
             color: #5a4231;
+            margin-top: 15px;
         }
 
-        .btn-secundario:active {
+        .btn-pergaminho.btn-secundario:active {
             transform: scale(0.98);
         }
 
@@ -180,8 +181,10 @@
                 <img src="imagens/logo.png" alt="Logo CatDojo">
             </div>
             
-            <input type="text" id="nomeMestre" placeholder="Nome do Mestre (Máx 20 car.)" maxlength="20">
-            <input type="text" id="nomeCla" placeholder="Nome do Clã (Máx 20 car.)" maxlength="20">
+            <div id="grupoRegistro" style="display: none;">
+                <input type="text" id="nomeMestre" placeholder="Nome do Mestre (Máx 20 car.)" maxlength="20">
+                <input type="text" id="nomeCla" placeholder="Nome do Clã (Máx 20 car.)" maxlength="20">
+            </div>
             <input type="email" id="email" placeholder="E-mail">
             <input type="password" id="senha" placeholder="Senha">
             
@@ -204,22 +207,41 @@
     <script type="module">
         import { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc } from './firebase-config.js';
 
+        const grupoRegistro = document.getElementById('grupoRegistro');
         const nomeMestreInput = document.getElementById('nomeMestre');
         const nomeClaInput = document.getElementById('nomeCla');
         const emailInput = document.getElementById('email');
         const senhaInput = document.getElementById('senha');
         const btnLogin = document.getElementById('btnLogin');
         const btnRegistro = document.getElementById('btnRegistro');
+        const divisor = document.querySelector('.divisor');
         const checkLembrar = document.getElementById('lembrarEmail');
+        const grupoLembrar = document.querySelector('.lembrar-email');
 
-        // Carrega o e-mail se estiver memorizado
+        let modoRegistro = false;
+
+        // Carrega o e-mail memorizado
         if (localStorage.getItem('catdojo_email')) {
             emailInput.value = localStorage.getItem('catdojo_email');
             checkLembrar.checked = true;
         }
 
-        // Ação de Login (Entrar)
+        // BOTÃO SUPERIOR (LOGIN / VOLTAR)
         btnLogin.addEventListener('click', async () => {
+            if (modoRegistro) {
+                modoRegistro = false;
+                grupoRegistro.style.display = 'none';
+                divisor.style.display = 'block';
+                grupoLembrar.style.display = 'flex';
+                
+                btnLogin.textContent = "Entrar no Dojo";
+                btnLogin.classList.remove('btn-secundario');
+                
+                btnRegistro.textContent = "Fundar Novo Clã";
+                btnRegistro.classList.add('btn-secundario');
+                return;
+            }
+
             const email = emailInput.value;
             const senha = senhaInput.value;
 
@@ -247,8 +269,22 @@
             }
         });
 
-        // Ação de Registro (Criar Conta)
+        // BOTÃO INFERIOR (ABRIR CAMPOS / CONFIRMAR CRIAÇÃO)
         btnRegistro.addEventListener('click', async () => {
+            if (!modoRegistro) {
+                modoRegistro = true;
+                grupoRegistro.style.display = 'block';
+                divisor.style.display = 'none';
+                grupoLembrar.style.display = 'none';
+                
+                btnLogin.textContent = "Voltar para o Login";
+                btnLogin.classList.add('btn-secundario');
+                
+                btnRegistro.textContent = "Fundar Clã Agora!";
+                btnRegistro.classList.remove('btn-secundario');
+                return;
+            }
+
             const nomeMestre = nomeMestreInput.value.trim();
             const nomeCla = nomeClaInput.value.trim();
             const email = emailInput.value;
@@ -270,7 +306,6 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const user = userCredential.user;
 
-                // Salva os dados customizados no Firestore
                 await setDoc(doc(db, "Clas", user.uid), {
                     nomeMestre: nomeMestre,
                     nomeCla: nomeCla,
@@ -284,7 +319,7 @@
             } catch (error) {
                 console.error(error);
                 alert("Erro ao criar conta. O e-mail pode já estar em uso.");
-                btnRegistro.textContent = "Fundar Novo Clã";
+                btnRegistro.textContent = "Fundar Clã Agora!";
             }
         });
     </script>
