@@ -477,6 +477,14 @@
                 listaAvatars.appendChild(imgNode);
             }
         }
+        // Ativa o instalador do PWA também no Dojo
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('PWA configurado com sucesso no Dojo!'))
+                    .catch(err => console.error('Erro ao configurar PWA no Dojo:', err));
+            });
+        }
     </script>
 </body>
 </html>
