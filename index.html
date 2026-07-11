@@ -31,7 +31,6 @@
             align-items: center; 
             justify-content: center;
             
-            /* Usando a imagem de fundo */
             background-image: url('imagens/fundo.png');
             background-size: cover;
             background-position: center;
@@ -56,26 +55,24 @@
             border-radius: 12px;
             padding: 30px 20px;
             text-align: center;
-            
             box-shadow: 0px 10px 20px rgba(0,0,0,0.5), inset 0px 0px 20px rgba(139, 90, 43, 0.15);
         }
 
-        /* LOGO */
+        /* LOGO (Metade do tamanho original) */
         .logo-titulo {
             margin-bottom: 25px;
         }
 
-        /* LOGO */
         .logo-titulo img {
             width: 100%;
-            max-width: 150px; /* Reduzido para metade do tamanho (110px) */
+            max-width: 110px; 
             display: block;
             margin: 0 auto;
             filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));
         }
 
         /* CAMPOS DE TEXTO (Inputs) */
-        input[type="email"], input[type="password"] {
+        input[type="text"], input[type="email"], input[type="password"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
@@ -89,11 +86,11 @@
             transition: border-color 0.2s;
         }
         
-        input[type="email"]::placeholder, input[type="password"]::placeholder {
+        input::placeholder {
             color: #bfa580;
         }
 
-        input[type="email"]:focus, input[type="password"]:focus {
+        input:focus {
             border-color: #5a4231;
         }
 
@@ -103,7 +100,7 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 20px;
-            margin-top: -5px; /* Puxa um pouco pra cima, perto da senha */
+            margin-top: -5px; 
             text-align: left;
             color: #2a2a2a;
             font-weight: bold;
@@ -114,7 +111,7 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: #5a4231; /* Deixa o quadradinho marrom quando clicado */
+            accent-color: #5a4231; 
         }
 
         .lembrar-email label {
@@ -134,7 +131,6 @@
             border: 2px solid #5a4231;
             border-radius: 8px;
             cursor: pointer;
-            
             box-shadow: 0px 4px 0px #5a4231;
             transition: all 0.1s;
         }
@@ -184,6 +180,8 @@
                 <img src="imagens/logo.png" alt="Logo CatDojo">
             </div>
             
+            <input type="text" id="nomeMestre" placeholder="Nome do Mestre (Máx 20 car.)" maxlength="20">
+            <input type="text" id="nomeCla" placeholder="Nome do Clã (Máx 20 car.)" maxlength="20">
             <input type="email" id="email" placeholder="E-mail">
             <input type="password" id="senha" placeholder="Senha">
             
@@ -204,7 +202,91 @@
     </div>
 
     <script type="module">
-        // Lógica do Firebase
+        import { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc } from './firebase-config.js';
+
+        const nomeMestreInput = document.getElementById('nomeMestre');
+        const nomeClaInput = document.getElementById('nomeCla');
+        const emailInput = document.getElementById('email');
+        const senhaInput = document.getElementById('senha');
+        const btnLogin = document.getElementById('btnLogin');
+        const btnRegistro = document.getElementById('btnRegistro');
+        const checkLembrar = document.getElementById('lembrarEmail');
+
+        // Carrega o e-mail se estiver memorizado
+        if (localStorage.getItem('catdojo_email')) {
+            emailInput.value = localStorage.getItem('catdojo_email');
+            checkLembrar.checked = true;
+        }
+
+        // Ação de Login (Entrar)
+        btnLogin.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const senha = senhaInput.value;
+
+            if (!email || !senha) {
+                alert("Preencha o e-mail e a senha para entrar!");
+                return;
+            }
+
+            btnLogin.textContent = "Entrando...";
+
+            try {
+                await signInWithEmailAndPassword(auth, email, senha);
+                
+                if (checkLembrar.checked) {
+                    localStorage.setItem('catdojo_email', email);
+                } else {
+                    localStorage.removeItem('catdojo_email');
+                }
+
+                window.location.href = "dojo.html";
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao entrar. Verifique o e-mail e a senha.");
+                btnLogin.textContent = "Entrar no Dojo";
+            }
+        });
+
+        // Ação de Registro (Criar Conta)
+        btnRegistro.addEventListener('click', async () => {
+            const nomeMestre = nomeMestreInput.value.trim();
+            const nomeCla = nomeClaInput.value.trim();
+            const email = emailInput.value;
+            const senha = senhaInput.value;
+
+            if (!nomeMestre || !nomeCla || !email || !senha) {
+                alert("Preencha todos os campos para fundar o seu clã!");
+                return;
+            }
+
+            if (senha.length < 6) {
+                alert("A senha precisa ter no mínimo 6 caracteres!");
+                return;
+            }
+
+            btnRegistro.textContent = "Fundando...";
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+                const user = userCredential.user;
+
+                // Salva os dados customizados no Firestore
+                await setDoc(doc(db, "Clas", user.uid), {
+                    nomeMestre: nomeMestre,
+                    nomeCla: nomeCla,
+                    moedas: 50,
+                    reputacao: 0,
+                    dataCriacao: new Date().toISOString()
+                });
+
+                alert("Clã fundado com sucesso! Bem-vindo ao CatDojo.");
+                window.location.href = "dojo.html";
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao criar conta. O e-mail pode já estar em uso.");
+                btnRegistro.textContent = "Fundar Novo Clã";
+            }
+        });
     </script>
 </body>
 </html>
