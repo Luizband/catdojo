@@ -462,7 +462,6 @@
         let vagasLiberadas = 3; 
         let listaGatosData = [];
         let gatoSelecionado = null; 
-        let biscoitosInventario = 0;
         let atributosBase = {};
         let atributosTemp = {};
         let pontosLivresTemp = 0;
@@ -698,7 +697,8 @@
             
             atualizarInterfaceAtributos(); // Pinta os números na tela 
 
-            if (biscoitosInventario > 0) {
+            // Onde estava "if (biscoitosInventario > 0) {" mude para:
+            if (inventario['biscoitinho'] > 0) {
                 btnResetarStats.classList.add('ativo');
                 btnResetarStats.disabled = false;
             } else {
@@ -874,47 +874,40 @@
             } catch(e) { console.error(e); }
         };
 
-        document.getElementById('btnSalvarGato').onclick = async () => {
-            const novoNome = document.getElementById('modalNome').value.trim();
-            if(!novoNome) { mostrarToast("O gato precisa ter um nome!"); return; }
-            
-            try {
-                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
-                await updateDoc(gatoRef, { nome: novoNome });
-                mostrarToast("Salvo com sucesso!");
-                carregarDormitorio(jogadorUid); 
-                modalGato.style.display = 'none';
-            } catch (e) { console.error(e); }
-        };
 
         // Botão de Reset (O Biscoito Mágico)
         document.getElementById('btnResetarStats').onclick = () => {
-            if (biscoitosInventario > 0) {
-                pedirConfirmacao("Deseja gastar 1 Biscoito Mágico para resetar os status?", () => {
-                    // Consome o biscoito localmente (A ser ligado ao Depósito depois)
-                    biscoitosInventario--; 
-                    
-                    // Soma todos os pontos atualmente gastos nos atributos
-                    const totalPontosGastos = atributosTemp.forca + atributosTemp.agilidade + atributosTemp.resistencia + atributosTemp.foco;
-                    
-                    // Devolve os pontos para a carteira livre, subtraindo os 4 pontos mínimos (1 de cada atributo)
-                    pontosLivresTemp += (totalPontosGastos - 4);
-                    
-                    // Zera os atributos na memória temporária
-                    atributosTemp = { forca: 1, agilidade: 1, resistencia: 1, foco: 1 };
-                    // ADICIONE A LINHA ABAIXO:
-                    atributosBase = { forca: 1, agilidade: 1, resistencia: 1, foco: 1 }; 
-                    
-                    // Pinta a tela na hora
-                    atualizarInterfaceAtributos();
-                    
-                    // Desativa o botão se acabaram os biscoitos
-                    if (biscoitosInventario <= 0) {
-                        btnResetarStats.classList.remove('ativo');
-                        btnResetarStats.disabled = true;
-                    }
-                    
-                    mostrarToast("Status resetados! Distribua os pontos e clique em Salvar.");
+            if (inventario['biscoitinho'] > 0) {
+                pedirConfirmacao("Deseja gastar 1 Biscoito Mágico para resetar os status?", async () => {
+                    try {
+                        // 1. Consome o biscoito no inventário real
+                        inventario['biscoitinho']--; 
+                        
+                        // 2. Atualiza a perda do biscoito no Depósito do Firebase
+                        const claRef = doc(db, "Clas", jogadorUid);
+                        await updateDoc(claRef, { inventario: inventario });
+                        
+                        // 3. Soma todos os pontos atualmente gastos nos atributos
+                        const totalPontosGastos = atributosTemp.forca + atributosTemp.agilidade + atributosTemp.resistencia + atributosTemp.foco;
+                        
+                        // 4. Devolve os pontos para a carteira livre, subtraindo os 4 pontos mínimos
+                        pontosLivresTemp += (totalPontosGastos - 4);
+                        
+                        // 5. Zera os atributos na memória temporária e na base de comparação
+                        atributosTemp = { forca: 1, agilidade: 1, resistencia: 1, foco: 1 };
+                        atributosBase = { forca: 1, agilidade: 1, resistencia: 1, foco: 1 }; 
+                        
+                        // 6. Pinta a tela na hora
+                        atualizarInterfaceAtributos();
+                        
+                        // 7. Desativa o botão se acabaram os biscoitos
+                        if (!inventario['biscoitinho'] || inventario['biscoitinho'] <= 0) {
+                            btnResetarStats.classList.remove('ativo');
+                            btnResetarStats.disabled = true;
+                        }
+                        
+                        mostrarToast("Status resetados! Distribua os pontos e clique em Salvar.");
+                    } catch(e) { console.error("Erro ao usar biscoito:", e); }
                 });
             } else {
                 mostrarToast("Você precisa de um Biscoito Mágico no Depósito!");
