@@ -557,16 +557,18 @@
                 }
 
                 // ==========================================
-                // NOVO: SISTEMA DE EVOLUÇÃO (LEVEL UP)
+                // NOVO: SISTEMA DE EVOLUÇÃO (LEVEL UP) E PREVENÇÃO
                 // ==========================================
-                let nivelGato = gato.nivel || 1;
+                gato.nivel = gato.nivel || 1;
+                gato.xpAtual = gato.xpAtual || 0;
+                gato.xpProxFaixa = gato.xpProxFaixa || 500;
+                gato.faixa = gato.faixa || "Branca";
+                gato.pontosLivres = gato.pontosLivres || 0;
                 
-                // Enquanto o XP atual for maior que o necessário, ele sobe de nível (limite: nível 20)
-                if (gato.xpAtual >= gato.xpProxFaixa && nivelGato < 20) {
-                    gato.xpAtual = gato.xpAtual - gato.xpProxFaixa; // Mantém o XP excedente
-                    gato.nivel = nivelGato + 1;
+                if (gato.xpAtual >= gato.xpProxFaixa && gato.nivel < 20) {
+                    gato.xpAtual = gato.xpAtual - gato.xpProxFaixa;
+                    gato.nivel = gato.nivel + 1;
                     
-                    // Lista das 20 Faixas
                     const nomesFaixas = [
                         "Branca", "Cinza/Branca", "Cinza", "Cinza/Amarela", "Amarela", 
                         "Amarela/Laranja", "Laranja", "Laranja/Verde", "Verde", "Verde/Azul", 
@@ -574,11 +576,7 @@
                         "Marrom/Preta", "Preta", "Preta 1º Dan", "Preta 2º Dan", "Preta 3º Dan"
                     ];
                     gato.faixa = nomesFaixas[gato.nivel - 1] || `Nível ${gato.nivel}`;
-                    
-                    // Concede os +7 pontos livres para distribuição!
-                    gato.pontosLivres = (gato.pontosLivres || 0) + 7;
-                    
-                    // Aumenta a exigência de XP para a próxima faixa (ajuste os 500 se o GDD pedir outra curva)
+                    gato.pontosLivres = gato.pontosLivres + 7;
                     gato.xpProxFaixa = gato.xpProxFaixa + 500; 
 
                     precisaSalvar = true;
@@ -591,12 +589,11 @@
                 if (precisaSalvar) {
                     const gatoRef = doc(db, "Clas", uid, "Gatos", gato.id);
                     atualizacoesPendentes.push(updateDoc(gatoRef, {
-                        fome: gato.fome,
-                        hpAtual: gato.hpAtual,
-                        estado: gato.estado,
-                        idadeHoras: gato.idadeHoras,
+                        fome: gato.fome !== undefined ? gato.fome : 100,
+                        hpAtual: gato.hpAtual !== undefined ? gato.hpAtual : 250,
+                        estado: gato.estado || 'Saudável',
+                        idadeHoras: gato.idadeHoras || 0,
                         ultimaAtualizacao: gato.ultimaAtualizacao,
-                        // --- Adicionado para salvar a Evolução ---
                         xpAtual: gato.xpAtual,
                         nivel: gato.nivel,
                         faixa: gato.faixa,
