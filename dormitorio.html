@@ -391,6 +391,7 @@
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDoc, doc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { ARTES_MARCIAIS } from './artes-marciais.js'; // <-- Nova importação!
 
         // ==========================================
         // SISTEMA DE AVISOS (TOAST E CONFIRMAÇÃO)
@@ -418,87 +419,6 @@
                 document.getElementById('modalConfirmacao').style.display = 'none';
             };
         }
-
-        // ==========================================
-        // BASE DE DADOS: ARTES MARCIAIS
-        // ==========================================
-        const ARTES_MARCIAIS = {
-            garate: {
-                nome: "Garatê", cor: "#cc3333", icone: "icones/garate.png",
-                tecnicas: [
-                    { nome: "Aranhada Direta", pe: 0, desc: "Golpe frontal simples usando as garras dianteiras." },
-                    { nome: "Patada Dupla", pe: 3, desc: "Impacto pesado concentrando força nas duas patas." },
-                    { nome: "Investida Felina", pe: 6, desc: "Avanço corporal desestabilizador." },
-                    { nome: "Mordida Firme", pe: 10, desc: "Prende o oponente causando dano contínuo." },
-                    { nome: "Impacto Caótico", pe: 15, desc: "Série rápida de golpes sem direção fixa." },
-                    { nome: "Quebra-Postura", pe: 21, desc: "Reduz drasticamente a defesa inimiga." },
-                    { nome: "Garra de Aço", pe: 28, desc: "Perfuração profunda ignorando armadura mecânica." },
-                    { nome: "Contundência Pura", pe: 36, desc: "Ataque massivo focado em nocaute imediato." },
-                    { nome: "Fúria do Miado", pe: 45, desc: "Garante bônus de dano físico por 3 turnos." },
-                    { nome: "Predador Supremo", pe: 55, desc: "Técnica lendária do Garatê. Dano crítico massivo." }
-                ]
-            },
-            meowjitsu: {
-                nome: "Meow-Jitsu", cor: "#993399", icone: "icones/meowjitsu.png",
-                tecnicas: [
-                    { nome: "Bote Rasteiro", pe: 0, desc: "Imobilização básica pelas pernas do alvo." },
-                    { nome: "Chave de Cauda", pe: 3, desc: "Usa a cauda para travar os movimentos adversários." },
-                    { nome: "Guarda Sentada", pe: 6, desc: "Aumenta a absorção de impactos no solo." },
-                    { nome: "Abraço de Urso", pe: 10, desc: "Drena a energia de ação (PA) do oponente." },
-                    { nome: "Queda de Quadril", pe: 15, desc: "Arremessa o alvo causando atordoamento." },
-                    { nome: "Estrangulamento", pe: 21, desc: "Asfixia progressiva por rodada." },
-                    { nome: "Transição Fluida", pe: 28, desc: "Permite contra-atacar imediatamente após esquivar." },
-                    { nome: "Imobilização Total", pe: 36, desc: "Impede o oponente de atacar por 1 turno." },
-                    { nome: "Inversão Felina", pe: 45, desc: "Reflete o próximo dano físico recebido." },
-                    { nome: "Toque de Dormir", pe: 55, desc: "Coloca o oponente em estado de exaustão extrema." }
-                ]
-            },
-            catpoeira: {
-                nome: "Catpoeira", cor: "#339966", icone: "icones/catpoeira.png",
-                tecnicas: [
-                    { nome: "Ginga Básica", pe: 0, desc: "Movimentação constante que amplia a esquiva nativa." },
-                    { nome: "Rabo de Arraia", pe: 3, desc: "Giro veloz atingindo a cabeça com as patas traseiras." },
-                    { nome: "Meia Lua", pe: 6, desc: "Chute em arco focado em alvos rápidos." },
-                    { nome: "Aú de Costas", pe: 10, desc: "Acrobacia evasiva que reposiciona o lutador." },
-                    { nome: "Rasteira Invertida", pe: 15, desc: "Derruba o alvo quebrando sua sequência." },
-                    { nome: "Salto Acrobático", pe: 21, desc: "Evita completamente ataques do tipo rasteiro." },
-                    { nome: "Giro de Tronco", pe: 28, desc: "Aumenta a velocidade de ataque temporariamente." },
-                    { nome: "Balanço Supremo", pe: 36, desc: "Confunde o oponente reduzindo seu foco." },
-                    { nome: "Chute de Asa", pe: 45, desc: "Golpe aéreo de alta precisão." },
-                    { nome: "Dança das Sombras", pe: 55, desc: "Torna o gato intocável por 2 rodadas completas." }
-                ]
-            },
-            felinethai: {
-                nome: "Feline Thai", cor: "#ff6600", icone: "icones/felinethai.png",
-                tecnicas: [
-                    { nome: "Chute Canela", pe: 0, desc: "Golpe seco visando desgastar o ponto de apoio." },
-                    { nome: "Cotovelada Direta", pe: 3, desc: "Impacto de curtíssima distância causando sangramento." },
-                    { nome: "Joelhada Frontal", pe: 6, desc: "Perfura as costelas reduzindo a resistência." },
-                    { nome: "Clinch de Pescoço", pe: 10, desc: "Prende o alvo para desferir joelhadas sequenciais." },
-                    { nome: "Chute Traumatizante", pe: 15, desc: "Dano contínuo na região atingida." },
-                    { nome: "Combinação Rápida", pe: 21, desc: "Três golpes em sequência veloz." },
-                    { nome: "Resistência de Ferro", pe: 28, desc: "Suporta danos severos sem perder a postura." },
-                    { nome: "Golpe Destruidor", pe: 36, desc: "Causa sangramento crítico persistente." },
-                    { nome: "Foco de Combate", pe: 45, desc: "Maximiza a chance de acertos críticos." },
-                    { nome: "Corte Profundo", pe: 55, desc: "Dano massivo baseado na vida perdida do oponente." }
-                ]
-            },
-            ronrondo: {
-                nome: "Ron-Ron-Dô", cor: "#3366cc", icone: "icones/ronrondo.png",
-                tecnicas: [
-                    { nome: "Postura Firme", pe: 0, desc: "Bloqueio básico reduzindo dano frontal." },
-                    { nome: "Ronrono Defensivo", pe: 3, desc: "Vibração que estabiliza os batimentos e mitiga dano." },
-                    { nome: "Casca Grossa", pe: 6, desc: "Aumenta a defesa física passivamente." },
-                    { nome: "Contra-Choque", pe: 10, desc: "Devolve uma fração do dano recebido em moedas de dor." },
-                    { nome: "Escudo Corporal", pe: 15, desc: "Absorve completamente o próximo golpe comum." },
-                    { nome: "Muralha Intransponível", pe: 21, desc: "Duplica a armadura temporariamente." },
-                    { nome: "Recuperação Ativa", pe: 28, desc: "Regenera uma pequena quantia de HP ao bloquear." },
-                    { nome: "Desvio Blindado", pe: 36, desc: "Transforma falhas de esquiva em bloqueios eficientes." },
-                    { nome: "Absorção Vital", pe: 45, desc: "Converte 20% do dano recebido em foco." },
-                    { nome: "Zênite Inabalável", pe: 55, desc: "Imunidade total a qualquer penalidade ou efeito negativo." }
-                ]
-            }
-        };
 
         let slotAtivoIndex = null; 
 
