@@ -141,6 +141,14 @@
         .controles-stat { display: flex; align-items: center; gap: 10px; }
         .btn-stat { background-color: #dfc495; border: 2px solid #5a4231; width: 25px; height: 25px; border-radius: 5px; font-weight: bold; cursor: pointer;}
         
+        /* NOVO: Estilo para quando não há pontos para distribuir */
+        .btn-stat:disabled {
+            background-color: #7b7b7b;
+            border-color: #4a4a4a;
+            color: #dcdcdc;
+            cursor: not-allowed;
+        }
+        
         .botoes-stats-acoes { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px;}
         .btn-salvar-stats { flex: 1; background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32; font-size: 0.75em;}
         .btn-resetar-stats { 
@@ -361,10 +369,10 @@
             <div class="box-stats">
                 <div class="titulo-stats">Atributos <span style="color:#d27d46;">(Pontos: <span id="ptsLivres">0</span>)</span></div>
                 
-                <div class="linha-stat">Força <div class="controles-stat"><button class="btn-stat btn-sub">-</button> <span class="val-forca">1</span> <button class="btn-stat btn-add">+</button></div></div>
-                <div class="linha-stat">Agilidade <div class="controles-stat"><button class="btn-stat btn-sub">-</button> <span class="val-agi">1</span> <button class="btn-stat btn-add">+</button></div></div>
-                <div class="linha-stat">Resistência <div class="controles-stat"><button class="btn-stat btn-sub">-</button> <span class="val-res">1</span> <button class="btn-stat btn-add">+</button></div></div>
-                <div class="linha-stat">Foco <div class="controles-stat"><button class="btn-stat btn-sub">-</button> <span class="val-foco">1</span> <button class="btn-stat btn-add">+</button></div></div>
+                <div class="linha-stat">Força <div class="controles-stat"><button class="btn-stat btn-sub" data-attr="forca">-</button> <span id="val-forca">1</span> <button class="btn-stat btn-add" data-attr="forca">+</button></div></div>
+                <div class="linha-stat">Agilidade <div class="controles-stat"><button class="btn-stat btn-sub" data-attr="agilidade">-</button> <span id="val-agi">1</span> <button class="btn-stat btn-add" data-attr="agilidade">+</button></div></div>
+                <div class="linha-stat">Resistência <div class="controles-stat"><button class="btn-stat btn-sub" data-attr="resistencia">-</button> <span id="val-res">1</span> <button class="btn-stat btn-add" data-attr="resistencia">+</button></div></div>
+                <div class="linha-stat">Foco <div class="controles-stat"><button class="btn-stat btn-sub" data-attr="foco">-</button> <span id="val-foco">1</span> <button class="btn-stat btn-add" data-attr="foco">+</button></div></div>
                 
                 <div class="botoes-stats-acoes">
                     <button class="btn-salvar-stats" id="btnSalvarGato">Salvar Status & Nome</button>
@@ -441,7 +449,10 @@
         let vagasLiberadas = 3; 
         let listaGatosData = [];
         let gatoSelecionado = null; 
-        let biscoitosInventario = 0; 
+        let biscoitosInventario = 0;
+        let atributosBase = {};
+        let atributosTemp = {};
+        let pontosLivresTemp = 0;
 
         // Elementos UI Principais
         const gridDormitorio = document.getElementById('gridDormitorio');
@@ -628,11 +639,12 @@
             document.getElementById('txtXp').textContent = `${gato.xpAtual}/${gato.xpProxFaixa}`;
             document.getElementById('fillXp').style.width = `${(gato.xpAtual / gato.xpProxFaixa) * 100}%`;
 
-            document.querySelector('.val-forca').textContent = gato.atributos.forca;
-            document.querySelector('.val-agi').textContent = gato.atributos.agilidade;
-            document.querySelector('.val-res').textContent = gato.atributos.resistencia;
-            document.querySelector('.val-foco').textContent = gato.atributos.foco;
-            document.getElementById('ptsLivres').textContent = "0"; 
+            // Carrega os pontos reais do banco para a nossa memória temporária
+            atributosBase = { ...gato.atributos };
+            atributosTemp = { ...gato.atributos };
+            pontosLivresTemp = gato.pontosLivres || 0; 
+            
+            atualizarInterfaceAtributos(); // Pinta os números na tela 
 
             if (biscoitosInventario > 0) {
                 btnResetarStats.classList.add('ativo');
@@ -856,6 +868,79 @@
                 mostrarToast("Técnica equipada!");
             } catch (e) { console.error(e); }
         }
+
+        // ==========================================
+        // MOTOR DE DISTRIBUIÇÃO DE ATRIBUTOS
+        // ==========================================
+        function atualizarInterfaceAtributos() {
+            document.getElementById('val-forca').textContent = atributosTemp.forca;
+            document.getElementById('val-agi').textContent = atributosTemp.agilidade;
+            document.getElementById('val-res').textContent = atributosTemp.resistencia;
+            document.getElementById('val-foco').textContent = atributosTemp.foco;
+            document.getElementById('ptsLivres').textContent = pontosLivresTemp;
+
+            // Se a Resistência mudar, prevê o novo HP Máximo na tela em tempo real
+            const novoHpMax = 250 + (atributosTemp.resistencia * 15);
+            document.getElementById('txtHp').textContent = `${Math.round(gatoSelecionado.hpAtual)}/${novoHpMax}`;
+            document.getElementById('fillHp').style.width = `${(gatoSelecionado.hpAtual / novoHpMax) * 100}%`;
+
+            // Trava ou destrava os botões "+" se houver pontos
+            document.querySelectorAll('.btn-add').forEach(btn => {
+                btn.disabled = pontosLivresTemp <= 0;
+            });
+
+            // Trava ou destrava os botões "-" (só pode tirar o que acabou de colocar)
+            document.querySelectorAll('.btn-sub').forEach(btn => {
+                const attr = btn.getAttribute('data-attr');
+                btn.disabled = atributosTemp[attr] <= atributosBase[attr];
+            });
+        }
+
+        // Cliques do Botão +
+        document.querySelectorAll('.btn-add').forEach(btn => {
+            btn.onclick = () => {
+                if (pontosLivresTemp > 0) {
+                    const attr = btn.getAttribute('data-attr');
+                    atributosTemp[attr]++;
+                    pontosLivresTemp--;
+                    atualizarInterfaceAtributos();
+                }
+            };
+        });
+
+        // Cliques do Botão -
+        document.querySelectorAll('.btn-sub').forEach(btn => {
+            btn.onclick = () => {
+                const attr = btn.getAttribute('data-attr');
+                if (atributosTemp[attr] > atributosBase[attr]) {
+                    atributosTemp[attr]--;
+                    pontosLivresTemp++;
+                    atualizarInterfaceAtributos();
+                }
+            };
+        });
+
+        // Novo botão de Salvar (Atualiza o Firebase com os status reais)
+        document.getElementById('btnSalvarGato').onclick = async () => {
+            const novoNome = document.getElementById('modalNome').value.trim();
+            if(!novoNome) { mostrarToast("O gato precisa ter um nome!"); return; }
+            
+            try {
+                const novoHpMax = 250 + (atributosTemp.resistencia * 15);
+                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
+                
+                await updateDoc(gatoRef, { 
+                    nome: novoNome,
+                    atributos: atributosTemp,
+                    pontosLivres: pontosLivresTemp,
+                    hpMax: novoHpMax
+                });
+
+                mostrarToast("Status salvos com sucesso!");
+                carregarDormitorio(jogadorUid); 
+                modalGato.style.display = 'none';
+            } catch (e) { console.error(e); }
+        };
 
         // Ativa PWA
         if ('serviceWorker' in navigator) {
