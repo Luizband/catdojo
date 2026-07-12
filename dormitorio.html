@@ -57,17 +57,13 @@
         .vaga-gato img.foto-pet { width: 60%; border-radius: 5px; }
         .vaga-gato .nome-pet { font-size: 0.9em; font-weight: bold; color: #2a2a2a; margin-top: 5px; text-transform: uppercase; }
         
-       /* Ícone de Status flutuante no canto da vaga */
+        /* Ícone de Status flutuante no canto da vaga (Aceita imagens agora) */
         .status-icone {
             position: absolute; top: -10px; right: -10px; background-color: #fdf5e6; border: 2px solid #5a4231;
             border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
         }
-        
-        .status-icone img {
-            width: 65%; /* Garante que o ícone fique centralizado dentro da bolinha */
-            height: auto;
-        }
+        .status-icone img { width: 65%; height: auto; }
 
         /* Estilos para Vagas Livres e Bloqueadas */
         .vaga-livre { background-color: #e5cd9e; border: 3px dashed #a68a61; cursor: default; box-shadow: none; }
@@ -125,12 +121,18 @@
         .btn-salvar-stats { flex: 1; background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32;}
         .btn-resetar-stats { background-color: #FF9800; color: white; border: 2px solid #E65100; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #E65100; font-size: 0.8em;}
 
-        /* Slots de Batalha (UI) */
+        /* Slots de Batalha (UI) Ajustados para Imagens */
         .box-habilidades { margin-bottom: 20px; }
         .box-habilidades h4 { color: #2a2a2a; font-size: 0.9em; margin-bottom: 5px;}
         .grid-slots { display: flex; gap: 10px; }
-        .slot-habilidade { width: 40px; height: 40px; background-color: #7b7b7b; border: 2px solid #5a4231; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2em; color: #ccc;}
-        .slot-liberado { background-color: #dfc495; border-style: dashed; color: #5a4231;}
+        .slot-habilidade { 
+            width: 45px; height: 45px; background-color: #7b7b7b; border: 2px solid #5a4231; 
+            border-radius: 8px; display: flex; align-items: center; justify-content: center; 
+            font-size: 1.2em; color: #ccc; overflow: hidden;
+        }
+        .slot-habilidade img { width: 80%; height: 80%; object-fit: contain; }
+        .slot-liberado { background-color: #dfc495; border-style: dashed; color: #5a4231; cursor: pointer;}
+        .slot-liberado:hover { background-color: #e5cd9e; }
 
         /* Ações Finais */
         .grid-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
@@ -138,6 +140,39 @@
         .btn-acao:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
         .btn-dispensar { background-color: transparent; border: 2px dashed #cc3333; color: #cc3333; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;}
 
+        /* ==========================================
+           MODAL DE SELEÇÃO DE HABILIDADES
+           ========================================== */
+        .modal-habilidades {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85);
+            z-index: 200; display: none; justify-content: center; align-items: center;
+        }
+        .painel-habilidades {
+            background-color: #f1ddb0; width: 90%; max-width: 380px; border: 3px solid #5a4231;
+            border-radius: 12px; padding: 20px; box-shadow: 0px 10px 20px rgba(0,0,0,0.5);
+            max-height: 80vh; overflow-y: auto;
+        }
+        .item-arte {
+            display: flex; align-items: center; justify-content: space-between; padding: 12px;
+            border: 3px solid #5a4231; border-radius: 8px; margin-bottom: 10px; cursor: pointer;
+            font-weight: bold; color: #2a2a2a; text-transform: uppercase; font-size: 0.9em;
+            box-shadow: 0px 3px 0px #5a4231; transition: transform 0.1s;
+        }
+        .item-arte:active { transform: translateY(3px); box-shadow: 0px 0px 0px #5a4231; }
+        .item-arte img { width: 28px; height: 28px; object-fit: contain; }
+        
+        .tecnica-row {
+            display: flex; align-items: center; gap: 12px; padding: 10px;
+            border: 2px solid #5a4231; border-radius: 8px; margin-bottom: 8px; background-color: #fdf5e6;
+            cursor: pointer; text-align: left;
+        }
+        .tecnica-row.bloqueada {
+            filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; background-color: #ccc; border-color: #777;
+        }
+        .tecnica-row img { width: 32px; height: 32px; object-fit: contain; }
+        .tecnica-info h5 { font-size: 0.85em; color: #2a2a2a; text-transform: uppercase; margin-bottom: 2px; }
+        .tecnica-info p { font-size: 0.75em; color: #5a4231; font-weight: bold; line-height: 1.1em; }
+        .tecnica-pe { font-size: 0.75em; font-weight: bold; color: #b30000; margin-left: auto; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -232,13 +267,8 @@
 
             <div class="box-habilidades">
                 <h4>Slots de Batalha</h4>
-                <div class="grid-slots">
-                    <div class="slot-habilidade slot-liberado">+</div>
-                    <div class="slot-habilidade">🔒</div>
-                    <div class="slot-habilidade">🔒</div>
-                    <div class="slot-habilidade">🔒</div>
-                    <div class="slot-habilidade">🔒</div>
-                </div>
+                <div class="grid-slots" id="boxSlotsHabilidades">
+                    </div>
             </div>
 
             <div class="grid-acoes">
@@ -250,19 +280,111 @@
         </div>
     </div>
 
+    <div class="modal-habilidades" id="modalHabilidades">
+        <div class="painel-habilidades">
+            <button class="btn-fechar" id="btnFecharHabilidades" style="position: relative; float: right; top: -5px; right: -5px;">X</button>
+            <h3 id="tituloModalHabilidades" style="color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px; font-size: 1em; letter-spacing: 1px;">Selecione a Arte Marcial</h3>
+            <div id="conteudoModalHabilidades">
+                </div>
+        </div>
+    </div>
+
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDoc, doc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // ==========================================
+        // BASE DE DADOS: ARTES MARCIAIS
+        // ==========================================
+        const ARTES_MARCIAIS = {
+            garate: {
+                nome: "Garatê", cor: "#cc3333", icone: "icones/garate.png",
+                tecnicas: [
+                    { nome: "Aranhada Direta", pe: 0, desc: "Golpe frontal simples usando as garras dianteiras." },
+                    { nome: "Patada Dupla", pe: 3, desc: "Impacto pesado concentrando força nas duas patas." },
+                    { nome: "Investida Felina", pe: 6, desc: "Avanço corporal desestabilizador." },
+                    { nome: "Mordida Firme", pe: 10, desc: "Prende o oponente causando dano contínuo." },
+                    { nome: "Impacto Caótico", pe: 15, desc: "Série rápida de golpes sem direção fixa." },
+                    { nome: "Quebra-Postura", pe: 21, desc: "Reduz drasticamente a defesa inimiga." },
+                    { nome: "Garra de Aço", pe: 28, desc: "Perfuração profunda ignorando armadura mecânica." },
+                    { nome: "Contundência Pura", pe: 36, desc: "Ataque massivo focado em nocaute imediato." },
+                    { nome: "Fúria do Miado", pe: 45, desc: "Garante bônus de dano físico por 3 turnos." },
+                    { nome: "Predador Supremo", pe: 55, desc: "Técnica lendária do Garatê. Dano crítico massivo." }
+                ]
+            },
+            meowjitsu: {
+                nome: "Meow-Jitsu", cor: "#993399", icone: "icones/meowjitsu.png",
+                tecnicas: [
+                    { nome: "Bote Rasteiro", pe: 0, desc: "Imobilização básica pelas pernas do alvo." },
+                    { nome: "Chave de Cauda", pe: 3, desc: "Usa a cauda para travar os movimentos adversários." },
+                    { nome: "Guarda Sentada", pe: 6, desc: "Aumenta a absorção de impactos no solo." },
+                    { nome: "Abraço de Urso", pe: 10, desc: "Drena a energia de ação (PA) do oponente." },
+                    { nome: "Queda de Quadril", pe: 15, desc: "Arremessa o alvo causando atordoamento." },
+                    { nome: "Estrangulamento", pe: 21, desc: "Asfixia progressiva por rodada." },
+                    { nome: "Transição Fluida", pe: 28, desc: "Permite contra-atacar imediatamente após esquivar." },
+                    { nome: "Imobilização Total", pe: 36, desc: "Impede o oponente de atacar por 1 turno." },
+                    { nome: "Inversão Felina", pe: 45, desc: "Reflete o próximo dano físico recebido." },
+                    { nome: "Toque de Dormir", pe: 55, desc: "Coloca o oponente em estado de exaustão extrema." }
+                ]
+            },
+            catpoeira: {
+                nome: "Catpoeira", cor: "#339966", icone: "icones/catpoeira.png",
+                tecnicas: [
+                    { nome: "Ginga Básica", pe: 0, desc: "Movimentação constante que amplia a esquiva nativa." },
+                    { nome: "Rabo de Arraia", pe: 3, desc: "Giro veloz atingindo a cabeça com as patas traseiras." },
+                    { nome: "Meia Lua", pe: 6, desc: "Chute em arco focado em alvos rápidos." },
+                    { nome: "Aú de Costas", pe: 10, desc: "Acrobacia evasiva que reposiciona o lutador." },
+                    { nome: "Rasteira Invertida", pe: 15, desc: "Derruba o alvo quebrando sua sequência." },
+                    { nome: "Salto Acrobático", pe: 21, desc: "Evita completamente ataques do tipo rasteiro." },
+                    { nome: "Giro de Tronco", pe: 28, desc: "Aumenta a velocidade de ataque temporariamente." },
+                    { nome: "Balanço Supremo", pe: 36, desc: "Confunde o oponente reduzindo seu foco." },
+                    { nome: "Chute de Asa", pe: 45, desc: "Golpe aéreo de alta precisão." },
+                    { nome: "Dança das Sombras", pe: 55, desc: "Torna o gato intocável por 2 rodadas completas." }
+                ]
+            },
+            felinethai: {
+                nome: "Feline Thai", cor: "#ff6600", icone: "icones/felinethai.png",
+                tecnicas: [
+                    { nome: "Chute Canela", pe: 0, desc: "Golpe seco visando desgastar o ponto de apoio." },
+                    { nome: "Cotovelada Direta", pe: 3, desc: "Impacto de curtíssima distância causando sangramento." },
+                    { nome: "Joelhada Frontal", pe: 6, desc: "Perfura as costelas reduzindo a resistência." },
+                    { nome: "Clinch de Pescoço", pe: 10, desc: "Prende o alvo para desferir joelhadas sequenciais." },
+                    { nome: "Chute Traumatizante", pe: 15, desc: "Dano contínuo na região atingida." },
+                    { nome: "Combinação Rápida", pe: 21, desc: "Três golpes em sequência veloz." },
+                    { nome: "Resistência de Ferro", pe: 28, desc: "Suporta danos severos sem perder a postura." },
+                    { nome: "Golpe Destruidor", pe: 36, desc: "Causa sangramento crítico persistente." },
+                    { nome: "Foco de Combate", pe: 45, desc: "Maximiza a chance de acertos críticos." },
+                    { nome: "Corte Profundo", pe: 55, desc: "Dano massivo baseado na vida perdida do oponente." }
+                ]
+            },
+            ronrondo: {
+                nome: "Ron-Ron-Dô", cor: "#3366cc", icone: "icones/ronrondo.png",
+                tecnicas: [
+                    { nome: "Postura Firme", pe: 0, desc: "Bloqueio básico reduzindo dano frontal." },
+                    { nome: "Ronrono Defensivo", pe: 3, desc: "Vibração que estabiliza os batimentos e mitiga dano." },
+                    { nome: "Casca Grossa", pe: 6, desc: "Aumenta a defesa física passivamente." },
+                    { nome: "Contra-Choque", pe: 10, desc: "Devolve uma fração do dano recebido em moedas de dor." },
+                    { nome: "Escudo Corporal", pe: 15, desc: "Absorve completamente o próximo golpe comum." },
+                    { nome: "Muralha Intransponível", pe: 21, desc: "Duplica a armadura temporariamente." },
+                    { nome: "Recuperação Ativa", pe: 28, desc: "Regenera uma pequena quantia de HP ao bloquear." },
+                    { nome: "Desvio Blindado", pe: 36, desc: "Transforma falhas de esquiva em bloqueios eficientes." },
+                    { nome: "Absorção Vital", pe: 45, desc: "Converte 20% do dano recebido em foco." },
+                    { nome: "Zênite Inabalável", pe: 55, desc: "Imunidade total a qualquer penalidade ou efeito negativo." }
+                ]
+            }
+        };
+
+        let slotAtivoIndex = null; 
+
         // Variáveis de Estado
         let jogadorUid = null;
         let vagasTotais = 10;
-        let vagasLiberadas = 3; // Lemos isso do banco depois
+        let vagasLiberadas = 3; 
         let listaGatosData = [];
-        let gatoSelecionado = null; // Guarda o gato aberto no modal
+        let gatoSelecionado = null; 
 
-        // Elementos UI
+        // Elementos UI Principais
         const gridDormitorio = document.getElementById('gridDormitorio');
         const modalGato = document.getElementById('modalGato');
         const btnFecharModal = document.getElementById('btnFecharModal');
@@ -294,7 +416,6 @@
                 document.getElementById('exibeMoedas').textContent = dados.moedas !== undefined ? dados.moedas : 50;
                 document.getElementById('exibeReputacao').textContent = `${dados.reputacao || 0}/500`;
                 
-                // Vagas liberadas (Se não existir no BD, assume 3)
                 vagasLiberadas = dados.vagasDormitorio || 3;
 
                 if (dados.avatar) {
@@ -307,7 +428,6 @@
             gridDormitorio.innerHTML = '';
             listaGatosData = [];
 
-            // Puxa a subcoleção de gatos
             const gatosRef = collection(db, "Clas", uid, "Gatos");
             const querySnapshot = await getDocs(gatosRef);
             
@@ -325,26 +445,17 @@
                 const divCard = document.createElement('div');
                 
                 if (i < vagasLiberadas) {
-                    // É uma vaga que o jogador possui
                     if (i < listaGatosData.length) {
-                        // Tem gato nesta vaga
                         const gato = listaGatosData[i];
                         divCard.className = 'vaga-gato';
                         
-                        // Sistema de Ícones Personalizados
                         let htmlIcone = '';
                         let caminhoIcone = '';
 
-                        // Prioridade de alertas (Doente > Fome > Descansando)
-                        if (gato.estado === 'Doente') {
-                            caminhoIcone = 'icones/doente.png';
-                        } else if (gato.fome < 30) {
-                            caminhoIcone = 'icones/fome.png';
-                        } else if (gato.estado === 'Descansando') {
-                            caminhoIcone = 'icones/descansando.png';
-                        }
+                        if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } 
+                        else if (gato.fome < 30) { caminhoIcone = 'icones/fome.png'; } 
+                        else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descansando.png'; }
 
-                        // Só renderiza a bolinha no HTML se houver um alerta ativo
                         if (caminhoIcone !== '') {
                             htmlIcone = `<div class="status-icone"><img src="${caminhoIcone}" alt="Status"></div>`;
                         }
@@ -354,24 +465,21 @@
                             <img src="${gato.foto}" class="foto-pet" alt="Foto">
                             <div class="nome-pet">${gato.nome}</div>
                         `;
-                        // Abre o modal ao clicar
                         divCard.onclick = () => abrirPainelGato(gato);
-
+                    } else {
+                        divCard.className = 'vaga-gato vaga-livre';
+                        divCard.innerHTML = `<p>VAGA LIVRE</p>`;
                     }
                 } else {
-                    // Vaga bloqueada (precisa de upgrade)
                     divCard.className = 'vaga-gato vaga-bloqueada';
                     divCard.innerHTML = `<p>BLOQUEADO</p> <span style="font-size:1.5em">🔒</span>`;
                 }
-
                 gridDormitorio.appendChild(divCard);
             }
 
-            // Mostra o botão de comprar vaga se tiver vagas bloqueadas
             const btnComprar = document.getElementById('btnComprarVaga');
             if (vagasLiberadas < vagasTotais) {
                 btnComprar.style.display = 'block';
-                // Opcional: Atualizar o texto dinamicamente com base numa escala de preços no futuro
             } else {
                 btnComprar.style.display = 'none';
             }
@@ -387,7 +495,6 @@
             gatoSelecionado = gato;
             modalGato.style.display = 'flex';
 
-            // Alimenta os textos base
             document.getElementById('modalFoto').src = gato.foto;
             document.getElementById('modalNome').value = gato.nome;
             document.getElementById('modalFaixa').textContent = `Faixa ${gato.faixa}`;
@@ -397,7 +504,6 @@
             estadoEl.textContent = gato.estado;
             estadoEl.style.color = gato.estado === 'Doente' ? '#cc3333' : '#2E7D32';
 
-            // Alimenta as Barras
             document.getElementById('txtHp').textContent = `${gato.hpAtual}/${gato.hpMax}`;
             document.getElementById('fillHp').style.width = `${(gato.hpAtual / gato.hpMax) * 100}%`;
 
@@ -407,30 +513,83 @@
             document.getElementById('txtXp').textContent = `${gato.xpAtual}/${gato.xpProxFaixa}`;
             document.getElementById('fillXp').style.width = `${(gato.xpAtual / gato.xpProxFaixa) * 100}%`;
 
-            // Alimenta os Atributos (Visuais por enquanto)
             document.querySelector('.val-forca').textContent = gato.atributos.forca;
             document.querySelector('.val-agi').textContent = gato.atributos.agilidade;
             document.querySelector('.val-res').textContent = gato.atributos.resistencia;
             document.querySelector('.val-foco').textContent = gato.atributos.foco;
-            
-            // Pontos livres ficariam visíveis se gato tiver pontos (logica futura com level up)
             document.getElementById('ptsLivres').textContent = "0"; 
+
+            // Renderização Dinâmica dos Slots de Batalha baseada na Faixa
+            const boxSlots = document.getElementById('boxSlotsHabilidades');
+            boxSlots.innerHTML = '';
+
+            const niveisFaixas = { "Branca": 1, "Cinza": 2, "Amarela": 3, "Roxa": 5 };
+            const slotsLiberadosCount = niveisFaixas[gato.faixa] || 1;
+
+            if (!gato.habilidadesEquipadas) { gato.habilidadesEquipadas = [null, null, null, null, null]; }
+
+            for (let i = 0; i < 5; i++) {
+                const slotDiv = document.createElement('div');
+                
+                if (i < slotsLiberadosCount) {
+                    slotDiv.className = "slot-habilidade slot-liberado";
+                    const habEquipada = gato.habilidadesEquipadas[i];
+                    
+                    if (habEquipada) {
+                        slotDiv.innerHTML = `<img src="${habEquipada.iconeArte}" title="${habEquipada.nomeTecnica}">`;
+                        slotDiv.style.borderColor = habEquipada.corArte;
+                    } else {
+                        slotDiv.textContent = "+";
+                    }
+                    
+                    slotDiv.onclick = () => abrirSeletorArtes(i);
+                } else {
+                    slotDiv.className = "slot-habilidade";
+                    slotDiv.textContent = "🔒";
+                }
+                boxSlots.appendChild(slotDiv);
+            }
         }
 
-        // Botões de Ação (Apenas simulando as interações da UI para serem conectadas ao Firebase)
-        document.getElementById('btnAlimentar').onclick = () => {
-            alert("Em breve: Abrirá a mochila para escolher uma ração!");
-            // Lógica futura: Diminuir do inventário, aumentar 'fome' do gatoSelecionado e updateDoc no Firebase.
+        // ==========================================
+        // BOTÕES DE AÇÃO DO GATO (FIREBASE)
+        // ==========================================
+        document.getElementById('btnAlimentar').onclick = async () => {
+            if (gatoSelecionado.fome >= 100) {
+                alert(`${gatoSelecionado.nome} já está de barriga cheia!`);
+                return;
+            }
+            try {
+                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
+                await updateDoc(gatoRef, { fome: 100 });
+                
+                gatoSelecionado.fome = 100;
+                document.getElementById('txtFome').textContent = `100/100`;
+                document.getElementById('fillFome').style.width = `100%`;
+                
+                alert(`${gatoSelecionado.nome} comeu uma porção! (No futuro, gastará 1 Ração do Depósito)`);
+                carregarDormitorio(jogadorUid); 
+            } catch(e) { console.error("Erro ao alimentar:", e); }
         };
 
-        document.getElementById('btnDescansar').onclick = () => {
-            if(gatoSelecionado.estado === 'Descansando') {
-                alert(`${gatoSelecionado.nome} acordou e está pronto para o combate!`);
-                // Lógica: updateDoc mudando estado para Saudável
-            } else {
-                alert(`${gatoSelecionado.nome} foi colocado para descansar na cama e vai recuperar HP com o tempo.`);
-                // Lógica: updateDoc mudando estado para Descansando
-            }
+        document.getElementById('btnDescansar').onclick = async () => {
+            try {
+                const novoEstado = gatoSelecionado.estado === 'Descansando' ? 'Saudável' : 'Descansando';
+                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
+                
+                await updateDoc(gatoRef, { estado: novoEstado });
+                
+                gatoSelecionado.estado = novoEstado;
+                const estadoEl = document.getElementById('modalEstado');
+                estadoEl.textContent = novoEstado;
+                estadoEl.style.color = novoEstado === 'Doente' ? '#cc3333' : '#2E7D32';
+                
+                alert(novoEstado === 'Descansando' ? 
+                    `${gatoSelecionado.nome} foi deitar e está recuperando HP!` : 
+                    `${gatoSelecionado.nome} acordou e está pronto para treinar/lutar!`);
+                
+                carregarDormitorio(jogadorUid); 
+            } catch(e) { console.error("Erro ao descansar:", e); }
         };
 
         document.getElementById('btnResetarStats').onclick = () => {
@@ -445,7 +604,7 @@
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
                 await updateDoc(gatoRef, { nome: novoNome });
                 alert("Salvo com sucesso!");
-                carregarDormitorio(jogadorUid); // Recarrega a grid para mostrar novo nome
+                carregarDormitorio(jogadorUid); 
                 modalGato.style.display = 'none';
             } catch (e) {
                 console.error(e);
@@ -455,9 +614,99 @@
         document.getElementById('btnDispensar').onclick = () => {
             if(confirm(`Tem certeza que deseja expulsar ${gatoSelecionado.nome} do Clã? Esta ação é IRREVERSÍVEL.`)) {
                 alert("Função de deletar documento do Firebase a ser implementada.");
-                // Lógica: deleteDoc(doc(db, "Clas", uid, "Gatos", gato.id))
             }
         };
+
+        // ==========================================
+        // SISTEMA INTERATIVO DE SELEÇÃO DE TÉCNICAS
+        // ==========================================
+        const modalHabilidades = document.getElementById('modalHabilidades');
+        const conteudoHabilidades = document.getElementById('conteudoModalHabilidades');
+        const tituloHabilidades = document.getElementById('tituloModalHabilidades');
+        const btnFecharHabilidades = document.getElementById('btnFecharHabilidades');
+
+        btnFecharHabilidades.onclick = () => { modalHabilidades.style.display = 'none'; };
+
+        function abrirSeletorArtes(slotIndex) {
+            slotAtivoIndex = slotIndex;
+            tituloHabilidades.textContent = `Slot ${slotIndex + 1}: Escolha a Arte`;
+            conteudoHabilidades.innerHTML = '';
+            modalHabilidades.style.display = 'flex';
+
+            if (!gatoSelecionado.peArtes) {
+                gatoSelecionado.peArtes = { garate: 0, meowjitsu: 0, catpoeira: 0, felinethai: 0, ronrondo: 0 };
+            }
+
+            Object.keys(ARTES_MARCIAIS).forEach((chave) => {
+                const arte = ARTES_MARCIAIS[chave];
+                const pontosGato = gatoSelecionado.peArtes[chave] || 0;
+
+                const divArte = document.createElement('div');
+                divArte.className = 'item-arte';
+                divArte.style.backgroundColor = '#fdf5e6';
+                divArte.style.borderColor = arte.cor;
+                divArte.innerHTML = `
+                    <img src="${arte.icone}" alt="Ícone">
+                    <span>${arte.nome}</span>
+                    <span style="color: ${arte.cor}">PE: ${pontosGato}</span>
+                `;
+                
+                divArte.onclick = () => mostrarTecnicasDaArte(chave, arte);
+                conteudoHabilidades.appendChild(divArte);
+            });
+        }
+
+        function mostrarTecnicasDaArte(chaveArte, arte) {
+            tituloHabilidades.textContent = `Técnicas de ${arte.nome}`;
+            conteudoHabilidades.innerHTML = '';
+
+            const pontosGato = gatoSelecionado.peArtes[chaveArte] || 0;
+
+            arte.tecnicas.forEach((tec) => {
+                const liberada = pontosGato >= tec.pe;
+                const row = document.createElement('div');
+                row.className = `tecnica-row ${liberada ? '' : 'bloqueada'}`;
+                
+                row.innerHTML = `
+                    <img src="${arte.icone}" alt="Arte">
+                    <div class="tecnica-info">
+                        <h5>${tec.nome}</h5>
+                        <p>${tec.desc}</p>
+                    </div>
+                    <div class="tecnica-pe" style="color: ${liberada ? '#2E7D32' : '#b30000'}">
+                        Req: ${tec.pe} PE
+                    </div>
+                `;
+
+                if (liberada) {
+                    row.onclick = () => confirmarEquipamento(tec, arte);
+                }
+                conteudoHabilidades.appendChild(row);
+            });
+        }
+
+        async function confirmarEquipamento(tecnica, arte) {
+            if (confirm(`Deseja equipar a técnica "${tecnica.nome}" no Slot de Batalha ${slotAtivoIndex + 1}?`)) {
+                try {
+                    let novasHabilidades = [...gatoSelecionado.habilidadesEquipadas];
+                    novasHabilidades[slotAtivoIndex] = {
+                        nomeTecnica: tecnica.nome,
+                        iconeArte: arte.icone,
+                        corArte: arte.cor
+                    };
+
+                    const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
+                    await updateDoc(gatoRef, { habilidadesEquipadas: novasHabilidades });
+
+                    gatoSelecionado.habilidadesEquipadas = novasHabilidades;
+                    modalHabilidades.style.display = 'none';
+                    abrirPainelGato(gatoSelecionado); 
+                    alert("Técnica equipada com sucesso!");
+                } catch (e) {
+                    console.error("Erro ao equipar técnica:", e);
+                }
+            }
+        }
 
         // Ativa PWA
         if ('serviceWorker' in navigator) {
