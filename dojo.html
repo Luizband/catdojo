@@ -73,14 +73,16 @@
         .foto-cla {
             width: 70px;
             height: 70px;
-            background-color: #7b7b7b;
+            background-color: #ffffff; /* Fundo branco */
+            border: 3px solid #5a4231; /* Borda grossa de madeira */
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #a68a61; /* Cor do texto "FOTO" ajustada */
             font-size: 0.8em;
             font-weight: bold;
+            box-shadow: 0px 3px 0px #5a4231; /* Sombra estática igual aos botões, mas sem efeito de clique */
         }
 
         .dados-cla h2 {
@@ -293,12 +295,12 @@
             
             <header>
                 <div class="perfil-info">
-                    <div class="foto-cla" id="fotoClaContainer" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <div class="foto-cla" id="fotoClaContainer">
                         <span id="placeholderFoto">FOTO</span>
                     </div>
                     <div class="dados-cla">
                         <h2 id="exibeNomeCla">CARREGANDO...</h2>
-                        <p>Mestre <span id="exibeNomeMestre">...</span></p>
+                        <p id="exibeNomeMestre">Mestre...</p>
                         <div class="economia">
                             <div><img src="icones/moeda.png" alt="Moedas"> <span id="exibeMoedas">0</span></div>
                             <div><img src="icones/rep.png" alt="Reputação"> <span id="exibeReputacao">0/500</span></div>
@@ -432,11 +434,27 @@
                 if (docSnap.exists()) {
                     const dados = docSnap.data();
 
-                    exibeNomeCla.textContent = dados.nomeCla ? dados.nomeCla.toUpperCase() : "SEM NOME";
-                    exibeNomeMestre.textContent = dados.nomeMestre || "...";
+                    // 1. Formata o Nome do Clã
+                    let textoCla = dados.nomeCla ? dados.nomeCla.trim() : "DESCONHECIDO";
+                    // Se o jogador não escreveu a palavra "Clã", o sistema adiciona sozinho
+                    if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) {
+                        textoCla = "CLÃ " + textoCla;
+                    }
+                    exibeNomeCla.textContent = textoCla.toUpperCase();
+
+                    // 2. Formata o Nome do Mestre
+                    let textoMestre = dados.nomeMestre ? dados.nomeMestre.trim() : "...";
+                    // Se o jogador não escreveu a palavra "Mestre", o sistema adiciona sozinho
+                    if (!textoMestre.toUpperCase().startsWith("MESTRE")) {
+                        textoMestre = "Mestre " + textoMestre;
+                    }
+                    exibeNomeMestre.textContent = textoMestre;
+
+                    // 3. Moedas e Reputação
                     exibeMoedas.textContent = dados.moedas !== undefined ? dados.moedas : 50;
                     exibeReputacao.textContent = `${dados.reputacao || 0}/500`;
 
+                    // 4. Carrega o Avatar ou pede para escolher
                     if (dados.avatar) {
                         mostrarAvatarNaTela(dados.avatar);
                     } else {
