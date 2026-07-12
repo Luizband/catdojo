@@ -14,7 +14,7 @@
         #app {
             width: 100%; max-width: 414px; height: 100%; position: relative;
             box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
-            background-image: url('imagens/fundo.png'); background-size: cover; background-position: center;
+            background-image: url('imagens/fundodormitorio.png'); background-size: cover; background-position: center;
         }
         #app::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -119,11 +119,20 @@
 
         /* Barras Vitais */
         .box-barras { background-color: #e5cd9e; padding: 10px; border-radius: 8px; border: 2px solid #a68a61; margin-bottom: 15px; }
-        .linha-barra { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; font-size: 0.8em; font-weight: bold; color: #2a2a2a;}
-        .barra-fundo { width: 65%; height: 12px; background-color: #2c2c2c; border-radius: 6px; overflow: hidden; border: 1px solid #5a4231;}
+        .linha-barra { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; font-size: 0.85em; font-weight: bold; color: #2a2a2a;}
+        
+        .barra-fundo { width: 70%; height: 18px; background-color: #2c2c2c; border-radius: 8px; overflow: hidden; border: 1px solid #5a4231; position: relative; }
         .barra-hp { height: 100%; background-color: #cc3333; width: 100%; transition: width 0.3s; }
         .barra-fome { height: 100%; background-color: #a67c52; width: 100%; transition: width 0.3s; }
         .barra-xp { height: 100%; background-color: #3399ff; width: 0%; transition: width 0.3s; }
+        
+        /* Novo estilo para o número dentro da barra */
+        .texto-barra { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-size: 0.8em; font-weight: bold; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9); z-index: 2; pointer-events: none; 
+        }
 
         /* Atributos */
         .box-stats { background-color: #fdf5e6; border: 2px solid #5a4231; border-radius: 8px; padding: 15px; margin-bottom: 15px;}
@@ -133,8 +142,6 @@
         .btn-stat { background-color: #dfc495; border: 2px solid #5a4231; width: 25px; height: 25px; border-radius: 5px; font-weight: bold; cursor: pointer;}
         
         .botoes-stats-acoes { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px;}
-        
-        /* Botões Reduzidos */
         .btn-salvar-stats { flex: 1; background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32; font-size: 0.75em;}
         .btn-resetar-stats { 
             background-color: #7b7b7b; color: #dcdcdc; border: 2px solid #4a4a4a; padding: 6px 10px; 
@@ -164,12 +171,12 @@
             font-weight: bold; color: #2a2a2a; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; 
             text-transform: uppercase; font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-acao img { width: 44px; height: 44px; object-fit: contain; } /* Tamanho dobrado */
+        .btn-acao img { width: 44px; height: 44px; object-fit: contain; } 
         .btn-acao:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
         .btn-dispensar { background-color: transparent; border: 2px dashed #cc3333; color: #cc3333; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8em;}
 
         /* ==========================================
-           MODAL DE SELEÇÃO DE ARTES (CORRIGIDO)
+           MODAL DE SELEÇÃO DE ARTES
            ========================================== */
         .modal-habilidades {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85);
@@ -188,13 +195,10 @@
         }
         .arte-item-dojo:active { transform: translateY(4px); box-shadow: 0px 0px 0px #5a4231; }
         
-        /* Foto à esquerda, resto à direita */
         .arte-icone-lista { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3)); flex-shrink: 0;}
         .arte-info-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center;}
-        
         .arte-info-wrapper h4 { font-size: 1.1em; color: #2a2a2a; text-transform: uppercase; margin: 0 0 6px 0; letter-spacing: 1px;}
         
-        /* A barra começa apenas abaixo do título, do lado da foto */
         .arte-progresso-bg {
             width: 100%; height: 16px; background-color: #2c2c2c; border-radius: 8px; border: 2px solid #5a4231; 
             position: relative; overflow: hidden;
@@ -332,16 +336,25 @@
 
             <div class="box-barras">
                 <div class="linha-barra">
-                    <span>HP <span id="txtHp">250/250</span></span>
-                    <div class="barra-fundo"><div class="barra-hp" id="fillHp"></div></div>
+                    <span>HP</span>
+                    <div class="barra-fundo">
+                        <div class="barra-hp" id="fillHp"></div>
+                        <div class="texto-barra" id="txtHp">250/250</div>
+                    </div>
                 </div>
                 <div class="linha-barra">
-                    <span>Fome <span id="txtFome">100/100</span></span>
-                    <div class="barra-fundo"><div class="barra-fome" id="fillFome"></div></div>
+                    <span>Saciedade</span>
+                    <div class="barra-fundo">
+                        <div class="barra-fome" id="fillFome"></div>
+                        <div class="texto-barra" id="txtFome">100/100</div>
+                    </div>
                 </div>
                 <div class="linha-barra">
-                    <span>XP <span id="txtXp">0/500</span></span>
-                    <div class="barra-fundo"><div class="barra-xp" id="fillXp"></div></div>
+                    <span>XP</span>
+                    <div class="barra-fundo">
+                        <div class="barra-xp" id="fillXp"></div>
+                        <div class="texto-barra" id="txtXp">0/500</div>
+                    </div>
                 </div>
             </div>
 
@@ -391,7 +404,7 @@
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDoc, doc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { ARTES_MARCIAIS } from './artes-marciais.js'; // <-- Nova importação!
+        import { ARTES_MARCIAIS } from './artes-marciais.js';
 
         // ==========================================
         // SISTEMA DE AVISOS (TOAST E CONFIRMAÇÃO)
@@ -428,7 +441,7 @@
         let vagasLiberadas = 3; 
         let listaGatosData = [];
         let gatoSelecionado = null; 
-        let biscoitosInventario = 0; // Mock: Isso será lido do Depósito do Firebase depois
+        let biscoitosInventario = 0; 
 
         // Elementos UI Principais
         const gridDormitorio = document.getElementById('gridDormitorio');
@@ -478,9 +491,62 @@
             const gatosRef = collection(db, "Clas", uid, "Gatos");
             const querySnapshot = await getDocs(gatosRef);
             
+            const agora = Date.now();
+            let atualizacoesPendentes = [];
+
             querySnapshot.forEach((docSnap) => {
-                listaGatosData.push({ id: docSnap.id, ...docSnap.data() });
+                let gato = { id: docSnap.id, ...docSnap.data() };
+                let precisaSalvar = false;
+
+                // SISTEMA DE TEMPO REAL
+                if (!gato.ultimaAtualizacao) {
+                    gato.ultimaAtualizacao = agora;
+                    precisaSalvar = true;
+                } else {
+                    const horasPassadas = (agora - gato.ultimaAtualizacao) / (1000 * 60 * 60);
+
+                    if (horasPassadas > 0.01) { 
+                        gato.idadeHoras = (gato.idadeHoras || 0) + horasPassadas;
+
+                        // Nova Lógica: A saciedade decai SEMPRE, mesmo descansando!
+                        if (gato.fome > 0) {
+                            gato.fome -= (5 * horasPassadas);
+                            if (gato.fome <= 0) {
+                                gato.fome = 0;
+                                if (gato.estado !== 'Doente') gato.estado = 'Doente';
+                            }
+                        }
+
+                        if (gato.estado === 'Descansando' && gato.hpAtual < gato.hpMax) {
+                            gato.hpAtual += (gato.hpMax * 0.10) * horasPassadas;
+                            if (gato.hpAtual >= gato.hpMax) {
+                                gato.hpAtual = gato.hpMax;
+                                gato.estado = 'Saudável'; 
+                            }
+                        }
+
+                        gato.ultimaAtualizacao = agora;
+                        precisaSalvar = true;
+                    }
+                }
+
+                listaGatosData.push(gato);
+
+                if (precisaSalvar) {
+                    const gatoRef = doc(db, "Clas", uid, "Gatos", gato.id);
+                    atualizacoesPendentes.push(updateDoc(gatoRef, {
+                        fome: gato.fome,
+                        hpAtual: gato.hpAtual,
+                        estado: gato.estado,
+                        idadeHoras: gato.idadeHoras,
+                        ultimaAtualizacao: gato.ultimaAtualizacao
+                    }));
+                }
             });
+
+            if (atualizacoesPendentes.length > 0) {
+                await Promise.all(atualizacoesPendentes);
+            }
 
             renderizarGrid();
         }
@@ -542,22 +608,21 @@
             gatoSelecionado = gato;
             modalGato.style.display = 'flex';
 
-            // Define dinamicamente o número da imagem da faixa (1 a 20)
             const nivelExato = gato.nivel || 1; 
             document.getElementById('imgFaixaGato').src = `imagens/${String(nivelExato).padStart(2, '0')}.png`;
 
             document.getElementById('modalFoto').src = gato.foto;
             document.getElementById('modalNome').value = gato.nome;
-            document.getElementById('modalIdade').textContent = gato.idadeHoras;
+            document.getElementById('modalIdade').textContent = Math.floor(gato.idadeHoras);
             
             const estadoEl = document.getElementById('modalEstado');
             estadoEl.textContent = gato.estado;
             estadoEl.style.color = gato.estado === 'Doente' ? '#cc3333' : '#2E7D32';
 
-            document.getElementById('txtHp').textContent = `${gato.hpAtual}/${gato.hpMax}`;
+            document.getElementById('txtHp').textContent = `${Math.round(gato.hpAtual)}/${gato.hpMax}`;
             document.getElementById('fillHp').style.width = `${(gato.hpAtual / gato.hpMax) * 100}%`;
 
-            document.getElementById('txtFome').textContent = `${gato.fome}/100`;
+            document.getElementById('txtFome').textContent = `${Math.round(gato.fome)}/100`;
             document.getElementById('fillFome').style.width = `${gato.fome}%`;
 
             document.getElementById('txtXp').textContent = `${gato.xpAtual}/${gato.xpProxFaixa}`;
@@ -569,7 +634,6 @@
             document.querySelector('.val-foco').textContent = gato.atributos.foco;
             document.getElementById('ptsLivres').textContent = "0"; 
 
-            // Botão de Reset
             if (biscoitosInventario > 0) {
                 btnResetarStats.classList.add('ativo');
                 btnResetarStats.disabled = false;
@@ -578,7 +642,6 @@
                 btnResetarStats.disabled = true;
             }
 
-            // Renderização Dinâmica dos Slots de Batalha baseada na Faixa
             const boxSlots = document.getElementById('boxSlotsHabilidades');
             boxSlots.innerHTML = '';
 
@@ -610,6 +673,14 @@
                 }
                 boxSlots.appendChild(slotDiv);
             }
+
+            // Atualiza o botão de Descansar para "Acordar" caso o gato já esteja na cama
+            const btnDescansar = document.getElementById('btnDescansar');
+            if (gato.estado === 'Descansando') {
+                btnDescansar.innerHTML = `<img src="icones/descanso.png" alt="Icon"> Acordar`;
+            } else {
+                btnDescansar.innerHTML = `<img src="icones/descanso.png" alt="Icon"> Descansar`;
+            }
         }
 
         // ==========================================
@@ -622,9 +693,11 @@
             }
             try {
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
-                await updateDoc(gatoRef, { fome: 100 });
+                const agora = Date.now();
+                await updateDoc(gatoRef, { fome: 100, ultimaAtualizacao: agora });
                 
                 gatoSelecionado.fome = 100;
+                gatoSelecionado.ultimaAtualizacao = agora;
                 document.getElementById('txtFome').textContent = `100/100`;
                 document.getElementById('fillFome').style.width = `100%`;
                 
@@ -637,13 +710,22 @@
             try {
                 const novoEstado = gatoSelecionado.estado === 'Descansando' ? 'Saudável' : 'Descansando';
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
-                
-                await updateDoc(gatoRef, { estado: novoEstado });
+                const agora = Date.now();
+                await updateDoc(gatoRef, { estado: novoEstado, ultimaAtualizacao: agora });
                 
                 gatoSelecionado.estado = novoEstado;
+                gatoSelecionado.ultimaAtualizacao = agora;
                 const estadoEl = document.getElementById('modalEstado');
                 estadoEl.textContent = novoEstado;
                 estadoEl.style.color = novoEstado === 'Doente' ? '#cc3333' : '#2E7D32';
+
+                // Altera o botão instantaneamente na tela
+                const btnDescansar = document.getElementById('btnDescansar');
+                if (novoEstado === 'Descansando') {
+                    btnDescansar.innerHTML = `<img src="icones/descanso.png" alt="Icon"> Acordar`;
+                } else {
+                    btnDescansar.innerHTML = `<img src="icones/descanso.png" alt="Icon"> Descansar`;
+                }
                 
                 mostrarToast(novoEstado === 'Descansando' ? 
                     `${gatoSelecionado.nome} foi deitar!` : 
