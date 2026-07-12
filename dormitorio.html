@@ -39,45 +39,47 @@
         
         .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
 
-        /* GRID DO DORMITÓRIO (NOVO DESIGN SEM ESPAÇO) */
+        /* GRID DO DORMITÓRIO (MAIS PEQUENO - 3 POR LINHA) */
         main { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         
-        .grid-vagas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-bottom: 20px; }
+        .grid-vagas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; margin-bottom: 25px; }
 
         .vaga-gato {
             background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px;
             aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
             position: relative; cursor: pointer; box-shadow: 0px 4px 0px #5a4231; transition: transform 0.1s;
-            overflow: hidden; /* Corta a imagem perfeitamente dentro do card */
+            overflow: visible; /* Permite que a pílula saia do quadrado */
+            margin-bottom: 8px; /* Espaço para a pílula do nome */
         }
         .vaga-gato:active { transform: translateY(4px); box-shadow: 0px 0px 0px #5a4231; }
         
-        /* A imagem do gato ocupa o fundo todo do card */
+        /* A imagem do gato com bordas arredondadas para não sair do card */
         .vaga-gato img.foto-pet { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: cover; object-position: center bottom; border-radius: 7px;
         }
         
-        /* O nome virou uma pílula flutuante por cima do gato */
+        /* Pílula flutuante na borda inferior */
         .pilula-nome {
-            position: relative; z-index: 2; background-color: #5a4231; color: #f1ddb0;
-            padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;
-            margin-bottom: 8px; text-transform: uppercase; border: 2px solid #dfc495;
-            box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+            position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
+            z-index: 2; background-color: #5a4231; color: #f1ddb0; width: max-content;
+            padding: 2px 10px; border-radius: 12px; font-size: 0.75em; font-weight: bold;
+            text-transform: uppercase; border: 2px solid #dfc495;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.5); white-space: nowrap;
         }
         
-        /* Bolinha de status ajustada para não ficar cortada pelo overflow:hidden */
         .status-icone {
-            position: absolute; top: 5px; right: 5px; background-color: #fdf5e6; border: 2px solid #5a4231;
-            border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            position: absolute; top: -8px; right: -8px; background-color: #fdf5e6; border: 2px solid #5a4231;
+            border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0px 2px 4px rgba(0,0,0,0.3); z-index: 3;
         }
         .status-icone img { width: 65%; height: auto; }
 
-        .vaga-livre { background-color: #e5cd9e; border: 3px dashed #a68a61; cursor: default; box-shadow: none; justify-content: center; overflow: visible;}
-        .vaga-livre p { color: #a68a61; font-weight: bold; }
+        .vaga-livre { background-color: #e5cd9e; border: 3px dashed #a68a61; cursor: default; box-shadow: none; justify-content: center; overflow: hidden;}
+        .vaga-livre p { color: #a68a61; font-weight: bold; font-size: 0.8em; text-align: center;}
         
-        .vaga-bloqueada { background-color: #7b7b7b; border: 3px solid #4a4a4a; cursor: default; box-shadow: none; filter: grayscale(100%); opacity: 0.7; justify-content: center; overflow: visible;}
-        .vaga-bloqueada p { color: #2c2c2c; font-weight: bold; }
+        .vaga-bloqueada { background-color: #7b7b7b; border: 3px solid #4a4a4a; cursor: default; box-shadow: none; filter: grayscale(100%); opacity: 0.7; justify-content: center; overflow: hidden;}
+        .vaga-bloqueada p { color: #2c2c2c; font-weight: bold; font-size: 0.8em;}
 
         .btn-comprar-vaga {
             background-color: #d27d46; color: white; border: 2px solid #5a4231; padding: 10px 20px;
@@ -104,16 +106,16 @@
 
         .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold; z-index: 10;}
 
-        /* A Faixa do lado do X */
-        .imagem-faixa-topo {
-            position: absolute; right: 45px; top: 10px; width: 55px; height: auto; object-fit: contain; z-index: 5;
-            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));
-        }
-
         .cabecalho-pet { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; position: relative;}
-        .cabecalho-pet img.foto-modal { width: 80px; border: 3px solid #5a4231; border-radius: 10px; background-color: #fff;}
-        .info-cabecalho input { background: transparent; border: none; border-bottom: 2px solid #a68a61; font-size: 1.3em; font-weight: bold; color: #2a2a2a; width: 140px; outline: none; text-transform: uppercase;}
-        .info-cabecalho p { font-size: 0.9em; color: #5a4231; font-weight: bold; margin-top: 5px;}
+        .cabecalho-pet img.foto-modal { width: 80px; height: 80px; object-fit: cover; border: 3px solid #5a4231; border-radius: 10px; background-color: #fff;}
+        
+        .info-cabecalho { flex: 1; }
+        .info-cabecalho input { background: transparent; border: none; border-bottom: 2px solid #a68a61; font-size: 1.3em; font-weight: bold; color: #2a2a2a; width: 100%; outline: none; text-transform: uppercase; margin-bottom: 8px;}
+        
+        /* Layout flex para a idade/estado ficarem ao lado da faixa */
+        .info-detalhes { display: flex; justify-content: space-between; align-items: center; }
+        .textos-detalhes p { font-size: 0.85em; color: #5a4231; font-weight: bold; margin-bottom: 3px;}
+        .imagem-faixa-modal { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3)); }
 
         /* Barras Vitais */
         .box-barras { background-color: #e5cd9e; padding: 10px; border-radius: 8px; border: 2px solid #a68a61; margin-bottom: 15px; }
@@ -131,12 +133,12 @@
         .btn-stat { background-color: #dfc495; border: 2px solid #5a4231; width: 25px; height: 25px; border-radius: 5px; font-weight: bold; cursor: pointer;}
         
         .botoes-stats-acoes { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px;}
-        .btn-salvar-stats { flex: 1; background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32;}
         
-        /* Botão Resetar Bloqueado */
+        /* Botões Reduzidos */
+        .btn-salvar-stats { flex: 1; background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32; font-size: 0.75em;}
         .btn-resetar-stats { 
-            background-color: #7b7b7b; color: #dcdcdc; border: 2px solid #4a4a4a; padding: 8px 15px; 
-            border-radius: 6px; font-weight: bold; cursor: not-allowed; font-size: 0.8em;
+            background-color: #7b7b7b; color: #dcdcdc; border: 2px solid #4a4a4a; padding: 6px 10px; 
+            border-radius: 6px; font-weight: bold; cursor: not-allowed; font-size: 0.75em;
         }
         .btn-resetar-stats.ativo {
             background-color: #FF9800; color: white; border-color: #E65100; cursor: pointer; box-shadow: 0px 3px 0px #E65100;
@@ -155,19 +157,19 @@
         .slot-liberado { background-color: #dfc495; border-style: dashed; color: #5a4231; cursor: pointer;}
         .slot-liberado:hover { background-color: #e5cd9e; }
 
-        /* Ações Finais - Botões com Ícones */
+        /* Ações Finais - Ícones Duplicados de Tamanho */
         .grid-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .btn-acao { 
             background-color: #dfc495; border: 2px solid #5a4231; padding: 10px; border-radius: 8px; 
             font-weight: bold; color: #2a2a2a; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; 
             text-transform: uppercase; font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-acao img { width: 22px; height: 22px; object-fit: contain; }
+        .btn-acao img { width: 44px; height: 44px; object-fit: contain; } /* Tamanho dobrado */
         .btn-acao:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
-        .btn-dispensar { background-color: transparent; border: 2px dashed #cc3333; color: #cc3333; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;}
+        .btn-dispensar { background-color: transparent; border: 2px dashed #cc3333; color: #cc3333; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8em;}
 
         /* ==========================================
-           MODAL DE SELEÇÃO DE ARTES (NOVO ESTILO DOJO)
+           MODAL DE SELEÇÃO DE ARTES (CORRIGIDO)
            ========================================== */
         .modal-habilidades {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85);
@@ -180,16 +182,19 @@
         }
         
         .arte-item-dojo {
-            background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px; padding: 10px 15px; 
+            background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px; padding: 12px; 
             margin-bottom: 12px; cursor: pointer; box-shadow: 0px 4px 0px #5a4231; display: flex; 
-            flex-direction: column; gap: 8px; transition: transform 0.1s;
+            align-items: center; gap: 15px; transition: transform 0.1s;
         }
         .arte-item-dojo:active { transform: translateY(4px); box-shadow: 0px 0px 0px #5a4231; }
         
-        .arte-header { display: flex; align-items: center; gap: 15px; }
-        .arte-header img { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));}
-        .arte-header h4 { font-size: 1.1em; color: #2a2a2a; text-transform: uppercase; margin: 0; letter-spacing: 1px;}
+        /* Foto à esquerda, resto à direita */
+        .arte-icone-lista { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3)); flex-shrink: 0;}
+        .arte-info-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center;}
         
+        .arte-info-wrapper h4 { font-size: 1.1em; color: #2a2a2a; text-transform: uppercase; margin: 0 0 6px 0; letter-spacing: 1px;}
+        
+        /* A barra começa apenas abaixo do título, do lado da foto */
         .arte-progresso-bg {
             width: 100%; height: 16px; background-color: #2c2c2c; border-radius: 8px; border: 2px solid #5a4231; 
             position: relative; overflow: hidden;
@@ -310,14 +315,18 @@
     <div class="modal-overlay" id="modalGato">
         <div class="painel-gato">
             <button class="btn-fechar" id="btnFecharModal">X</button>
-            <img src="imagens/01.png" id="imgFaixaGato" class="imagem-faixa-topo" alt="Faixa">
             
             <div class="cabecalho-pet">
                 <img src="imagens/gato01.png" id="modalFoto" class="foto-modal" alt="Gato">
                 <div class="info-cabecalho">
                     <input type="text" id="modalNome" maxlength="10">
-                    <p>Idade: <span id="modalIdade">0</span> horas</p>
-                    <p>Estado: <span id="modalEstado" style="color: #2E7D32;">Saudável</span></p>
+                    <div class="info-detalhes">
+                        <div class="textos-detalhes">
+                            <p>Idade: <span id="modalIdade">0</span> horas</p>
+                            <p>Estado: <span id="modalEstado" style="color: #2E7D32;">Saudável</span></p>
+                        </div>
+                        <img src="imagens/01.png" id="imgFaixaGato" class="imagem-faixa-modal" alt="Faixa">
+                    </div>
                 </div>
             </div>
 
@@ -572,7 +581,7 @@
 
                         if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } 
                         else if (gato.fome < 30) { caminhoIcone = 'icones/fome.png'; } 
-                        else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descanso.png'; } // Usando descanso.png
+                        else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descanso.png'; }
 
                         if (caminhoIcone !== '') {
                             htmlIcone = `<div class="status-icone"><img src="${caminhoIcone}" alt="Status"></div>`;
@@ -653,7 +662,6 @@
             const boxSlots = document.getElementById('boxSlotsHabilidades');
             boxSlots.innerHTML = '';
 
-            // Lógica fictícia: 1 slot p/ lvl 1, 2 p/ lvl 2, 3 p/ lvl 3, 5 p/ lvl 5. Ajustar conforme GDD.
             let slotsLiberadosCount = 1;
             if (nivelExato >= 2) slotsLiberadosCount = 2;
             if (nivelExato >= 3) slotsLiberadosCount = 3;
@@ -777,18 +785,18 @@
             Object.keys(ARTES_MARCIAIS).forEach((chave) => {
                 const arte = ARTES_MARCIAIS[chave];
                 const pontosGato = gatoSelecionado.peArtes[chave] || 0;
-                const progressoMax = 100; // Define o máximo de PE da arte para calcular a porcentagem
+                const progressoMax = 100; 
 
                 const divArte = document.createElement('div');
                 divArte.className = 'arte-item-dojo';
                 divArte.innerHTML = `
-                    <div class="arte-header">
-                        <img src="${arte.icone}" alt="Ícone">
+                    <img src="${arte.icone}" class="arte-icone-lista" alt="Ícone">
+                    <div class="arte-info-wrapper">
                         <h4>${arte.nome}</h4>
-                    </div>
-                    <div class="arte-progresso-bg">
-                        <div class="arte-progresso-fill" style="width: ${(pontosGato/progressoMax)*100}%; background-color: ${arte.cor};"></div>
-                        <span class="arte-texto-pe">PE: ${pontosGato}/${progressoMax}</span>
+                        <div class="arte-progresso-bg">
+                            <div class="arte-progresso-fill" style="width: ${(pontosGato/progressoMax)*100}%; background-color: ${arte.cor};"></div>
+                            <span class="arte-texto-pe">PE: ${pontosGato}/${progressoMax}</span>
+                        </div>
                     </div>
                 `;
                 
