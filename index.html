@@ -208,6 +208,7 @@
 
     <script type="module">
         import { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc } from './firebase-config.js';
+        import { gerarGatoInicial } from './gerador-gatos.js';
 
         const grupoRegistro = document.getElementById('grupoRegistro');
         const nomeMestreInput = document.getElementById('nomeMestre');
@@ -308,6 +309,7 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const user = userCredential.user;
 
+                // 1. Cria a ficha do Clã
                 await setDoc(doc(db, "Clas", user.uid), {
                     nomeMestre: nomeMestre,
                     nomeCla: nomeCla,
@@ -316,7 +318,15 @@
                     dataCriacao: new Date().toISOString()
                 });
 
-                alert("Clã fundado com sucesso! Bem-vindo ao CatDojo.");
+                // 2. Gera os dois gatinhos iniciais a partir do módulo externo
+                const gato1 = gerarGatoInicial();
+                const gato2 = gerarGatoInicial();
+
+                // 3. Salva os gatos criados na subcoleção interna do jogador
+                await setDoc(doc(db, "Clas", user.uid, "Gatos", gato1.id), gato1);
+                await setDoc(doc(db, "Clas", user.uid, "Gatos", gato2.id), gato2);
+
+                alert("Clã fundado com sucesso! Os teus dois primeiros gatos já te esperam no Dormitório. Bem-vindo ao CatDojo.");
                 window.location.href = "dojo.html";
             } catch (error) {
                 console.error(error);
@@ -324,6 +334,7 @@
                 btnRegistro.textContent = "Fundar Clã Agora!";
             }
         });
+
         // Ativa o instalador do PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
