@@ -57,11 +57,16 @@
         .vaga-gato img.foto-pet { width: 60%; border-radius: 5px; }
         .vaga-gato .nome-pet { font-size: 0.9em; font-weight: bold; color: #2a2a2a; margin-top: 5px; text-transform: uppercase; }
         
-        /* Ícone de Status flutuante no canto da vaga */
+       /* Ícone de Status flutuante no canto da vaga */
         .status-icone {
-            position: absolute; top: -10px; right: -10px; background-color: #fff; border: 2px solid #5a4231;
-            border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2em; box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+            position: absolute; top: -10px; right: -10px; background-color: #fdf5e6; border: 2px solid #5a4231;
+            border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-icone img {
+            width: 65%; /* Garante que o ícone fique centralizado dentro da bolinha */
+            height: auto;
         }
 
         /* Estilos para Vagas Livres e Bloqueadas */
@@ -326,24 +331,32 @@
                         const gato = listaGatosData[i];
                         divCard.className = 'vaga-gato';
                         
-                        // Define icone de status rápido
-                        let iconeStatus = '🐱';
-                        if (gato.fome < 30) iconeStatus = '🍖';
-                        if (gato.estado === 'Doente') iconeStatus = '💊';
-                        if (gato.estado === 'Descansando') iconeStatus = '💤';
+                        // Sistema de Ícones Personalizados
+                        let htmlIcone = '';
+                        let caminhoIcone = '';
+
+                        // Prioridade de alertas (Doente > Fome > Descansando)
+                        if (gato.estado === 'Doente') {
+                            caminhoIcone = 'icones/doente.png';
+                        } else if (gato.fome < 30) {
+                            caminhoIcone = 'icones/fome.png';
+                        } else if (gato.estado === 'Descansando') {
+                            caminhoIcone = 'icones/descansando.png';
+                        }
+
+                        // Só renderiza a bolinha no HTML se houver um alerta ativo
+                        if (caminhoIcone !== '') {
+                            htmlIcone = `<div class="status-icone"><img src="${caminhoIcone}" alt="Status"></div>`;
+                        }
 
                         divCard.innerHTML = `
-                            <div class="status-icone">${iconeStatus}</div>
+                            ${htmlIcone}
                             <img src="${gato.foto}" class="foto-pet" alt="Foto">
                             <div class="nome-pet">${gato.nome}</div>
                         `;
                         // Abre o modal ao clicar
                         divCard.onclick = () => abrirPainelGato(gato);
 
-                    } else {
-                        // Vaga comprada, mas vazia
-                        divCard.className = 'vaga-gato vaga-livre';
-                        divCard.innerHTML = `<p>VAGA LIVRE</p>`;
                     }
                 } else {
                     // Vaga bloqueada (precisa de upgrade)
