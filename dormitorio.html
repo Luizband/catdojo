@@ -11,7 +11,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #2c2c2c; display: flex; justify-content: center; height: 100vh; }
 
-        /* CONTAINER PRINCIPAL */
         #app {
             width: 100%; max-width: 414px; height: 100%; position: relative;
             box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
@@ -24,7 +23,7 @@
 
         .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
 
-        /* CABEÇALHO PADRÃO + TÍTULO DA PÁGINA */
+        /* CABEÇALHO PADRÃO */
         header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
         .perfil-info { display: flex; gap: 15px; }
         .foto-cla {
@@ -40,36 +39,44 @@
         
         .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
 
-        /* GRID DO DORMITÓRIO (10 VAGAS) */
+        /* GRID DO DORMITÓRIO (NOVO DESIGN SEM ESPAÇO) */
         main { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         
-        .grid-vagas {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-bottom: 20px;
-        }
+        .grid-vagas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-bottom: 20px; }
 
         .vaga-gato {
             background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px;
-            aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
             position: relative; cursor: pointer; box-shadow: 0px 4px 0px #5a4231; transition: transform 0.1s;
+            overflow: hidden; /* Corta a imagem perfeitamente dentro do card */
         }
         .vaga-gato:active { transform: translateY(4px); box-shadow: 0px 0px 0px #5a4231; }
         
-        .vaga-gato img.foto-pet { width: 60%; border-radius: 5px; }
-        .vaga-gato .nome-pet { font-size: 0.9em; font-weight: bold; color: #2a2a2a; margin-top: 5px; text-transform: uppercase; }
+        /* A imagem do gato ocupa o fundo todo do card */
+        .vaga-gato img.foto-pet { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom;
+        }
         
-        /* Ícone de Status flutuante no canto da vaga (Aceita imagens agora) */
+        /* O nome virou uma pílula flutuante por cima do gato */
+        .pilula-nome {
+            position: relative; z-index: 2; background-color: #5a4231; color: #f1ddb0;
+            padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;
+            margin-bottom: 8px; text-transform: uppercase; border: 2px solid #dfc495;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* Bolinha de status ajustada para não ficar cortada pelo overflow:hidden */
         .status-icone {
-            position: absolute; top: -10px; right: -10px; background-color: #fdf5e6; border: 2px solid #5a4231;
-            border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+            position: absolute; top: 5px; right: 5px; background-color: #fdf5e6; border: 2px solid #5a4231;
+            border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.3); z-index: 3;
         }
         .status-icone img { width: 65%; height: auto; }
 
-        /* Estilos para Vagas Livres e Bloqueadas */
-        .vaga-livre { background-color: #e5cd9e; border: 3px dashed #a68a61; cursor: default; box-shadow: none; }
+        .vaga-livre { background-color: #e5cd9e; border: 3px dashed #a68a61; cursor: default; box-shadow: none; justify-content: center; overflow: visible;}
         .vaga-livre p { color: #a68a61; font-weight: bold; }
         
-        .vaga-bloqueada { background-color: #7b7b7b; border: 3px solid #4a4a4a; cursor: default; box-shadow: none; filter: grayscale(100%); opacity: 0.7;}
+        .vaga-bloqueada { background-color: #7b7b7b; border: 3px solid #4a4a4a; cursor: default; box-shadow: none; filter: grayscale(100%); opacity: 0.7; justify-content: center; overflow: visible;}
         .vaga-bloqueada p { color: #2c2c2c; font-weight: bold; }
 
         .btn-comprar-vaga {
@@ -87,7 +94,7 @@
            ========================================== */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.8);
-            z-index: 100; display: none; justify-content: center; align-items: flex-end; /* Abre de baixo pra cima */
+            z-index: 100; display: none; justify-content: center; align-items: flex-end; 
         }
         
         .painel-gato {
@@ -95,11 +102,17 @@
             border-radius: 20px 20px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; position: relative;
         }
 
-        .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold;}
+        .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold; z-index: 10;}
 
-        .cabecalho-pet { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .cabecalho-pet img { width: 80px; border: 3px solid #5a4231; border-radius: 10px; background-color: #fff;}
-        .info-cabecalho input { background: transparent; border: none; border-bottom: 2px solid #a68a61; font-size: 1.3em; font-weight: bold; color: #2a2a2a; width: 150px; outline: none; text-transform: uppercase;}
+        /* A Faixa do lado do X */
+        .imagem-faixa-topo {
+            position: absolute; right: 45px; top: 10px; width: 55px; height: auto; object-fit: contain; z-index: 5;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));
+        }
+
+        .cabecalho-pet { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; position: relative;}
+        .cabecalho-pet img.foto-modal { width: 80px; border: 3px solid #5a4231; border-radius: 10px; background-color: #fff;}
+        .info-cabecalho input { background: transparent; border: none; border-bottom: 2px solid #a68a61; font-size: 1.3em; font-weight: bold; color: #2a2a2a; width: 140px; outline: none; text-transform: uppercase;}
         .info-cabecalho p { font-size: 0.9em; color: #5a4231; font-weight: bold; margin-top: 5px;}
 
         /* Barras Vitais */
@@ -119,9 +132,17 @@
         
         .botoes-stats-acoes { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px;}
         .btn-salvar-stats { flex: 1; background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32;}
-        .btn-resetar-stats { background-color: #FF9800; color: white; border: 2px solid #E65100; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #E65100; font-size: 0.8em;}
+        
+        /* Botão Resetar Bloqueado */
+        .btn-resetar-stats { 
+            background-color: #7b7b7b; color: #dcdcdc; border: 2px solid #4a4a4a; padding: 8px 15px; 
+            border-radius: 6px; font-weight: bold; cursor: not-allowed; font-size: 0.8em;
+        }
+        .btn-resetar-stats.ativo {
+            background-color: #FF9800; color: white; border-color: #E65100; cursor: pointer; box-shadow: 0px 3px 0px #E65100;
+        }
 
-        /* Slots de Batalha (UI) Ajustados para Imagens */
+        /* Slots de Batalha */
         .box-habilidades { margin-bottom: 20px; }
         .box-habilidades h4 { color: #2a2a2a; font-size: 0.9em; margin-bottom: 5px;}
         .grid-slots { display: flex; gap: 10px; }
@@ -134,14 +155,19 @@
         .slot-liberado { background-color: #dfc495; border-style: dashed; color: #5a4231; cursor: pointer;}
         .slot-liberado:hover { background-color: #e5cd9e; }
 
-        /* Ações Finais */
+        /* Ações Finais - Botões com Ícones */
         .grid-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .btn-acao { background-color: #dfc495; border: 2px solid #5a4231; padding: 12px; border-radius: 8px; font-weight: bold; color: #2a2a2a; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; text-transform: uppercase; font-size: 0.85em;}
+        .btn-acao { 
+            background-color: #dfc495; border: 2px solid #5a4231; padding: 10px; border-radius: 8px; 
+            font-weight: bold; color: #2a2a2a; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; 
+            text-transform: uppercase; font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-acao img { width: 22px; height: 22px; object-fit: contain; }
         .btn-acao:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
         .btn-dispensar { background-color: transparent; border: 2px dashed #cc3333; color: #cc3333; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;}
 
         /* ==========================================
-           MODAL DE SELEÇÃO DE HABILIDADES
+           MODAL DE SELEÇÃO DE ARTES (NOVO ESTILO DOJO)
            ========================================== */
         .modal-habilidades {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85);
@@ -152,30 +178,89 @@
             border-radius: 12px; padding: 20px; box-shadow: 0px 10px 20px rgba(0,0,0,0.5);
             max-height: 80vh; overflow-y: auto;
         }
-        .item-arte {
-            display: flex; align-items: center; justify-content: space-between; padding: 12px;
-            border: 3px solid #5a4231; border-radius: 8px; margin-bottom: 10px; cursor: pointer;
-            font-weight: bold; color: #2a2a2a; text-transform: uppercase; font-size: 0.9em;
-            box-shadow: 0px 3px 0px #5a4231; transition: transform 0.1s;
-        }
-        .item-arte:active { transform: translateY(3px); box-shadow: 0px 0px 0px #5a4231; }
-        .item-arte img { width: 28px; height: 28px; object-fit: contain; }
         
+        .arte-item-dojo {
+            background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px; padding: 10px 15px; 
+            margin-bottom: 12px; cursor: pointer; box-shadow: 0px 4px 0px #5a4231; display: flex; 
+            flex-direction: column; gap: 8px; transition: transform 0.1s;
+        }
+        .arte-item-dojo:active { transform: translateY(4px); box-shadow: 0px 0px 0px #5a4231; }
+        
+        .arte-header { display: flex; align-items: center; gap: 15px; }
+        .arte-header img { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));}
+        .arte-header h4 { font-size: 1.1em; color: #2a2a2a; text-transform: uppercase; margin: 0; letter-spacing: 1px;}
+        
+        .arte-progresso-bg {
+            width: 100%; height: 16px; background-color: #2c2c2c; border-radius: 8px; border: 2px solid #5a4231; 
+            position: relative; overflow: hidden;
+        }
+        .arte-progresso-fill { height: 100%; }
+        .arte-texto-pe {
+            position: absolute; top: -1px; left: 0; width: 100%; text-align: center; font-size: 0.75em; 
+            color: white; font-weight: bold; line-height: 16px; text-shadow: 1px 1px 2px #000;
+        }
+
         .tecnica-row {
-            display: flex; align-items: center; gap: 12px; padding: 10px;
-            border: 2px solid #5a4231; border-radius: 8px; margin-bottom: 8px; background-color: #fdf5e6;
-            cursor: pointer; text-align: left;
+            display: flex; align-items: center; gap: 12px; padding: 10px; border: 2px solid #5a4231; 
+            border-radius: 8px; margin-bottom: 8px; background-color: #dfc495; cursor: pointer; text-align: left;
         }
-        .tecnica-row.bloqueada {
-            filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; background-color: #ccc; border-color: #777;
-        }
+        .tecnica-row.bloqueada { filter: grayscale(100%); opacity: 0.6; cursor: not-allowed; background-color: #ccc; border-color: #777;}
         .tecnica-row img { width: 32px; height: 32px; object-fit: contain; }
         .tecnica-info h5 { font-size: 0.85em; color: #2a2a2a; text-transform: uppercase; margin-bottom: 2px; }
         .tecnica-info p { font-size: 0.75em; color: #5a4231; font-weight: bold; line-height: 1.1em; }
         .tecnica-pe { font-size: 0.75em; font-weight: bold; color: #b30000; margin-left: auto; white-space: nowrap; }
+
+        /* ==========================================
+           SISTEMA DE AVISOS (TOASTS E MODAL CENTRO)
+           ========================================== */
+        #toastContainer {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast-msg {
+            background-color: #2c2c2c; color: #f1ddb0; padding: 12px 24px; border: 2px solid #dfc495;
+            border-radius: 8px; font-weight: bold; text-align: center; box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+            animation: fadeInOut 2s forwards; pointer-events: auto; cursor: pointer; text-transform: uppercase; font-size: 0.85em;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+
+        .modal-centro {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85);
+            z-index: 1000; display: none; justify-content: center; align-items: center;
+        }
+        .painel-centro {
+            background-color: #f1ddb0; width: 85%; max-width: 320px; border: 3px solid #5a4231;
+            border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0px 10px 20px rgba(0,0,0,0.5);
+        }
+        .painel-centro p { color: #2a2a2a; font-weight: bold; margin-bottom: 20px; font-size: 1.05em; }
+        .botoes-centro { display: flex; gap: 10px; justify-content: center; }
+        .btn-centro {
+            flex: 1; padding: 10px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px; 
+            font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; color: #2a2a2a; text-transform: uppercase;
+        }
+        .btn-centro:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+        .btn-centro.cancelar { background-color: transparent; border: 2px dashed #a68a61; box-shadow: none; }
+
     </style>
 </head>
 <body>
+    <div id="toastContainer"></div>
+    
+    <div class="modal-centro" id="modalConfirmacao">
+        <div class="painel-centro">
+            <p id="textoConfirmacao">Tem certeza?</p>
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" id="btnCancelarConfirm">Cancelar</button>
+                <button class="btn-centro" id="btnAceitarConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="app">
         <div class="conteudo-app">
             
@@ -225,12 +310,12 @@
     <div class="modal-overlay" id="modalGato">
         <div class="painel-gato">
             <button class="btn-fechar" id="btnFecharModal">X</button>
+            <img src="imagens/01.png" id="imgFaixaGato" class="imagem-faixa-topo" alt="Faixa">
             
             <div class="cabecalho-pet">
-                <img src="imagens/gato01.png" id="modalFoto" alt="Gato">
+                <img src="imagens/gato01.png" id="modalFoto" class="foto-modal" alt="Gato">
                 <div class="info-cabecalho">
                     <input type="text" id="modalNome" maxlength="10">
-                    <p id="modalFaixa">Faixa Branca - Nível 1</p>
                     <p>Idade: <span id="modalIdade">0</span> horas</p>
                     <p>Estado: <span id="modalEstado" style="color: #2E7D32;">Saudável</span></p>
                 </div>
@@ -261,7 +346,7 @@
                 
                 <div class="botoes-stats-acoes">
                     <button class="btn-salvar-stats" id="btnSalvarGato">Salvar Status & Nome</button>
-                    <button class="btn-resetar-stats" id="btnResetarStats">🍪 Resetar (1)</button>
+                    <button class="btn-resetar-stats" id="btnResetarStats">RESETAR STATUS</button>
                 </div>
             </div>
 
@@ -272,8 +357,12 @@
             </div>
 
             <div class="grid-acoes">
-                <button class="btn-acao" id="btnAlimentar">🍖 Alimentar</button>
-                <button class="btn-acao" id="btnDescansar">💤 Descansar</button>
+                <button class="btn-acao" id="btnAlimentar">
+                    <img src="icones/alimentar.png" alt="Icon"> Alimentar
+                </button>
+                <button class="btn-acao" id="btnDescansar">
+                    <img src="icones/descanso.png" alt="Icon"> Descansar
+                </button>
             </div>
             <button class="btn-dispensar" id="btnDispensar">Expulsar do Clã</button>
 
@@ -293,6 +382,33 @@
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDoc, doc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ==========================================
+        // SISTEMA DE AVISOS (TOAST E CONFIRMAÇÃO)
+        // ==========================================
+        function mostrarToast(mensagem) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.textContent = mensagem;
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+            
+            setTimeout(() => { if(toast.parentElement) toast.remove(); }, 2000);
+        }
+
+        function pedirConfirmacao(mensagem, callback) {
+            document.getElementById('textoConfirmacao').textContent = mensagem;
+            document.getElementById('modalConfirmacao').style.display = 'flex';
+            
+            document.getElementById('btnAceitarConfirm').onclick = () => {
+                document.getElementById('modalConfirmacao').style.display = 'none';
+                callback();
+            };
+            document.getElementById('btnCancelarConfirm').onclick = () => {
+                document.getElementById('modalConfirmacao').style.display = 'none';
+            };
+        }
 
         // ==========================================
         // BASE DE DADOS: ARTES MARCIAIS
@@ -383,11 +499,13 @@
         let vagasLiberadas = 3; 
         let listaGatosData = [];
         let gatoSelecionado = null; 
+        let biscoitosInventario = 0; // Mock: Isso será lido do Depósito do Firebase depois
 
         // Elementos UI Principais
         const gridDormitorio = document.getElementById('gridDormitorio');
         const modalGato = document.getElementById('modalGato');
         const btnFecharModal = document.getElementById('btnFecharModal');
+        const btnResetarStats = document.getElementById('btnResetarStats');
         
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -454,7 +572,7 @@
 
                         if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } 
                         else if (gato.fome < 30) { caminhoIcone = 'icones/fome.png'; } 
-                        else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descansando.png'; }
+                        else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descanso.png'; } // Usando descanso.png
 
                         if (caminhoIcone !== '') {
                             htmlIcone = `<div class="status-icone"><img src="${caminhoIcone}" alt="Status"></div>`;
@@ -463,7 +581,7 @@
                         divCard.innerHTML = `
                             ${htmlIcone}
                             <img src="${gato.foto}" class="foto-pet" alt="Foto">
-                            <div class="nome-pet">${gato.nome}</div>
+                            <div class="pilula-nome">${gato.nome}</div>
                         `;
                         divCard.onclick = () => abrirPainelGato(gato);
                     } else {
@@ -495,9 +613,12 @@
             gatoSelecionado = gato;
             modalGato.style.display = 'flex';
 
+            // Define dinamicamente o número da imagem da faixa (1 a 20)
+            const nivelExato = gato.nivel || 1; 
+            document.getElementById('imgFaixaGato').src = `imagens/${String(nivelExato).padStart(2, '0')}.png`;
+
             document.getElementById('modalFoto').src = gato.foto;
             document.getElementById('modalNome').value = gato.nome;
-            document.getElementById('modalFaixa').textContent = `Faixa ${gato.faixa}`;
             document.getElementById('modalIdade').textContent = gato.idadeHoras;
             
             const estadoEl = document.getElementById('modalEstado');
@@ -519,12 +640,24 @@
             document.querySelector('.val-foco').textContent = gato.atributos.foco;
             document.getElementById('ptsLivres').textContent = "0"; 
 
+            // Botão de Reset
+            if (biscoitosInventario > 0) {
+                btnResetarStats.classList.add('ativo');
+                btnResetarStats.disabled = false;
+            } else {
+                btnResetarStats.classList.remove('ativo');
+                btnResetarStats.disabled = true;
+            }
+
             // Renderização Dinâmica dos Slots de Batalha baseada na Faixa
             const boxSlots = document.getElementById('boxSlotsHabilidades');
             boxSlots.innerHTML = '';
 
-            const niveisFaixas = { "Branca": 1, "Cinza": 2, "Amarela": 3, "Roxa": 5 };
-            const slotsLiberadosCount = niveisFaixas[gato.faixa] || 1;
+            // Lógica fictícia: 1 slot p/ lvl 1, 2 p/ lvl 2, 3 p/ lvl 3, 5 p/ lvl 5. Ajustar conforme GDD.
+            let slotsLiberadosCount = 1;
+            if (nivelExato >= 2) slotsLiberadosCount = 2;
+            if (nivelExato >= 3) slotsLiberadosCount = 3;
+            if (nivelExato >= 5) slotsLiberadosCount = 5;
 
             if (!gato.habilidadesEquipadas) { gato.habilidadesEquipadas = [null, null, null, null, null]; }
 
@@ -552,11 +685,11 @@
         }
 
         // ==========================================
-        // BOTÕES DE AÇÃO DO GATO (FIREBASE)
+        // BOTÕES DE AÇÃO DO GATO (FIREBASE E TOASTS)
         // ==========================================
         document.getElementById('btnAlimentar').onclick = async () => {
             if (gatoSelecionado.fome >= 100) {
-                alert(`${gatoSelecionado.nome} já está de barriga cheia!`);
+                mostrarToast(`${gatoSelecionado.nome} já está cheio!`);
                 return;
             }
             try {
@@ -567,9 +700,9 @@
                 document.getElementById('txtFome').textContent = `100/100`;
                 document.getElementById('fillFome').style.width = `100%`;
                 
-                alert(`${gatoSelecionado.nome} comeu uma porção! (No futuro, gastará 1 Ração do Depósito)`);
+                mostrarToast(`${gatoSelecionado.nome} comeu uma porção!`);
                 carregarDormitorio(jogadorUid); 
-            } catch(e) { console.error("Erro ao alimentar:", e); }
+            } catch(e) { console.error(e); }
         };
 
         document.getElementById('btnDescansar').onclick = async () => {
@@ -584,41 +717,45 @@
                 estadoEl.textContent = novoEstado;
                 estadoEl.style.color = novoEstado === 'Doente' ? '#cc3333' : '#2E7D32';
                 
-                alert(novoEstado === 'Descansando' ? 
-                    `${gatoSelecionado.nome} foi deitar e está recuperando HP!` : 
-                    `${gatoSelecionado.nome} acordou e está pronto para treinar/lutar!`);
+                mostrarToast(novoEstado === 'Descansando' ? 
+                    `${gatoSelecionado.nome} foi deitar!` : 
+                    `${gatoSelecionado.nome} acordou!`);
                 
                 carregarDormitorio(jogadorUid); 
-            } catch(e) { console.error("Erro ao descansar:", e); }
+            } catch(e) { console.error(e); }
         };
 
         document.getElementById('btnResetarStats').onclick = () => {
-            alert("Requer 1 Biscoito Mágico do Depósito. Todos os pontos do gato voltarão a 1 e você poderá redistribuí-los!");
+            if (biscoitosInventario > 0) {
+                pedirConfirmacao("Deseja gastar 1 Biscoito Mágico para resetar os status?", () => {
+                    mostrarToast("Status resetados! (Lógica a ser feita)");
+                });
+            } else {
+                mostrarToast("Você precisa de um Biscoito Mágico!");
+            }
         };
 
         document.getElementById('btnSalvarGato').onclick = async () => {
             const novoNome = document.getElementById('modalNome').value.trim();
-            if(!novoNome) { alert("O gato precisa ter um nome!"); return; }
+            if(!novoNome) { mostrarToast("O gato precisa ter um nome!"); return; }
             
             try {
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
                 await updateDoc(gatoRef, { nome: novoNome });
-                alert("Salvo com sucesso!");
+                mostrarToast("Salvo com sucesso!");
                 carregarDormitorio(jogadorUid); 
                 modalGato.style.display = 'none';
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
         };
 
         document.getElementById('btnDispensar').onclick = () => {
-            if(confirm(`Tem certeza que deseja expulsar ${gatoSelecionado.nome} do Clã? Esta ação é IRREVERSÍVEL.`)) {
-                alert("Função de deletar documento do Firebase a ser implementada.");
-            }
+            pedirConfirmacao(`Expulsar ${gatoSelecionado.nome} do Clã é IRREVERSÍVEL. Confirmar?`, () => {
+                mostrarToast(`${gatoSelecionado.nome} foi embora!`);
+            });
         };
 
         // ==========================================
-        // SISTEMA INTERATIVO DE SELEÇÃO DE TÉCNICAS
+        // NOVO SISTEMA DE SELEÇÃO DE ARTES (ESTILO DOJO)
         // ==========================================
         const modalHabilidades = document.getElementById('modalHabilidades');
         const conteudoHabilidades = document.getElementById('conteudoModalHabilidades');
@@ -640,15 +777,19 @@
             Object.keys(ARTES_MARCIAIS).forEach((chave) => {
                 const arte = ARTES_MARCIAIS[chave];
                 const pontosGato = gatoSelecionado.peArtes[chave] || 0;
+                const progressoMax = 100; // Define o máximo de PE da arte para calcular a porcentagem
 
                 const divArte = document.createElement('div');
-                divArte.className = 'item-arte';
-                divArte.style.backgroundColor = '#fdf5e6';
-                divArte.style.borderColor = arte.cor;
+                divArte.className = 'arte-item-dojo';
                 divArte.innerHTML = `
-                    <img src="${arte.icone}" alt="Ícone">
-                    <span>${arte.nome}</span>
-                    <span style="color: ${arte.cor}">PE: ${pontosGato}</span>
+                    <div class="arte-header">
+                        <img src="${arte.icone}" alt="Ícone">
+                        <h4>${arte.nome}</h4>
+                    </div>
+                    <div class="arte-progresso-bg">
+                        <div class="arte-progresso-fill" style="width: ${(pontosGato/progressoMax)*100}%; background-color: ${arte.cor};"></div>
+                        <span class="arte-texto-pe">PE: ${pontosGato}/${progressoMax}</span>
+                    </div>
                 `;
                 
                 divArte.onclick = () => mostrarTecnicasDaArte(chave, arte);
@@ -673,39 +814,37 @@
                         <h5>${tec.nome}</h5>
                         <p>${tec.desc}</p>
                     </div>
-                    <div class="tecnica-pe" style="color: ${liberada ? '#2E7D32' : '#b30000'}">
+                    <div class="tecnica-pe" style="color: ${liberada ? '#2a2a2a' : '#555'}">
                         Req: ${tec.pe} PE
                     </div>
                 `;
 
                 if (liberada) {
-                    row.onclick = () => confirmarEquipamento(tec, arte);
+                    row.onclick = () => {
+                        pedirConfirmacao(`Deseja equipar "${tec.nome}" no Slot ${slotAtivoIndex + 1}?`, () => confirmarEquipamento(tec, arte));
+                    };
                 }
                 conteudoHabilidades.appendChild(row);
             });
         }
 
         async function confirmarEquipamento(tecnica, arte) {
-            if (confirm(`Deseja equipar a técnica "${tecnica.nome}" no Slot de Batalha ${slotAtivoIndex + 1}?`)) {
-                try {
-                    let novasHabilidades = [...gatoSelecionado.habilidadesEquipadas];
-                    novasHabilidades[slotAtivoIndex] = {
-                        nomeTecnica: tecnica.nome,
-                        iconeArte: arte.icone,
-                        corArte: arte.cor
-                    };
+            try {
+                let novasHabilidades = [...gatoSelecionado.habilidadesEquipadas];
+                novasHabilidades[slotAtivoIndex] = {
+                    nomeTecnica: tecnica.nome,
+                    iconeArte: arte.icone,
+                    corArte: arte.cor
+                };
 
-                    const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
-                    await updateDoc(gatoRef, { habilidadesEquipadas: novasHabilidades });
+                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
+                await updateDoc(gatoRef, { habilidadesEquipadas: novasHabilidades });
 
-                    gatoSelecionado.habilidadesEquipadas = novasHabilidades;
-                    modalHabilidades.style.display = 'none';
-                    abrirPainelGato(gatoSelecionado); 
-                    alert("Técnica equipada com sucesso!");
-                } catch (e) {
-                    console.error("Erro ao equipar técnica:", e);
-                }
-            }
+                gatoSelecionado.habilidadesEquipadas = novasHabilidades;
+                modalHabilidades.style.display = 'none';
+                abrirPainelGato(gatoSelecionado); 
+                mostrarToast("Técnica equipada!");
+            } catch (e) { console.error(e); }
         }
 
         // Ativa PWA
