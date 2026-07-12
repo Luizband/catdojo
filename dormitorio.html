@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CatDojo - Dormitório</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5a4231">
+    <style>
+        /* RESET BÁSICO */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #2c2c2c; display: flex; justify-content: center; height: 100vh; }
+
+        /* CONTAINER PRINCIPAL */
+        #app {
+            width: 100%; max-width: 414px; height: 100%; position: relative;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            background-image: url('imagens/fundo.png'); background-size: cover; background-position: center;
+        }
+        #app::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); z-index: 1; 
+        }
+
+        .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+
+        /* CABEÇALHO PADRÃO + TÍTULO DA PÁGINA */
+        header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
+        .perfil-info { display: flex; gap: 15px; }
+        .foto-cla {
+            width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;
+        }
+        .dados-cla h2 { font-size: 1em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 0.8em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
+        .economia { display: flex; gap: 15px; font-size: 0.8em; font-weight: bold; color: #4a3b32; }
+        .economia div { display: flex; align-items: center; gap: 5px; }
+        .economia img { width: 18px; }
+        
+        .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
+
+        /* GRID DO DORMITÓRIO (10 VAGAS) */
+        main { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        
+        .grid-vagas {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-bottom: 20px;
+        }
+
+        .vaga-gato {
+            background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px;
+            aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; cursor: pointer; box-shadow: 0px 4px 0px #5a4231; transition: transform 0.1s;
+        }
+        .vaga-gato:active { transform: translateY(4px); box-shadow: 0px 0px 0px #5a4231; }
+        
+        .vaga-gato img.foto-pet { width: 60%; border-radius: 5px; }
+        .vaga-gato .nome-pet { font-size: 0.9em; font-weight: bold; color: #2a2a2a; margin-top: 5px; text-transform: uppercase; }
+        
+        /* Ícone de Status flutuante no canto da vaga */
+        .status-icone {
+            position: absolute; top: -10px; right: -10px; background-color: #fff; border: 2px solid #5a4231;
+            border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2em; box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Estilos para Vagas Livres e Bloqueadas */
+        .vaga-livre { background-color: #e5cd9e; border: 3px dashed #a68a61; cursor: default; box-shadow: none; }
+        .vaga-livre p { color: #a68a61; font-weight: bold; }
+        
+        .vaga-bloqueada { background-color: #7b7b7b; border: 3px solid #4a4a4a; cursor: default; box-shadow: none; filter: grayscale(100%); opacity: 0.7;}
+        .vaga-bloqueada p { color: #2c2c2c; font-weight: bold; }
+
+        .btn-comprar-vaga {
+            background-color: #d27d46; color: white; border: 2px solid #5a4231; padding: 10px 20px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 4px 0px #5a4231; width: 100%; text-transform: uppercase;
+        }
+
+        /* NAVEGAÇÃO INFERIOR */
+        nav { background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; padding: 10px 5px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none;}
+        .nav-item img { width: 40px; margin-bottom: 3px; }
+
+        /* ==========================================
+           MODAL: PAINEL DO GATO
+           ========================================== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.8);
+            z-index: 100; display: none; justify-content: center; align-items: flex-end; /* Abre de baixo pra cima */
+        }
+        
+        .painel-gato {
+            background-color: #f1ddb0; width: 100%; max-width: 414px; border-top: 4px solid #5a4231;
+            border-radius: 20px 20px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; position: relative;
+        }
+
+        .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold;}
+
+        .cabecalho-pet { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .cabecalho-pet img { width: 80px; border: 3px solid #5a4231; border-radius: 10px; background-color: #fff;}
+        .info-cabecalho input { background: transparent; border: none; border-bottom: 2px solid #a68a61; font-size: 1.3em; font-weight: bold; color: #2a2a2a; width: 150px; outline: none; text-transform: uppercase;}
+        .info-cabecalho p { font-size: 0.9em; color: #5a4231; font-weight: bold; margin-top: 5px;}
+
+        /* Barras Vitais */
+        .box-barras { background-color: #e5cd9e; padding: 10px; border-radius: 8px; border: 2px solid #a68a61; margin-bottom: 15px; }
+        .linha-barra { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; font-size: 0.8em; font-weight: bold; color: #2a2a2a;}
+        .barra-fundo { width: 65%; height: 12px; background-color: #2c2c2c; border-radius: 6px; overflow: hidden; border: 1px solid #5a4231;}
+        .barra-hp { height: 100%; background-color: #cc3333; width: 100%; transition: width 0.3s; }
+        .barra-fome { height: 100%; background-color: #a67c52; width: 100%; transition: width 0.3s; }
+        .barra-xp { height: 100%; background-color: #3399ff; width: 0%; transition: width 0.3s; }
+
+        /* Atributos */
+        .box-stats { background-color: #fdf5e6; border: 2px solid #5a4231; border-radius: 8px; padding: 15px; margin-bottom: 15px;}
+        .titulo-stats { text-align: center; font-weight: bold; color: #2a2a2a; margin-bottom: 10px; font-size: 0.9em;}
+        .linha-stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: bold; color: #4a3b32;}
+        .controles-stat { display: flex; align-items: center; gap: 10px; }
+        .btn-stat { background-color: #dfc495; border: 2px solid #5a4231; width: 25px; height: 25px; border-radius: 5px; font-weight: bold; cursor: pointer;}
+        
+        .botoes-stats-acoes { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px;}
+        .btn-salvar-stats { flex: 1; background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32;}
+        .btn-resetar-stats { background-color: #FF9800; color: white; border: 2px solid #E65100; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #E65100; font-size: 0.8em;}
+
+        /* Slots de Batalha (UI) */
+        .box-habilidades { margin-bottom: 20px; }
+        .box-habilidades h4 { color: #2a2a2a; font-size: 0.9em; margin-bottom: 5px;}
+        .grid-slots { display: flex; gap: 10px; }
+        .slot-habilidade { width: 40px; height: 40px; background-color: #7b7b7b; border: 2px solid #5a4231; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2em; color: #ccc;}
+        .slot-liberado { background-color: #dfc495; border-style: dashed; color: #5a4231;}
+
+        /* Ações Finais */
+        .grid-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .btn-acao { background-color: #dfc495; border: 2px solid #5a4231; padding: 12px; border-radius: 8px; font-weight: bold; color: #2a2a2a; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; text-transform: uppercase; font-size: 0.85em;}
+        .btn-acao:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+        .btn-dispensar { background-color: transparent; border: 2px dashed #cc3333; color: #cc3333; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;}
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="conteudo-app">
+            
+            <header>
+                <div class="perfil-info">
+                    <div class="foto-cla" id="fotoClaContainer">
+                        <span id="placeholderFoto">FOTO</span>
+                    </div>
+                    <div class="dados-cla">
+                        <h2 id="exibeNomeCla">CARREGANDO...</h2>
+                        <p id="exibeNomeMestre">Mestre...</p>
+                        <div class="economia">
+                            <div><img src="icones/moeda.png" alt="Moedas"> <span id="exibeMoedas">0</span></div>
+                            <div><img src="icones/rep.png" alt="Reputação"> <span id="exibeReputacao">0/500</span></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="titulo-pagina">Dormitório</div>
+
+            <main>
+                <div class="grid-vagas" id="gridDormitorio">
+                    </div>
+                
+                <button class="btn-comprar-vaga" id="btnComprarVaga" style="display: none;">
+                    Expandir Dormitório (100 Moedas)
+                </button>
+            </main>
+
+            <nav>
+                <a href="dojo.html" class="nav-item">
+                    <img src="icones/Dojo.png" alt="Dojo">DOJO
+                </a>
+                <div class="nav-item">
+                    <img src="icones/adocao.png" alt="Adoção">Adoção
+                </div>
+                <div class="nav-item">
+                    <img src="icones/arena.png" alt="Arena">ARENA
+                </div>
+                <div class="nav-item">
+                    <img src="icones/loja.png" alt="Loja">LOJA
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalGato">
+        <div class="painel-gato">
+            <button class="btn-fechar" id="btnFecharModal">X</button>
+            
+            <div class="cabecalho-pet">
+                <img src="imagens/gato01.png" id="modalFoto" alt="Gato">
+                <div class="info-cabecalho">
+                    <input type="text" id="modalNome" maxlength="10">
+                    <p id="modalFaixa">Faixa Branca - Nível 1</p>
+                    <p>Idade: <span id="modalIdade">0</span> horas</p>
+                    <p>Estado: <span id="modalEstado" style="color: #2E7D32;">Saudável</span></p>
+                </div>
+            </div>
+
+            <div class="box-barras">
+                <div class="linha-barra">
+                    <span>HP <span id="txtHp">250/250</span></span>
+                    <div class="barra-fundo"><div class="barra-hp" id="fillHp"></div></div>
+                </div>
+                <div class="linha-barra">
+                    <span>Fome <span id="txtFome">100/100</span></span>
+                    <div class="barra-fundo"><div class="barra-fome" id="fillFome"></div></div>
+                </div>
+                <div class="linha-barra">
+                    <span>XP <span id="txtXp">0/500</span></span>
+                    <div class="barra-fundo"><div class="barra-xp" id="fillXp"></div></div>
+                </div>
+            </div>
+
+            <div class="box-stats">
+                <div class="titulo-stats">Atributos <span style="color:#d27d46;">(Pontos: <span id="ptsLivres">0</span>)</span></div>
+                
+                <div class="linha-stat">Força <div class="controles-stat"><button class="btn-stat btn-sub">-</button> <span class="val-forca">1</span> <button class="btn-stat btn-add">+</button></div></div>
+                <div class="linha-stat">Agilidade <div class="controles-stat"><button class="btn-stat btn-sub">-</button> <span class="val-agi">1</span> <button class="btn-stat btn-add">+</button></div></div>
+                <div class="linha-stat">Resistência <div class="controles-stat"><button class="btn-stat btn-sub">-</button> <span class="val-res">1</span> <button class="btn-stat btn-add">+</button></div></div>
+                <div class="linha-stat">Foco <div class="controles-stat"><button class="btn-stat btn-sub">-</button> <span class="val-foco">1</span> <button class="btn-stat btn-add">+</button></div></div>
+                
+                <div class="botoes-stats-acoes">
+                    <button class="btn-salvar-stats" id="btnSalvarGato">Salvar Status & Nome</button>
+                    <button class="btn-resetar-stats" id="btnResetarStats">🍪 Resetar (1)</button>
+                </div>
+            </div>
+
+            <div class="box-habilidades">
+                <h4>Slots de Batalha</h4>
+                <div class="grid-slots">
+                    <div class="slot-habilidade slot-liberado">+</div>
+                    <div class="slot-habilidade">🔒</div>
+                    <div class="slot-habilidade">🔒</div>
+                    <div class="slot-habilidade">🔒</div>
+                    <div class="slot-habilidade">🔒</div>
+                </div>
+            </div>
+
+            <div class="grid-acoes">
+                <button class="btn-acao" id="btnAlimentar">🍖 Alimentar</button>
+                <button class="btn-acao" id="btnDescansar">💤 Descansar</button>
+            </div>
+            <button class="btn-dispensar" id="btnDispensar">Expulsar do Clã</button>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDoc, doc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Variáveis de Estado
+        let jogadorUid = null;
+        let vagasTotais = 10;
+        let vagasLiberadas = 3; // Lemos isso do banco depois
+        let listaGatosData = [];
+        let gatoSelecionado = null; // Guarda o gato aberto no modal
+
+        // Elementos UI
+        const gridDormitorio = document.getElementById('gridDormitorio');
+        const modalGato = document.getElementById('modalGato');
+        const btnFecharModal = document.getElementById('btnFecharModal');
+        
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                jogadorUid = user.uid;
+                await carregarCabecalho(user.uid);
+                await carregarDormitorio(user.uid);
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function carregarCabecalho(uid) {
+            const docRef = doc(db, "Clas", uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const dados = docSnap.data();
+                
+                let textoCla = dados.nomeCla ? dados.nomeCla.trim() : "DESCONHECIDO";
+                if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) { textoCla = "CLÃ " + textoCla; }
+                document.getElementById('exibeNomeCla').textContent = textoCla.toUpperCase();
+
+                let textoMestre = dados.nomeMestre ? dados.nomeMestre.trim() : "...";
+                if (!textoMestre.toUpperCase().startsWith("MESTRE")) { textoMestre = "Mestre " + textoMestre; }
+                document.getElementById('exibeNomeMestre').textContent = textoMestre;
+
+                document.getElementById('exibeMoedas').textContent = dados.moedas !== undefined ? dados.moedas : 50;
+                document.getElementById('exibeReputacao').textContent = `${dados.reputacao || 0}/500`;
+                
+                // Vagas liberadas (Se não existir no BD, assume 3)
+                vagasLiberadas = dados.vagasDormitorio || 3;
+
+                if (dados.avatar) {
+                    document.getElementById('fotoClaContainer').innerHTML = `<img src="${dados.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+                }
+            }
+        }
+
+        async function carregarDormitorio(uid) {
+            gridDormitorio.innerHTML = '';
+            listaGatosData = [];
+
+            // Puxa a subcoleção de gatos
+            const gatosRef = collection(db, "Clas", uid, "Gatos");
+            const querySnapshot = await getDocs(gatosRef);
+            
+            querySnapshot.forEach((docSnap) => {
+                listaGatosData.push({ id: docSnap.id, ...docSnap.data() });
+            });
+
+            renderizarGrid();
+        }
+
+        function renderizarGrid() {
+            gridDormitorio.innerHTML = '';
+            
+            for (let i = 0; i < vagasTotais; i++) {
+                const divCard = document.createElement('div');
+                
+                if (i < vagasLiberadas) {
+                    // É uma vaga que o jogador possui
+                    if (i < listaGatosData.length) {
+                        // Tem gato nesta vaga
+                        const gato = listaGatosData[i];
+                        divCard.className = 'vaga-gato';
+                        
+                        // Define icone de status rápido
+                        let iconeStatus = '🐱';
+                        if (gato.fome < 30) iconeStatus = '🍖';
+                        if (gato.estado === 'Doente') iconeStatus = '💊';
+                        if (gato.estado === 'Descansando') iconeStatus = '💤';
+
+                        divCard.innerHTML = `
+                            <div class="status-icone">${iconeStatus}</div>
+                            <img src="${gato.foto}" class="foto-pet" alt="Foto">
+                            <div class="nome-pet">${gato.nome}</div>
+                        `;
+                        // Abre o modal ao clicar
+                        divCard.onclick = () => abrirPainelGato(gato);
+
+                    } else {
+                        // Vaga comprada, mas vazia
+                        divCard.className = 'vaga-gato vaga-livre';
+                        divCard.innerHTML = `<p>VAGA LIVRE</p>`;
+                    }
+                } else {
+                    // Vaga bloqueada (precisa de upgrade)
+                    divCard.className = 'vaga-gato vaga-bloqueada';
+                    divCard.innerHTML = `<p>BLOQUEADO</p> <span style="font-size:1.5em">🔒</span>`;
+                }
+
+                gridDormitorio.appendChild(divCard);
+            }
+
+            // Mostra o botão de comprar vaga se tiver vagas bloqueadas
+            const btnComprar = document.getElementById('btnComprarVaga');
+            if (vagasLiberadas < vagasTotais) {
+                btnComprar.style.display = 'block';
+                // Opcional: Atualizar o texto dinamicamente com base numa escala de preços no futuro
+            } else {
+                btnComprar.style.display = 'none';
+            }
+        }
+
+        // ==========================================
+        // LÓGICA DO MODAL (PAINEL DO GATO)
+        // ==========================================
+        
+        btnFecharModal.onclick = () => { modalGato.style.display = 'none'; gatoSelecionado = null; }
+
+        function abrirPainelGato(gato) {
+            gatoSelecionado = gato;
+            modalGato.style.display = 'flex';
+
+            // Alimenta os textos base
+            document.getElementById('modalFoto').src = gato.foto;
+            document.getElementById('modalNome').value = gato.nome;
+            document.getElementById('modalFaixa').textContent = `Faixa ${gato.faixa}`;
+            document.getElementById('modalIdade').textContent = gato.idadeHoras;
+            
+            const estadoEl = document.getElementById('modalEstado');
+            estadoEl.textContent = gato.estado;
+            estadoEl.style.color = gato.estado === 'Doente' ? '#cc3333' : '#2E7D32';
+
+            // Alimenta as Barras
+            document.getElementById('txtHp').textContent = `${gato.hpAtual}/${gato.hpMax}`;
+            document.getElementById('fillHp').style.width = `${(gato.hpAtual / gato.hpMax) * 100}%`;
+
+            document.getElementById('txtFome').textContent = `${gato.fome}/100`;
+            document.getElementById('fillFome').style.width = `${gato.fome}%`;
+
+            document.getElementById('txtXp').textContent = `${gato.xpAtual}/${gato.xpProxFaixa}`;
+            document.getElementById('fillXp').style.width = `${(gato.xpAtual / gato.xpProxFaixa) * 100}%`;
+
+            // Alimenta os Atributos (Visuais por enquanto)
+            document.querySelector('.val-forca').textContent = gato.atributos.forca;
+            document.querySelector('.val-agi').textContent = gato.atributos.agilidade;
+            document.querySelector('.val-res').textContent = gato.atributos.resistencia;
+            document.querySelector('.val-foco').textContent = gato.atributos.foco;
+            
+            // Pontos livres ficariam visíveis se gato tiver pontos (logica futura com level up)
+            document.getElementById('ptsLivres').textContent = "0"; 
+        }
+
+        // Botões de Ação (Apenas simulando as interações da UI para serem conectadas ao Firebase)
+        document.getElementById('btnAlimentar').onclick = () => {
+            alert("Em breve: Abrirá a mochila para escolher uma ração!");
+            // Lógica futura: Diminuir do inventário, aumentar 'fome' do gatoSelecionado e updateDoc no Firebase.
+        };
+
+        document.getElementById('btnDescansar').onclick = () => {
+            if(gatoSelecionado.estado === 'Descansando') {
+                alert(`${gatoSelecionado.nome} acordou e está pronto para o combate!`);
+                // Lógica: updateDoc mudando estado para Saudável
+            } else {
+                alert(`${gatoSelecionado.nome} foi colocado para descansar na cama e vai recuperar HP com o tempo.`);
+                // Lógica: updateDoc mudando estado para Descansando
+            }
+        };
+
+        document.getElementById('btnResetarStats').onclick = () => {
+            alert("Requer 1 Biscoito Mágico do Depósito. Todos os pontos do gato voltarão a 1 e você poderá redistribuí-los!");
+        };
+
+        document.getElementById('btnSalvarGato').onclick = async () => {
+            const novoNome = document.getElementById('modalNome').value.trim();
+            if(!novoNome) { alert("O gato precisa ter um nome!"); return; }
+            
+            try {
+                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
+                await updateDoc(gatoRef, { nome: novoNome });
+                alert("Salvo com sucesso!");
+                carregarDormitorio(jogadorUid); // Recarrega a grid para mostrar novo nome
+                modalGato.style.display = 'none';
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        document.getElementById('btnDispensar').onclick = () => {
+            if(confirm(`Tem certeza que deseja expulsar ${gatoSelecionado.nome} do Clã? Esta ação é IRREVERSÍVEL.`)) {
+                alert("Função de deletar documento do Firebase a ser implementada.");
+                // Lógica: deleteDoc(doc(db, "Clas", uid, "Gatos", gato.id))
+            }
+        };
+
+        // Ativa PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+        }
+    </script>
+</body>
+</html>
