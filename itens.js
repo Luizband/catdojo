@@ -40,7 +40,7 @@ export const ITENS = {
     remedio: {
         id: "remedio",
         nome: "Remédio",
-        tipo: "medicina",
+        tipo: "especial",
         preco: 40,
         espaco: { largura: 1, altura: 2 }, // 2 espaços na vertical
         icone: "imagens/remedio.png",
@@ -49,7 +49,7 @@ export const ITENS = {
     biscoitinho: {
         id: "biscoitinho",
         nome: "Biscoitinho",
-        tipo: "magico",
+        tipo: "especial",
         preco: 100,
         espaco: { largura: 1, altura: 1 },
         icone: "imagens/biscoito.png",
