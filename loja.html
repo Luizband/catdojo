@@ -15,7 +15,7 @@
             width: 100%; max-width: 414px; height: 100%; position: relative;
             box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
             background-color: #3e2723; /* Fundo escuro para a loja */
-            background-image: url('imagens/fundodeposito.png'); /* Pode usar um fundo específico de loja se tiver */
+            background-image: url('imagens/fundoloja.png');
             background-size: cover; background-position: center;
         }
         #app::before {
@@ -78,12 +78,14 @@
         .btn-comprar img { width: 14px; height: 14px; }
         
         /* Filtros de Categoria */
-        .filtros-loja { display: flex; gap: 8px; margin-bottom: 5px; overflow-x: auto; padding-bottom: 5px; }
-        .btn-filtro {
-            background-color: #dfc495; color: #5a4231; border: 2px solid #5a4231; padding: 6px 12px;
-            border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.75em; white-space: nowrap;
+        .filtros-loja { 
+            display: flex; gap: 8px; margin-bottom: 10px; overflow-x: auto; 
+            padding-bottom: 5px; flex-shrink: 0; /* Impede que a barra seja esmagada */
+            -ms-overflow-style: none; scrollbar-width: none; /* Oculta scrollbar no Firefox/Edge */
         }
-        .btn-filtro.ativo { background-color: #5a4231; color: #f1ddb0; }
+        .filtros-loja::-webkit-scrollbar { 
+            display: none; /* Oculta scrollbar no Chrome/Safari/Mobile */
+        }
 
         /* NAVEGAÇÃO INFERIOR */
         nav { background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; padding: 10px 5px; flex-shrink: 0;}
