@@ -9,7 +9,12 @@
     <style>
         /* RESET BÁSICO */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #2c2c2c; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
+        body { 
+            background-color: #2c2c2c; display: flex; justify-content: center; 
+            height: 100vh; /* Mantido como plano B para navegadores muito antigos */
+            height: 100dvh; /* Altura Dinâmica: Desconta a barra do sistema automaticamente */
+            overflow: hidden; 
+        }
 
         #app {
             width: 100%; max-width: 414px; height: 100%; position: relative;
@@ -124,7 +129,12 @@
         .btn-upgrade:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(4px); }
 
         /* NAVEGAÇÃO INFERIOR */
-        nav { background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; padding: 10px 5px; }
+        nav { 
+            background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; 
+            justify-content: space-around; flex-shrink: 0;
+            padding: 10px 5px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+        }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none;}
         .nav-item img { width: 40px; margin-bottom: 3px; }
 
