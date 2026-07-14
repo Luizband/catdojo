@@ -9,10 +9,18 @@
     <style>
         /* RESET BÁSICO */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { 
-            background-color: #2c2c2c; display: flex; justify-content: center; 
-            height: 100vh; /* Mantido como plano B para navegadores muito antigos */
-            height: 100dvh; /* Altura Dinâmica: Desconta a barra do sistema automaticamente */
+        
+        html, body { 
+            background-color: #2c2c2c; 
+            display: flex; 
+            justify-content: center; 
+            /* A TRAVA DEFINITIVA PARA ECRÃS MOBILE */
+            position: fixed;
+            top: 0; 
+            bottom: 0; 
+            left: 0; 
+            right: 0;
+            width: 100%;
             overflow: hidden; 
         }
 
@@ -117,10 +125,15 @@
         .btn-comprar img { width: 14px; height: 14px; }
 
         /* NAVEGAÇÃO INFERIOR */
+        /* NAVEGAÇÃO INFERIOR */
         nav { 
-            background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; 
-            justify-content: space-around; flex-shrink: 0;
-            padding: 10px 5px;
+            background-color: #e5cd9e; 
+            border-top: 3px solid #5a4231; 
+            display: flex; 
+            justify-content: space-around; 
+            flex-shrink: 0;
+            padding: 10px 5px; 
+            /* Protege os botões da barra de gestos do sistema (tanto no Android como no iPhone) */
             padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none;}
