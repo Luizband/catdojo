@@ -79,6 +79,22 @@
         .item-instancia:active { transform: scale(0.95); }
         .item-instancia img { width: 80%; height: 80%; object-fit: contain; pointer-events: none; }
 
+        /* Indicador de Drop (A Marcação de Encaixe) */
+        .indicador-drop {
+            background-color: rgba(76, 175, 80, 0.4); /* Verde suave */
+            border: 2px dashed #4CAF50;
+            border-radius: 6px;
+            position: relative;
+            z-index: 4;
+            display: none;
+            pointer-events: none;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .indicador-drop.invalido {
+            background-color: rgba(204, 51, 51, 0.4); /* Vermelho suave */
+            border-color: #cc3333;
+        }
+
         /* Item Fantasma (quando está sendo arrastado) */
         .item-fantasma {
             position: fixed;
