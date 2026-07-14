@@ -211,11 +211,13 @@
         let linhasTotais = 7;
         let inventarioInstancias = [];
 
-        // Controle do Drag & Drop
+        // Controle do Drag & Drop Atualizado (As variáveis certas agora)
         let isDragging = false;
         let dragItem = null;
         let ghostEl = null;
-        let startX = 0; let startY = 0;
+        let indicadorEl = null; // A marcação verde/vermelha
+        let celBaseW = 0; // Medidas da célula
+        let celBaseH = 0;
 
         function mostrarToast(mensagem) {
             const container = document.getElementById('toastContainer');
@@ -403,21 +405,30 @@
         // EVENTOS DE DRAG AND DROP
         // ==========================================
         function iniciarDrag(e, instancia, elementOriginal) {
-            if (e.type === 'touchstart') e.preventDefault(); // Previne o scroll da página
+            if (e.type === 'touchstart') e.preventDefault(); 
             isDragging = true;
             dragItem = instancia;
 
             const refDb = ITENS[instancia.itemId];
             const celulaRect = document.querySelector('.celula-grid').getBoundingClientRect();
+            
+            // Grava o tamanho exato de um quadrado para a física funcionar perfeita
+            celBaseW = celulaRect.width;
+            celBaseH = celulaRect.height;
 
             ghostEl = document.createElement('div');
             ghostEl.className = 'item-fantasma';
-            ghostEl.style.width = `${celulaRect.width * refDb.espaco.largura}px`;
-            ghostEl.style.height = `${celulaRect.height * refDb.espaco.altura}px`;
+            ghostEl.style.width = `${celBaseW * refDb.espaco.largura}px`;
+            ghostEl.style.height = `${celBaseH * refDb.espaco.altura}px`;
             ghostEl.innerHTML = `<img src="${refDb.icone}">`;
             
             document.body.appendChild(ghostEl);
-            elementOriginal.style.opacity = '0.3'; // Deixa o original translúcido enquanto move
+            elementOriginal.style.opacity = '0.3'; 
+
+            // Cria a marcação (holograma) invisível inicialmente
+            indicadorEl = document.createElement('div');
+            indicadorEl.className = 'indicador-drop';
+            document.getElementById('gridContainer').appendChild(indicadorEl);
 
             moverFantasma(e);
         }
@@ -429,8 +440,39 @@
             const x = e.touches ? e.touches[0].clientX : e.clientX;
             const y = e.touches ? e.touches[0].clientY : e.clientY;
             
+            // Move a caixa que acompanha o dedo
             ghostEl.style.left = `${x - ghostEl.offsetWidth / 2}px`;
             ghostEl.style.top = `${y - ghostEl.offsetHeight / 2}px`;
+
+            if (indicadorEl) {
+                // MÁGICA: Em vez do dedo, lemos a célula exata que bate no topo-esquerdo do item
+                const ghostRect = ghostEl.getBoundingClientRect();
+                const pontoX = ghostRect.left + (celBaseW / 2);
+                const pontoY = ghostRect.top + (celBaseH / 2);
+
+                const elementoAbaixo = document.elementFromPoint(pontoX, pontoY);
+                const celula = elementoAbaixo ? elementoAbaixo.closest('.celula-grid') : null;
+
+                if (celula) {
+                    const novoX = parseInt(celula.dataset.x);
+                    const novoY = parseInt(celula.dataset.y);
+                    const refDb = ITENS[dragItem.itemId];
+
+                    // Mostra e posiciona a marcação na Grid
+                    indicadorEl.style.display = 'block';
+                    indicadorEl.style.gridColumn = `${novoX + 1} / span ${refDb.espaco.largura}`;
+                    indicadorEl.style.gridRow = `${novoY + 1} / span ${refDb.espaco.altura}`;
+
+                    // Pinta de verde ou vermelho
+                    if (podeColocar(novoX, novoY, refDb.espaco.largura, refDb.espaco.altura, dragItem.idInstancia)) {
+                        indicadorEl.classList.remove('invalido');
+                    } else {
+                        indicadorEl.classList.add('invalido');
+                    }
+                } else {
+                    indicadorEl.style.display = 'none'; // Esconde se sair da Grid
+                }
+            }
         }
 
         async function finalizarDrag(e) {
@@ -440,26 +482,32 @@
             const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
             const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
             
-            ghostEl.remove();
-            ghostEl = null;
+            // Soltou na lixeira? (Lê o ponteiro normal)
+            const elementoAbaixoMouse = document.elementFromPoint(x, y);
+            if (elementoAbaixoMouse && elementoAbaixoMouse.closest('#zonaLixeira')) {
+                ghostEl.remove(); ghostEl = null;
+                if (indicadorEl) { indicadorEl.remove(); indicadorEl = null; }
 
-            // Identifica onde o dedo/mouse soltou o item
-            const elementoAbaixo = document.elementFromPoint(x, y);
-            if (!elementoAbaixo) { renderizarGrid(); return; }
-
-            // Soltou na lixeira?
-            if (elementoAbaixo.closest('#zonaLixeira')) {
                 pedirConfirmacao("Deseja destruir este item permanentemente?", async () => {
                     inventarioInstancias = inventarioInstancias.filter(i => i.idInstancia !== dragItem.idInstancia);
                     await updateDoc(doc(db, "Clas", jogadorUid), { inventarioInstancias: inventarioInstancias });
                     renderizarGrid();
                 });
-                renderizarGrid(); // Retorna visualmente até confirmar
+                renderizarGrid(); 
                 return;
             }
 
-            // Soltou no Grid?
-            const celula = elementoAbaixo.closest('.celula-grid');
+            // Lê onde o holograma estava para fazer o encaixe real
+            const ghostRect = ghostEl.getBoundingClientRect();
+            const pontoX = ghostRect.left + (celBaseW / 2);
+            const pontoY = ghostRect.top + (celBaseH / 2);
+
+            ghostEl.remove(); ghostEl = null;
+            if (indicadorEl) { indicadorEl.remove(); indicadorEl = null; }
+
+            const elementoAbaixoPonto = document.elementFromPoint(pontoX, pontoY);
+            const celula = elementoAbaixoPonto ? elementoAbaixoPonto.closest('.celula-grid') : null;
+
             if (celula) {
                 const novoX = parseInt(celula.dataset.x);
                 const novoY = parseInt(celula.dataset.y);
@@ -473,7 +521,6 @@
                     mostrarToast("Espaço ocupado ou item fora dos limites!");
                 }
             }
-            // Recria a matriz pra colocar o item no lugar final (seja novo ou antigo)
             renderizarGrid();
         }
 
