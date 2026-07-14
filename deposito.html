@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CatDojo - Depósito</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5a4231">
+    <style>
+        /* RESET BÁSICO */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #2c2c2c; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
+
+        #app {
+            width: 100%; max-width: 414px; height: 100%; position: relative;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            background-image: url('imagens/fundodeposito.png'); background-size: cover; background-position: center;
+        }
+        #app::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.45); z-index: 1; 
+        }
+
+        .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+
+        /* CABEÇALHO PADRÃO */
+        header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
+        .perfil-info { display: flex; gap: 15px; }
+        .foto-cla {
+            width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;
+        }
+        .dados-cla h2 { font-size: 1em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 0.8em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
+        .economia { display: flex; gap: 15px; font-size: 0.8em; font-weight: bold; color: #4a3b32; }
+        .economia div { display: flex; align-items: center; gap: 5px; }
+        .economia img { width: 18px; }
+        
+        .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
+
+        /* ÁREA DO DEPÓSITO (TETRIS) */
+        main { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        
+        .info-deposito { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; color: #f1ddb0; background: rgba(90, 66, 49, 0.8); padding: 5px 10px; border-radius: 8px; border: 2px solid #dfc495;}
+
+        /* A Grid Principal */
+        #gridContainer {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2px;
+            background-color: rgba(90, 66, 49, 0.6);
+            padding: 4px;
+            border-radius: 8px;
+            border: 3px solid #dfc495;
+            width: 100%;
+            position: relative; /* Crucial para os itens se posicionarem sobre as células */
+        }
+
+        .celula-grid {
+            aspect-ratio: 1 / 1;
+            background-color: rgba(229, 205, 158, 0.2);
+            border: 1px dashed rgba(223, 196, 149, 0.4);
+            z-index: 1;
+        }
+
+        /* Os Itens Físicos */
+        .item-instancia {
+            background-color: rgba(241, 221, 176, 0.9);
+            border: 2px solid #2a2a2a;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 5;
+            cursor: grab;
+            touch-action: none; /* Previne o scroll da tela ao arrastar no celular */
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+        }
+        .item-instancia:active { transform: scale(0.95); }
+        .item-instancia img { width: 80%; height: 80%; object-fit: contain; pointer-events: none; }
+
+        /* Item Fantasma (quando está sendo arrastado) */
+        .item-fantasma {
+            position: fixed;
+            background-color: rgba(241, 221, 176, 0.7);
+            border: 2px dashed #2a2a2a;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+            pointer-events: none; /* Ignora o mouse para conseguirmos ler a célula abaixo dele */
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        }
+        .item-fantasma img { width: 80%; height: 80%; object-fit: contain; }
+
+        /* Lixeira & Upgrades */
+        .lixeira-zona {
+            margin-top: 20px; width: 100%; padding: 15px; border: 3px dashed #cc3333;
+            background-color: rgba(204, 51, 51, 0.2); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            color: #ff9999; font-weight: bold; text-transform: uppercase; text-align: center;
+        }
+
+        .btn-upgrade {
+            margin-top: 15px; background-color: #d27d46; color: white; border: 2px solid #5a4231; 
+            padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; 
+            box-shadow: 0px 4px 0px #5a4231; width: 100%; text-transform: uppercase;
+        }
+        .btn-upgrade:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(4px); }
+
+        /* NAVEGAÇÃO INFERIOR */
+        nav { background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; padding: 10px 5px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none;}
+        .nav-item img { width: 40px; margin-bottom: 3px; }
+
+        /* SISTEMA DE AVISOS */
+        #toastContainer { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast-msg { background-color: #2c2c2c; color: #f1ddb0; padding: 12px 24px; border: 2px solid #dfc495; border-radius: 8px; font-weight: bold; text-align: center; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); animation: fadeInOut 2s forwards; text-transform: uppercase; font-size: 0.85em; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(-10px); } 10% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
+
+        .modal-centro { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .painel-centro { background-color: #f1ddb0; width: 85%; max-width: 320px; border: 3px solid #5a4231; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0px 10px 20px rgba(0,0,0,0.5); }
+        .painel-centro p { color: #2a2a2a; font-weight: bold; margin-bottom: 20px; font-size: 1.05em; }
+        .botoes-centro { display: flex; gap: 10px; justify-content: center; }
+        .btn-centro { flex: 1; padding: 10px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; color: #2a2a2a; text-transform: uppercase; }
+        .btn-centro:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+        .btn-centro.cancelar { background-color: transparent; border: 2px dashed #a68a61; box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div id="toastContainer"></div>
+    <div class="modal-centro" id="modalConfirmacao">
+        <div class="painel-centro">
+            <p id="textoConfirmacao">Tem certeza?</p>
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" id="btnCancelarConfirm">Cancelar</button>
+                <button class="btn-centro" id="btnAceitarConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <div class="conteudo-app">
+            <header>
+                <div class="perfil-info">
+                    <div class="foto-cla" id="fotoClaContainer"><span id="placeholderFoto">FOTO</span></div>
+                    <div class="dados-cla">
+                        <h2 id="exibeNomeCla">CARREGANDO...</h2>
+                        <p id="exibeNomeMestre">Mestre...</p>
+                        <div class="economia">
+                            <div><img src="icones/moeda.png" alt="Moedas"> <span id="exibeMoedas">0</span></div>
+                            <div><img src="icones/rep.png" alt="Reputação"> <span id="exibeReputacao">0/500</span></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="titulo-pagina">Depósito</div>
+
+            <main>
+                <div class="info-deposito">
+                    <span id="txtNivelDeposito">Nível 1 (5x7)</span>
+                    <span id="txtOcupacao">0/35 Itens</span>
+                </div>
+
+                <div id="gridContainer">
+                    </div>
+
+                <div class="lixeira-zona" id="zonaLixeira">
+                    🗑️ Arraste um item aqui para excluí-lo
+                </div>
+
+                <button class="btn-upgrade" id="btnUpgrade" style="display: none;">
+                    Expandir Linha (100 Moedas)
+                </button>
+            </main>
+
+            <nav>
+                <a href="dojo.html" class="nav-item"><img src="icones/Dojo.png" alt="Dojo">DOJO</a>
+                <a href="dormitorio.html" class="nav-item"><img src="icones/dormitorio.png" alt="Dormitório">Dormitório</a>
+                <div class="nav-item"><img src="icones/arena.png" alt="Arena">ARENA</div>
+                <div class="nav-item"><img src="icones/loja.png" alt="Loja">LOJA</div>
+            </nav>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDoc, doc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { ITENS } from './itens.js';
+
+        let jogadorUid = null;
+        let dadosGlobais = null;
+        
+        let nivelDeposito = 1;
+        let linhasTotais = 7;
+        let inventarioInstancias = [];
+
+        // Controle do Drag & Drop
+        let isDragging = false;
+        let dragItem = null;
+        let ghostEl = null;
+        let startX = 0; let startY = 0;
+
+        function mostrarToast(mensagem) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.textContent = mensagem;
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+            setTimeout(() => { if(toast.parentElement) toast.remove(); }, 2000);
+        }
+
+        function pedirConfirmacao(mensagem, callback) {
+            document.getElementById('textoConfirmacao').textContent = mensagem;
+            document.getElementById('modalConfirmacao').style.display = 'flex';
+            document.getElementById('btnAceitarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; callback(); };
+            document.getElementById('btnCancelarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; };
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                jogadorUid = user.uid;
+                await carregarDeposito();
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function carregarDeposito() {
+            const docRef = doc(db, "Clas", jogadorUid);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                dadosGlobais = docSnap.data();
+                
+                // Preenche Cabeçalho
+                let textoCla = dadosGlobais.nomeCla ? dadosGlobais.nomeCla.trim() : "DESCONHECIDO";
+                if (!textoCla.toUpperCase().startsWith("CLÃ")) textoCla = "CLÃ " + textoCla;
+                document.getElementById('exibeNomeCla').textContent = textoCla.toUpperCase();
+                let textoMestre = dadosGlobais.nomeMestre ? dadosGlobais.nomeMestre.trim() : "...";
+                if (!textoMestre.toUpperCase().startsWith("MESTRE")) textoMestre = "Mestre " + textoMestre;
+                document.getElementById('exibeNomeMestre').textContent = textoMestre;
+                document.getElementById('exibeMoedas').textContent = dadosGlobais.moedas || 0;
+                document.getElementById('exibeReputacao').textContent = `${dadosGlobais.reputacao || 0}/500`;
+                if (dadosGlobais.avatar) document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+
+                nivelDeposito = dadosGlobais.nivelDeposito || 1;
+                linhasTotais = 6 + nivelDeposito; // Nivel 1 = 7, Nivel 2 = 8, etc.
+                inventarioInstancias = dadosGlobais.inventarioInstancias || [];
+
+                // MIGRAR INVENTÁRIO ANTIGO (Caso o jogador já tenha comprado itens antes da física existir)
+                if (dadosGlobais.inventario) {
+                    let houveMigracao = false;
+                    for (let itemId in dadosGlobais.inventario) {
+                        let quantidade = dadosGlobais.inventario[itemId];
+                        while(quantidade > 0 && ITENS[itemId]) {
+                            let espaco = encontrarEspacoLivre(ITENS[itemId].espaco.largura, ITENS[itemId].espaco.altura);
+                            if (espaco) {
+                                inventarioInstancias.push({
+                                    idInstancia: `item_${Date.now()}_${Math.floor(Math.random()*1000)}`,
+                                    itemId: itemId,
+                                    x: espaco.x,
+                                    y: espaco.y
+                                });
+                                houveMigracao = true;
+                            }
+                            quantidade--;
+                        }
+                    }
+                    if (houveMigracao) {
+                        // Salva o novo inventário físico e deleta o velho (apenas números)
+                        await updateDoc(docRef, { inventarioInstancias: inventarioInstancias, inventario: deleteField() });
+                        mostrarToast("Seus itens foram desencaixotados no Depósito!");
+                    }
+                }
+
+                renderizarGrid();
+                atualizarBotoesDeUpgrade();
+            }
+        }
+
+        function atualizarBotoesDeUpgrade() {
+            const btn = document.getElementById('btnUpgrade');
+            if (nivelDeposito < 4) {
+                const precos = { 1: 100, 2: 300, 3: 500 };
+                const custo = precos[nivelDeposito];
+                btn.style.display = 'block';
+                btn.textContent = `Expandir Linha (${custo} Moedas)`;
+                btn.onclick = () => comprarUpgrade(custo);
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        async function comprarUpgrade(custo) {
+            if (dadosGlobais.moedas >= custo) {
+                pedirConfirmacao(`Deseja gastar ${custo} moedas para expandir o depósito?`, async () => {
+                    const docRef = doc(db, "Clas", jogadorUid);
+                    await updateDoc(docRef, { 
+                        moedas: dadosGlobais.moedas - custo,
+                        nivelDeposito: nivelDeposito + 1 
+                    });
+                    mostrarToast("Depósito expandido!");
+                    carregarDeposito(); // Recarrega tudo
+                });
+            } else {
+                mostrarToast("Moedas insuficientes!");
+            }
+        }
+
+        // ==========================================
+        // LÓGICA DE GRID E FÍSICA (TETRIS)
+        // ==========================================
+        function podeColocar(x, y, larg, alt, ignorarId) {
+            // Saiu dos limites?
+            if (x < 0 || y < 0 || x + larg > 5 || y + alt > linhasTotais) return false;
+            
+            // Colisão com outro item?
+            for (let inst of inventarioInstancias) {
+                if (inst.idInstancia === ignorarId) continue;
+                let ref = ITENS[inst.itemId];
+                if (!ref) continue;
+                
+                // Checagem de sobreposição geométrica (AABB)
+                if (x < inst.x + ref.espaco.largura && x + larg > inst.x &&
+                    y < inst.y + ref.espaco.altura && y + alt > inst.y) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function encontrarEspacoLivre(larg, alt) {
+            for (let y = 0; y <= linhasTotais - alt; y++) {
+                for (let x = 0; x <= 5 - larg; x++) {
+                    if (podeColocar(x, y, larg, alt, null)) return {x, y};
+                }
+            }
+            return null; // Grid cheio
+        }
+
+        function renderizarGrid() {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = '';
+            
+            // Atualiza os textos
+            document.getElementById('txtNivelDeposito').textContent = `Nível ${nivelDeposito} (5x${linhasTotais})`;
+            document.getElementById('txtOcupacao').textContent = `${inventarioInstancias.length} Itens Ocupando Espaço`;
+
+            // Desenha o Grid Base (O fundo onde os itens pisam)
+            for (let y = 0; y < linhasTotais; y++) {
+                for (let x = 0; x < 5; x++) {
+                    let divCel = document.createElement('div');
+                    divCel.className = 'celula-grid';
+                    divCel.dataset.x = x;
+                    divCel.dataset.y = y;
+                    // A magia do CSS Grid: localizamos a célula exatamente na matriz
+                    divCel.style.gridColumn = `${x + 1}`; 
+                    divCel.style.gridRow = `${y + 1}`;
+                    container.appendChild(divCel);
+                }
+            }
+
+            // Desenha os Itens Fisicamente sobre o Grid
+            inventarioInstancias.forEach(inst => {
+                const refDb = ITENS[inst.itemId];
+                if (!refDb) return;
+
+                let divItem = document.createElement('div');
+                divItem.className = 'item-instancia';
+                // Ocupa o número exato de espaços na horizontal e vertical
+                divItem.style.gridColumn = `${inst.x + 1} / span ${refDb.espaco.largura}`;
+                divItem.style.gridRow = `${inst.y + 1} / span ${refDb.espaco.altura}`;
+                
+                divItem.innerHTML = `<img src="${refDb.icone}" alt="${refDb.nome}">`;
+
+                // Eventos de Toque / Mouse para Arrastar
+                divItem.addEventListener('mousedown', (e) => iniciarDrag(e, inst, divItem));
+                divItem.addEventListener('touchstart', (e) => iniciarDrag(e, inst, divItem), {passive: false});
+
+                container.appendChild(divItem);
+            });
+        }
+
+        // ==========================================
+        // EVENTOS DE DRAG AND DROP
+        // ==========================================
+        function iniciarDrag(e, instancia, elementOriginal) {
+            if (e.type === 'touchstart') e.preventDefault(); // Previne o scroll da página
+            isDragging = true;
+            dragItem = instancia;
+
+            const refDb = ITENS[instancia.itemId];
+            const celulaRect = document.querySelector('.celula-grid').getBoundingClientRect();
+
+            ghostEl = document.createElement('div');
+            ghostEl.className = 'item-fantasma';
+            ghostEl.style.width = `${celulaRect.width * refDb.espaco.largura}px`;
+            ghostEl.style.height = `${celulaRect.height * refDb.espaco.altura}px`;
+            ghostEl.innerHTML = `<img src="${refDb.icone}">`;
+            
+            document.body.appendChild(ghostEl);
+            elementOriginal.style.opacity = '0.3'; // Deixa o original translúcido enquanto move
+
+            moverFantasma(e);
+        }
+
+        function moverFantasma(e) {
+            if (!isDragging || !ghostEl) return;
+            if (e.type === 'touchmove') e.preventDefault(); 
+            
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            ghostEl.style.left = `${x - ghostEl.offsetWidth / 2}px`;
+            ghostEl.style.top = `${y - ghostEl.offsetHeight / 2}px`;
+        }
+
+        async function finalizarDrag(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+            const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+            
+            ghostEl.remove();
+            ghostEl = null;
+
+            // Identifica onde o dedo/mouse soltou o item
+            const elementoAbaixo = document.elementFromPoint(x, y);
+            if (!elementoAbaixo) { renderizarGrid(); return; }
+
+            // Soltou na lixeira?
+            if (elementoAbaixo.closest('#zonaLixeira')) {
+                pedirConfirmacao("Deseja destruir este item permanentemente?", async () => {
+                    inventarioInstancias = inventarioInstancias.filter(i => i.idInstancia !== dragItem.idInstancia);
+                    await updateDoc(doc(db, "Clas", jogadorUid), { inventarioInstancias: inventarioInstancias });
+                    renderizarGrid();
+                });
+                renderizarGrid(); // Retorna visualmente até confirmar
+                return;
+            }
+
+            // Soltou no Grid?
+            const celula = elementoAbaixo.closest('.celula-grid');
+            if (celula) {
+                const novoX = parseInt(celula.dataset.x);
+                const novoY = parseInt(celula.dataset.y);
+                const refDb = ITENS[dragItem.itemId];
+
+                if (podeColocar(novoX, novoY, refDb.espaco.largura, refDb.espaco.altura, dragItem.idInstancia)) {
+                    dragItem.x = novoX;
+                    dragItem.y = novoY;
+                    await updateDoc(doc(db, "Clas", jogadorUid), { inventarioInstancias: inventarioInstancias });
+                } else {
+                    mostrarToast("Espaço ocupado ou item fora dos limites!");
+                }
+            }
+            // Recria a matriz pra colocar o item no lugar final (seja novo ou antigo)
+            renderizarGrid();
+        }
+
+        // Eventos Globais para segurar o arraste onde quer que o dedo vá
+        window.addEventListener('mousemove', moverFantasma);
+        window.addEventListener('touchmove', moverFantasma, {passive: false});
+        window.addEventListener('mouseup', finalizarDrag);
+        window.addEventListener('touchend', finalizarDrag);
+
+        // Ativa PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+        }
+    </script>
+</body>
+</html>
