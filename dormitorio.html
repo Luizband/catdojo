@@ -801,6 +801,9 @@
                 return;
             }
             if (gatoSelecionado.fome >= 100) {
+                mostrarToast(`${gatoSelecionado.nome} já está de barriga cheia!`);
+                return;
+            }
 
             // NOVO: Conta fisicamente quantos pacotes de cada comida existem na grid
             let contagemComidas = {};
