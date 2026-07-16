@@ -74,16 +74,16 @@
         }
 
         .foto-cla {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
+            width: 85px; /* Aumentado significativamente */
+            height: 85px;
+            background-color: transparent; /* Remove o fundo branco */
+            border: none; /* Remove a borda de madeira do código */
+            border-radius: 0; /* Contêiner 100% quadrado */
+            box-shadow: none; /* Remove a sombra do código */
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            color: #a68a61;
-            font-size: 0.8em;
-            font-weight: bold;
+            overflow: hidden; /* Garante que as pontas não vazem */
         }
 
         .dados-cla h2 {
@@ -471,7 +471,7 @@
         }
 
         function mostrarAvatarNaTela(caminhoImg) {
-            fotoClaContainer.innerHTML = `<img src="${caminhoImg}" style="width: 100%; height: 100%; object-fit: contain;">`;
+            fotoClaContainer.innerHTML = `<img src="${caminhoImg}" style="width: 100%; height: 100%; object-fit: cover;">`;
         }
 
         function abrirSeletorDeAvatar() {
