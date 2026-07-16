@@ -20,6 +20,7 @@
         #app::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.65); z-index: 1; }
         .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
 
+        /* CABEÇALHO PADRÃO (IGUAL AO DORMITÓRIO) */
         header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
         .perfil-info { display: flex; gap: 15px; }
         .foto-cla { width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;}
@@ -39,41 +40,39 @@
 
         main { flex: 1; min-height: 0; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
 
-        /* GRID DO QUADRO DE MISSÕES (ESTILO CARTAS) */
+        /* GRID DO QUADRO DE MISSÕES (ESTILO CARTAS LIMPO) */
         .grid-missoes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding-bottom: 20px;}
         
         .card-missao-grid { 
             background-image: url('imagens/missoes.png'); 
-            background-size: contain; /* Garante que as pontas do pergaminho não sejam cortadas */
+            background-size: contain; 
             background-position: center; 
             background-repeat: no-repeat;
             background-color: transparent; 
-            border: none; /* Remove a borda marrom dura */
-            box-shadow: none; /* Remove a sombra quadrada */
+            border: none; 
+            box-shadow: none; 
             aspect-ratio: 1 / 1.1; 
             display: flex; flex-direction: column; justify-content: center; padding: 10px;
             cursor: pointer; position: relative;
         }
         .card-missao-grid:active { transform: scale(0.95); }
-        /* A película transparente escura que ficava por cima (::before) foi deletada! */
         
         .card-conteudo { 
             position: relative; z-index: 2; 
             display: flex; flex-direction: column; 
             height: 100%; width: 100%; 
-            justify-content: center; /* Empurra todo o bloco de texto para o centro vertical */
-            align-items: center; /* Centraliza horizontalmente */
+            justify-content: center; 
+            align-items: center; 
         }
         
         .rank-badge { 
-            position: absolute; top: 0; right: 0; /* Solta o Rank do texto e prende-o no topo da carta */
+            position: absolute; top: 0; right: 0; 
             background-color: #cc3333; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 2px solid #2a2a2a; font-size: 0.8em; 
         }
         
         .titulo-missao-grid {
             color: #2a2a2a; font-size: 0.85em; font-weight: 900;
             text-align: center; text-transform: uppercase;
-            /* A caixa retangular que ficava atrás da fonte foi removida, o texto senta direto no papel */
         }
         .timer-expiracao { font-size: 0.7em; color: #b30000; font-weight: bold; text-align: center; margin-top: 5px; }
 
@@ -185,7 +184,7 @@
             <p class="detalhe-desc" id="detDesc">Descrição...</p>
             
             <div class="card-detalhes">
-                <span><img src="icones/relogio.png"> <span id="detTempo">1</span>h</span>
+                <span><img src="icones/time.png"> <span id="detTempo">1</span>h</span>
                 <span><img src="icones/moeda.png"> <span id="detMoedas">12</span></span>
                 <span><img src="icones/exp.png"> <span id="detXp">15</span></span>
                 <span style="color:#b30000; width: 100%;">Custo: <span id="detCustoHp">15</span>% do HP Máximo</span>
@@ -231,12 +230,15 @@
         <div class="conteudo-app">
             <header>
                 <div class="perfil-info">
-                    <div class="foto-cla" id="fotoClaContainer"><span id="placeholderFoto">FOTO</span></div>
+                    <div class="foto-cla" id="fotoClaContainer">
+                        <span id="placeholderFoto">FOTO</span>
+                    </div>
                     <div class="dados-cla">
                         <h2 id="exibeNomeCla">CARREGANDO...</h2>
+                        <p id="exibeNomeMestre">Mestre...</p>
                         <div class="economia">
-                            <div><img src="icones/moeda.png" alt="M"> <span id="exibeMoedas">0</span></div>
-                            <div><img src="icones/rep.png" alt="R"> <span id="exibeReputacao">0/500</span></div>
+                            <div><img src="icones/moeda.png" alt="Moedas"> <span id="exibeMoedas">0</span></div>
+                            <div><img src="icones/rep.png" alt="Reputação"> <span id="exibeReputacao">0/500</span></div>
                         </div>
                     </div>
                 </div>
@@ -272,10 +274,7 @@
         import { MISSOES } from './missoes.js';
         import { ITENS } from './itens.js';
 
-        // ==========================================
-        // CONFIGURAÇÕES DO QUADRO DE MISSÕES
-        // ==========================================
-        const TEMPO_ROTACAO_HORAS = 8; // Tempo para a carta sumir do quadro
+        const TEMPO_ROTACAO_HORAS = 8; 
 
         let jogadorUid = null;
         let dadosGlobais = null;
@@ -326,9 +325,18 @@
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 dadosGlobais = docSnap.data();
-                document.getElementById('exibeNomeCla').textContent = (dadosGlobais.nomeCla || "CLÃ").toUpperCase();
-                document.getElementById('exibeMoedas').textContent = dadosGlobais.moedas || 0;
+                
+                let textoCla = dadosGlobais.nomeCla ? dadosGlobais.nomeCla.trim() : "DESCONHECIDO";
+                if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) { textoCla = "CLÃ " + textoCla; }
+                document.getElementById('exibeNomeCla').textContent = textoCla.toUpperCase();
+
+                let textoMestre = dadosGlobais.nomeMestre ? dadosGlobais.nomeMestre.trim() : "...";
+                if (!textoMestre.toUpperCase().startsWith("MESTRE")) { textoMestre = "Mestre " + textoMestre; }
+                document.getElementById('exibeNomeMestre').textContent = textoMestre;
+
+                document.getElementById('exibeMoedas').textContent = dadosGlobais.moedas !== undefined ? dadosGlobais.moedas : 50;
                 document.getElementById('exibeReputacao').textContent = `${dadosGlobais.reputacao || 0}/500`;
+                
                 inventarioInstancias = dadosGlobais.inventarioInstancias || [];
                 missoesNoQuadro = dadosGlobais.missoesNoQuadro || [];
                 
@@ -344,44 +352,35 @@
             });
         }
 
-        // ==========================================
-        // ROTAÇÃO DE MISSÕES (2 POR RANK)
-        // ==========================================
         async function gerenciarRotacaoQuadro() {
             const agora = Date.now();
             let houveMudanca = false;
 
-            // 1. Limpa o que expirou
             const validas = missoesNoQuadro.filter(m => m.expiraEm > agora);
             if (validas.length !== missoesNoQuadro.length) {
                 missoesNoQuadro = validas;
                 houveMudanca = true;
             }
 
-            // 2. Garante exatamente 2 vagas de cada Rank
             const maxPorRank = { 'D': 2, 'C': 2, 'B': 2, 'A': 2 };
             const contagemAtual = { 'D': 0, 'C': 0, 'B': 0, 'A': 0 };
             const missoesPorRank = { 'D': [], 'C': [], 'B': [], 'A': [] };
 
-            // Organiza o banco
             Object.keys(MISSOES).forEach(key => {
                 missoesPorRank[MISSOES[key].rank].push(key);
             });
 
-            // Conta o que está ativo no quadro
             missoesNoQuadro.forEach(m => {
                 if(MISSOES[m.missaoId]) {
                     contagemAtual[MISSOES[m.missaoId].rank]++;
                 }
             });
 
-            // Sorteia para preencher os buracos
             Object.keys(maxPorRank).forEach(rank => {
                 while (contagemAtual[rank] < maxPorRank[rank]) {
                     const pool = missoesPorRank[rank];
                     const sorteada = pool[Math.floor(Math.random() * pool.length)];
                     
-                    // Bloqueia cartas idênticas AO MESMO TEMPO no quadro
                     if (!missoesNoQuadro.some(m => m.missaoId === sorteada)) {
                         missoesNoQuadro.push({
                             idQuadro: `brd_${Date.now()}_${Math.floor(Math.random()*1000)}`,
@@ -394,7 +393,6 @@
                 }
             });
 
-            // Ordena o array para exibir sempre D, C, B, A na tela
             const ordemRank = { 'D': 1, 'C': 2, 'B': 3, 'A': 4 };
             missoesNoQuadro.sort((a, b) => {
                 let rankA = MISSOES[a.missaoId]?.rank || 'D';
@@ -807,6 +805,7 @@
                 
                 await carregarDadosBasicos();
                 await carregarMissoesAtivas();
+                renderizarQuadro();
 
             } catch (e) { console.error(e); btn.disabled = false; }
         };
