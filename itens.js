@@ -93,7 +93,7 @@ export const ITENS = {
         preco: 25,
         espaco: { largura: 1, altura: 1 },
         icone: "imagens/shuriken.png",
-        desc: "Reduz o risco absoluto de falha da missão em 15%."
+        desc: "Reduz o risco de falha da missão em 15%."
     },
     botas: {
         id: "botas",
