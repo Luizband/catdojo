@@ -15,7 +15,7 @@
             width: 100%; max-width: 414px; height: 100%; position: relative;
             box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
             background-color: #3e2723;
-            background-image: url('imagens/fundomissao.png'); background-size: cover; background-position: center;
+            background-image: url('imagens/fundomissoes.png'); background-size: cover; background-position: center;
         }
         #app::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.65); z-index: 1; }
         .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
@@ -39,17 +39,31 @@
 
         main { flex: 1; min-height: 0; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
 
-        /* CARDS MISSÃO */
-        .card-missao { background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px; padding: 12px; box-shadow: 0px 4px 0px #5a4231; position: relative;}
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;}
-        .card-header h4 { font-size: 1.05em; color: #2a2a2a; text-transform: uppercase; width: 80%;}
-        .rank-badge { background-color: #cc3333; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; border: 2px solid #2a2a2a; font-size: 0.9em;}
-        .card-missao p { font-size: 0.75em; color: #5a4231; font-weight: bold; margin-bottom: 10px; line-height: 1.2em;}
-        .card-detalhes { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.75em; font-weight: bold; color: #2a2a2a; margin-bottom: 10px; background: #dfc495; padding: 6px; border-radius: 6px; border: 1px solid #a68a61;}
-        .card-detalhes span { display: flex; align-items: center; gap: 4px; }
-        .card-detalhes img { width: 14px; height: 14px; }
+        /* GRID DO QUADRO DE MISSÕES (ESTILO CARTAS) */
+        .grid-missoes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding-bottom: 20px;}
         
-        .btn-acao-card { background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32; width: 100%; text-transform: uppercase; font-size: 0.85em;}
+        .card-missao-grid { 
+            background-image: url('imagens/missoes.png'); background-size: cover; background-position: center;
+            border: 3px solid #5a4231; border-radius: 10px; aspect-ratio: 1 / 1.1; 
+            display: flex; flex-direction: column; justify-content: space-between; padding: 10px;
+            box-shadow: 0px 4px 0px #5a4231; cursor: pointer; position: relative;
+        }
+        .card-missao-grid:active { transform: translateY(4px); box-shadow: 0px 0px 0px #5a4231; }
+        .card-missao-grid::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.4); border-radius: 7px; z-index: 1;}
+        
+        .card-conteudo { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; justify-content: space-between;}
+        .rank-badge { background-color: #cc3333; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 2px solid #2a2a2a; font-size: 0.8em; width: max-content; align-self: flex-end;}
+        
+        .titulo-missao-grid {
+            background: rgba(90, 66, 49, 0.95); color: #f1ddb0; font-size: 0.8em; font-weight: bold;
+            text-align: center; padding: 6px; border-radius: 6px; text-transform: uppercase; border: 1px solid #dfc495;
+        }
+        .timer-expiracao { font-size: 0.7em; color: #f1ddb0; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px #000; margin-top: 5px; }
+
+        /* CARDS MISSÃO EM ANDAMENTO (LISTA NORMAL) */
+        .card-missao-lista { background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px; padding: 12px; box-shadow: 0px 4px 0px #5a4231; position: relative;}
+        
+        .btn-acao-card { background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32; width: 100%; text-transform: uppercase; font-size: 0.85em; margin-top: 10px;}
         .btn-acao-card:active { box-shadow: 0px 0px 0px #2E7D32; transform: translateY(3px); }
 
         /* PROGRESSO MISSÃO ATIVA */
@@ -58,13 +72,19 @@
         .barra-progresso-fill.concluida { background-color: #4CAF50; }
         .tempo-restante { font-size: 0.85em; font-weight: bold; color: #b30000; text-align: center; margin-top: 5px; }
 
-        /* MODAL PREPARAÇÃO */
+        /* MODAIS GERAIS (FUNDO ESCURO) */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: flex-end; }
         .painel-modal { background-color: #f1ddb0; width: 100%; max-width: 414px; border-top: 4px solid #5a4231; border-radius: 20px 20px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; position: relative;}
-        .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold;}
+        .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold; z-index: 10;}
+
+        /* MODAL DETALHE DA MISSÃO */
+        .detalhe-desc { font-size: 0.9em; color: #4a3b32; font-weight: bold; line-height: 1.3em; margin-bottom: 15px; border-bottom: 2px dashed #a68a61; padding-bottom: 15px;}
+        .card-detalhes { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.8em; font-weight: bold; color: #2a2a2a; margin-bottom: 15px; background: #dfc495; padding: 10px; border-radius: 8px; border: 1px solid #a68a61;}
+        .card-detalhes span { display: flex; align-items: center; gap: 5px; }
+        .card-detalhes img { width: 16px; height: 16px; object-fit: contain;}
         
+        /* MODAL PREPARAÇÃO */
         .seletor-gato { width: 100%; padding: 10px; border: 2px solid #5a4231; border-radius: 8px; background: #dfc495; font-weight: bold; color: #2a2a2a; margin-bottom: 15px; font-size: 0.9em; outline: none;}
-        
         .slots-itens { display: flex; gap: 10px; margin-bottom: 15px; }
         .slot-item { flex: 1; height: 60px; background-color: #e5cd9e; border: 2px dashed #a68a61; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 0.7em; font-weight: bold; color: #5a4231; cursor: pointer; position: relative;}
         .slot-item img { width: 35px; height: 35px; object-fit: contain; }
@@ -81,10 +101,8 @@
         .relatorio-header { text-align: center; border-bottom: 2px dashed #a68a61; padding-bottom: 15px; margin-bottom: 15px;}
         .relatorio-header img { width: 80px; height: 80px; border-radius: 10px; border: 3px solid #5a4231; background: #fff;}
         .relatorio-resultado { font-size: 1.2em; font-weight: bold; text-transform: uppercase; margin-top: 10px; letter-spacing: 1px;}
-        
         .resultado-sucesso { color: #2E7D32; }
         .resultado-falha { color: #b30000; }
-        
         .relatorio-linha { display: flex; justify-content: space-between; font-weight: bold; color: #2a2a2a; margin-bottom: 8px; font-size: 0.9em; background: #f1ddb0; padding: 8px; border-radius: 6px; border: 1px solid #a68a61;}
 
         /* NAVEGAÇÃO INFERIOR UNIFICADA */
@@ -97,7 +115,6 @@
         #toastContainer { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .toast-msg { background-color: #2c2c2c; color: #f1ddb0; padding: 12px 24px; border: 2px solid #dfc495; border-radius: 8px; font-weight: bold; text-align: center; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); animation: fadeInOut 2s forwards; text-transform: uppercase; font-size: 0.85em; }
         @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(-10px); } 10% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
-
         .modal-centro { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .painel-centro { background-color: #f1ddb0; width: 85%; max-width: 320px; border: 3px solid #5a4231; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0px 10px 20px rgba(0,0,0,0.5); }
         .painel-centro p { color: #2a2a2a; font-weight: bold; margin-bottom: 20px; font-size: 0.95em; line-height: 1.4em;}
@@ -135,52 +152,35 @@
                 <p id="relDano" style="font-size: 0.85em; font-weight: bold; color: #5a4231; margin-top: 5px;"></p>
             </div>
             <div class="relatorio-linha">Moedas <span id="relMoedas">+0</span></div>
-            <div class="relatorio-linha">XP Obtido <span id="relXp">+0</span></div>
+            <div class="relatorio-linha"><img src="icones/exp.png" style="width:16px; margin-right:4px; vertical-align:bottom;"> Obtido <span id="relXp">+0</span></div>
             <div class="relatorio-linha">Reputação <span id="relRep">+0</span></div>
             
             <button class="btn-acao-card" id="btnColetarRecompensas" style="margin-top: 15px;">Coletar e Retornar</button>
         </div>
     </div>
 
-    <div id="app">
-        <div class="conteudo-app">
-            <header>
-                <div class="perfil-info">
-                    <div class="foto-cla" id="fotoClaContainer"><span id="placeholderFoto">FOTO</span></div>
-                    <div class="dados-cla">
-                        <h2 id="exibeNomeCla">CARREGANDO...</h2>
-                        <div class="economia">
-                            <div><img src="icones/moeda.png" alt="M"> <span id="exibeMoedas">0</span></div>
-                            <div><img src="icones/rep.png" alt="R"> <span id="exibeReputacao">0/500</span></div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            <div class="titulo-pagina">Missões e Expedições</div>
-
-            <div class="abas-container">
-                <button class="btn-aba ativa" id="abaQuadro">Disponíveis</button>
-                <button class="btn-aba" id="abaAndamento">Em Andamento (<span id="countAtivas">0</span>)</button>
+    <div class="modal-overlay" id="modalDetalheMissao">
+        <div class="painel-modal">
+            <button class="btn-fechar" onclick="document.getElementById('modalDetalheMissao').style.display='none'">X</button>
+            <h3 style="color: #2a2a2a; text-transform: uppercase; margin-bottom: 5px; font-size: 1.1em;" id="detTitulo">Nome</h3>
+            <span class="rank-badge" id="detRank" style="display:block; margin-bottom: 15px;">RANK D</span>
+            
+            <p class="detalhe-desc" id="detDesc">Descrição...</p>
+            
+            <div class="card-detalhes">
+                <span><img src="icones/relogio.png"> <span id="detTempo">1</span>h</span>
+                <span><img src="icones/moeda.png"> <span id="detMoedas">12</span></span>
+                <span><img src="icones/exp.png"> <span id="detXp">15</span></span>
+                <span style="color:#b30000; width: 100%;">Custo: <span id="detCustoHp">15</span>% do HP Máximo</span>
             </div>
 
-            <main id="areaQuadro">
-                </main>
-
-            <main id="areaAndamento" style="display: none;">
-                </main>
-
-            <nav>
-                <a href="dojo.html" class="nav-item"><img src="icones/Dojo.png" alt="Dojo">DOJO</a>
-                <a href="missoes.html" class="nav-item ativo"><img src="icones/escritorio.png" alt="Missões">MISSÕES</a>
-                <a href="arena.html" class="nav-item"><img src="icones/arena.png" alt="Arena">ARENA</a>
-                <a href="loja.html" class="nav-item"><img src="icones/loja.png" alt="Loja">LOJA</a>
-            </nav>
+            <button class="btn-acao-card" id="btnIrParaPrep">Preparar Equipe</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="modalPrep">
         <div class="painel-modal">
-            <button class="btn-fechar" onclick="fecharPrep()">X</button>
+            <button class="btn-fechar" onclick="document.getElementById('modalPrep').style.display='none'">X</button>
             <h3 style="color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px; font-size: 1em;" id="prepNomeMissao">Nome</h3>
             
             <select class="seletor-gato" id="selectGato" onchange="calcularEstimativas()">
@@ -210,6 +210,44 @@
         </div>
     </div>
 
+    <div id="app">
+        <div class="conteudo-app">
+            <header>
+                <div class="perfil-info">
+                    <div class="foto-cla" id="fotoClaContainer"><span id="placeholderFoto">FOTO</span></div>
+                    <div class="dados-cla">
+                        <h2 id="exibeNomeCla">CARREGANDO...</h2>
+                        <div class="economia">
+                            <div><img src="icones/moeda.png" alt="M"> <span id="exibeMoedas">0</span></div>
+                            <div><img src="icones/rep.png" alt="R"> <span id="exibeReputacao">0/500</span></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="titulo-pagina">Missões e Expedições</div>
+
+            <div class="abas-container">
+                <button class="btn-aba ativa" id="abaQuadro">Quadro (<span id="countQuadro">0/8</span>)</button>
+                <button class="btn-aba" id="abaAndamento">Andamento (<span id="countAtivas">0</span>)</button>
+            </div>
+
+            <main id="areaQuadro">
+                <div class="grid-missoes" id="gridQuadroDisponiveis">
+                    </div>
+            </main>
+
+            <main id="areaAndamento" style="display: none;">
+                </main>
+
+            <nav>
+                <a href="dojo.html" class="nav-item"><img src="icones/Dojo.png" alt="Dojo">DOJO</a>
+                <a href="missoes.html" class="nav-item ativo"><img src="icones/escritorio.png" alt="Missões">MISSÕES</a>
+                <a href="arena.html" class="nav-item"><img src="icones/arena.png" alt="Arena">ARENA</a>
+                <a href="loja.html" class="nav-item"><img src="icones/loja.png" alt="Loja">LOJA</a>
+            </nav>
+        </div>
+    </div>
+
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -217,13 +255,20 @@
         import { MISSOES } from './missoes.js';
         import { ITENS } from './itens.js';
 
+        // ==========================================
+        // CONFIGURAÇÕES DO QUADRO DE MISSÕES
+        // ==========================================
+        const TEMPO_ROTACAO_HORAS = 8; // Tempo para a carta sumir do quadro
+
         let jogadorUid = null;
         let dadosGlobais = null;
         let inventarioInstancias = [];
         let gatosDisponiveis = [];
         let missoesAtivas = [];
+        let missoesNoQuadro = []; 
         
-        let missaoAtual = null;
+        let missaoAtual = null; 
+        let missaoQuadroInstanciaId = null; 
         let slot1Item = null; 
         let slot2Item = null;
         let resultadoRelatorio = null;
@@ -240,10 +285,9 @@
             document.getElementById('btnAceitarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; callback(); };
         }
 
-        // Abas
         document.getElementById('abaQuadro').onclick = () => {
             document.getElementById('abaQuadro').classList.add('ativa'); document.getElementById('abaAndamento').classList.remove('ativa');
-            document.getElementById('areaQuadro').style.display = 'flex'; document.getElementById('areaAndamento').style.display = 'none';
+            document.getElementById('areaQuadro').style.display = 'block'; document.getElementById('areaAndamento').style.display = 'none';
         };
         document.getElementById('abaAndamento').onclick = () => {
             document.getElementById('abaAndamento').classList.add('ativa'); document.getElementById('abaQuadro').classList.remove('ativa');
@@ -254,8 +298,8 @@
             if (user) {
                 jogadorUid = user.uid;
                 await carregarDadosBasicos();
+                await gerenciarRotacaoQuadro(); 
                 await carregarMissoesAtivas();
-                renderizarQuadro();
                 setInterval(atualizarRelogios, 1000);
             } else { window.location.href = "index.html"; }
         });
@@ -269,6 +313,8 @@
                 document.getElementById('exibeMoedas').textContent = dadosGlobais.moedas || 0;
                 document.getElementById('exibeReputacao').textContent = `${dadosGlobais.reputacao || 0}/500`;
                 inventarioInstancias = dadosGlobais.inventarioInstancias || [];
+                missoesNoQuadro = dadosGlobais.missoesNoQuadro || [];
+                
                 if (dadosGlobais.avatar) document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
             }
 
@@ -281,35 +327,117 @@
             });
         }
 
-        function renderizarQuadro() {
-            const area = document.getElementById('areaQuadro');
-            area.innerHTML = '';
-            
-            Object.values(MISSOES).forEach(missao => {
+        // ==========================================
+        // ROTAÇÃO DE MISSÕES (2 POR RANK)
+        // ==========================================
+        async function gerenciarRotacaoQuadro() {
+            const agora = Date.now();
+            let houveMudanca = false;
+
+            // 1. Limpa o que expirou
+            const validas = missoesNoQuadro.filter(m => m.expiraEm > agora);
+            if (validas.length !== missoesNoQuadro.length) {
+                missoesNoQuadro = validas;
+                houveMudanca = true;
+            }
+
+            // 2. Garante exatamente 2 vagas de cada Rank
+            const maxPorRank = { 'D': 2, 'C': 2, 'B': 2, 'A': 2 };
+            const contagemAtual = { 'D': 0, 'C': 0, 'B': 0, 'A': 0 };
+            const missoesPorRank = { 'D': [], 'C': [], 'B': [], 'A': [] };
+
+            // Organiza o banco
+            Object.keys(MISSOES).forEach(key => {
+                missoesPorRank[MISSOES[key].rank].push(key);
+            });
+
+            // Conta o que está ativo no quadro
+            missoesNoQuadro.forEach(m => {
+                if(MISSOES[m.missaoId]) {
+                    contagemAtual[MISSOES[m.missaoId].rank]++;
+                }
+            });
+
+            // Sorteia para preencher os buracos
+            Object.keys(maxPorRank).forEach(rank => {
+                while (contagemAtual[rank] < maxPorRank[rank]) {
+                    const pool = missoesPorRank[rank];
+                    const sorteada = pool[Math.floor(Math.random() * pool.length)];
+                    
+                    // Bloqueia cartas idênticas AO MESMO TEMPO no quadro
+                    if (!missoesNoQuadro.some(m => m.missaoId === sorteada)) {
+                        missoesNoQuadro.push({
+                            idQuadro: `brd_${Date.now()}_${Math.floor(Math.random()*1000)}`,
+                            missaoId: sorteada,
+                            expiraEm: agora + (TEMPO_ROTACAO_HORAS * 60 * 60 * 1000)
+                        });
+                        contagemAtual[rank]++;
+                        houveMudanca = true;
+                    }
+                }
+            });
+
+            // Ordena o array para exibir sempre D, C, B, A na tela
+            const ordemRank = { 'D': 1, 'C': 2, 'B': 3, 'A': 4 };
+            missoesNoQuadro.sort((a, b) => {
+                let rankA = MISSOES[a.missaoId]?.rank || 'D';
+                let rankB = MISSOES[b.missaoId]?.rank || 'D';
+                return ordemRank[rankA] - ordemRank[rankB];
+            });
+
+            if (houveMudanca) {
+                await updateDoc(doc(db, "Clas", jogadorUid), { missoesNoQuadro: missoesNoQuadro });
+            }
+
+            document.getElementById('countQuadro').textContent = `${missoesNoQuadro.length}/8`;
+            renderizarGridQuadro();
+        }
+
+        function renderizarGridQuadro() {
+            const container = document.getElementById('gridQuadroDisponiveis');
+            container.innerHTML = '';
+
+            missoesNoQuadro.forEach(instancia => {
+                const refDb = MISSOES[instancia.missaoId];
+                if(!refDb) return;
+
                 const div = document.createElement('div');
-                div.className = 'card-missao';
+                div.className = 'card-missao-grid';
+                
                 div.innerHTML = `
-                    <div class="card-header">
-                        <h4>${missao.nome}</h4>
-                        <span class="rank-badge">RANK ${missao.rank}</span>
+                    <div class="card-conteudo">
+                        <span class="rank-badge">RANK ${refDb.rank}</span>
+                        <div>
+                            <div class="titulo-missao-grid">${refDb.nome}</div>
+                            <div class="timer-expiracao" id="timer-exp-${instancia.idQuadro}">Calculando...</div>
+                        </div>
                     </div>
-                    <p>${missao.desc}</p>
-                    <div class="card-detalhes">
-                        <span><img src="icones/relogio.png"> ${missao.tempoBase}h</span>
-                        <span><img src="icones/moeda.png"> ${missao.moedasBase}</span>
-                        <span>XP: ${missao.xpBase}</span>
-                        <span style="color:#b30000;">Custo: ${missao.custoHpPct}% HP</span>
-                    </div>
-                    <button class="btn-acao-card" onclick="abrirPreparo('${missao.id}')">Preparar Equipe</button>
                 `;
-                area.appendChild(div);
+                
+                div.onclick = () => abrirDetalheMissao(instancia.idQuadro, refDb);
+                container.appendChild(div);
             });
         }
 
-        window.abrirPreparo = (idMissao) => {
-            missaoAtual = MISSOES[idMissao];
-            document.getElementById('prepNomeMissao').textContent = `[Rank ${missaoAtual.rank}] ${missaoAtual.nome}`;
+        window.abrirDetalheMissao = (instanciaQuadroId, refDb) => {
+            missaoAtual = refDb;
+            missaoQuadroInstanciaId = instanciaQuadroId; 
+
+            document.getElementById('detTitulo').textContent = refDb.nome;
+            document.getElementById('detRank').textContent = `RANK ${refDb.rank}`;
+            document.getElementById('detDesc').textContent = refDb.desc;
+            document.getElementById('detTempo').textContent = refDb.tempoBase;
+            document.getElementById('detMoedas').textContent = refDb.moedasBase;
+            document.getElementById('detXp').textContent = refDb.xpBase;
+            document.getElementById('detCustoHp').textContent = refDb.custoHpPct;
+
+            document.getElementById('modalDetalheMissao').style.display = 'flex';
+        };
+
+        document.getElementById('btnIrParaPrep').onclick = () => {
+            document.getElementById('modalDetalheMissao').style.display = 'none';
             
+            document.getElementById('prepNomeMissao').textContent = `[Rank ${missaoAtual.rank}] ${missaoAtual.nome}`;
             slot1Item = null; slot2Item = null;
             atualizarSlotsUI();
 
@@ -363,22 +491,15 @@
                 }
             });
 
-            // O Custo Real calcula em cima do HP Máximo total do gato, conforme regras
             let custoHpTotalDaMissao = (gato.hpMax * (missaoAtual.custoHpPct / 100)) * (hasKimono ? 0.75 : 1);
             document.getElementById('estHp').textContent = `-${Math.round(custoHpTotalDaMissao)} HP`;
             
-            // A Trava da Doença Fatal
-            if (custoHpTotalDaMissao >= gato.hpAtual) {
-                alerta.style.display = 'block';
-            } else {
-                alerta.style.display = 'none';
-            }
+            if (custoHpTotalDaMissao >= gato.hpAtual) alerta.style.display = 'block';
+            else alerta.style.display = 'none';
 
-            // Agilidade corta o tempo
             let horasReais = missaoAtual.tempoBase * (100 / (100 + attrs.agilidade)) * (hasBotas ? 0.8 : 1);
             document.getElementById('estTempo').textContent = `${horasReais.toFixed(1)} Horas`;
 
-            // A Matemática Exata de Aptidão
             let penIdade = idadeH >= 2880 ? 1.30 : 1;
             let riscoFalha = (missaoAtual.riscoBase * penIdade) * (50 / (50 + attrs.forca));
             if (hasShuriken) riscoFalha = riscoFalha * 0.85;
@@ -404,6 +525,8 @@
                     let itensRemovidos = [slot1Item, slot2Item].filter(id => id !== null);
                     let novoInventario = inventarioInstancias.filter(i => !itensRemovidos.includes(i.idInstancia));
                     
+                    let novoQuadro = missoesNoQuadro.filter(m => m.idQuadro !== missaoQuadroInstanciaId);
+
                     const missaoData = {
                         idUnico: `missao_${Date.now()}`,
                         gatoId: gato.id,
@@ -420,14 +543,17 @@
                     const claRef = doc(db, "Clas", jogadorUid);
                     await updateDoc(claRef, {
                         inventarioInstancias: novoInventario,
-                        missoesAtivas: arrayUnion(missaoData)
+                        missoesAtivas: arrayUnion(missaoData),
+                        missoesNoQuadro: novoQuadro
                     });
 
                     const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
                     await updateDoc(gatoRef, { estado: 'Em Missão' });
 
                     mostrarToast(`${gato.nome} partiu para a missão!`);
+                    
                     await carregarDadosBasicos();
+                    await gerenciarRotacaoQuadro(); 
                     await carregarMissoesAtivas();
                     document.getElementById('abaAndamento').click();
 
@@ -506,6 +632,28 @@
         }
 
         function atualizarRelogios() {
+            const agora = Date.now();
+
+            if (document.getElementById('abaQuadro').classList.contains('ativa')) {
+                let recarregarGrid = false;
+                missoesNoQuadro.forEach(m => {
+                    const elTimer = document.getElementById(`timer-exp-${m.idQuadro}`);
+                    if (elTimer) {
+                        const tempoRestante = m.expiraEm - agora;
+                        if (tempoRestante <= 0) {
+                            recarregarGrid = true;
+                        } else {
+                            const s = Math.floor(tempoRestante / 1000);
+                            const h = Math.floor(s / 3600);
+                            const min = Math.floor((s % 3600) / 60);
+                            const sec = s % 60;
+                            elTimer.textContent = `Expira em: ${h}h ${min}m ${sec}s`;
+                        }
+                    }
+                });
+                if (recarregarGrid) gerenciarRotacaoQuadro();
+            }
+
             const area = document.getElementById('areaAndamento');
             if (document.getElementById('abaAndamento').classList.contains('ativa')) {
                 if (missoesAtivas.length === 0) {
@@ -514,7 +662,6 @@
                 }
                 
                 let html = '';
-                const agora = Date.now();
                 missoesAtivas.forEach((m, idx) => {
                     const refDb = MISSOES[m.missaoId];
                     const fim = m.inicio + m.duracaoMs;
@@ -538,7 +685,7 @@
                     }
 
                     html += `
-                        <div class="card-missao">
+                        <div class="card-missao-lista">
                             <h4 style="color:#2a2a2a; text-transform:uppercase; margin-bottom:5px;">[${refDb.rank}] ${refDb.nome}</h4>
                             <p style="font-size:0.8em; color:#5a4231; font-weight:bold;">Agente: ${m.gatoNome}</p>
                             <div class="barra-progresso-bg">
@@ -562,7 +709,6 @@
             const gato = { id: gatoSnap.id, ...gatoSnap.data() };
             const attrs = gato.atributos;
 
-            // O Sorteio Final
             const sorteio = Math.floor(Math.random() * (m.maxApt - m.minApt + 1)) + m.minApt;
             
             let sucessoPct = 0; let failState = ''; let isDoente = false;
@@ -574,7 +720,7 @@
                 sucessoPct = 0.5; failState = 'FALHA LEVE (Recursos Pela Metade)';
             } else if (sorteio >= 20) {
                 sucessoPct = 0.66; failState = 'FALHA MÉDIA (Gato Gravemente Ferido)';
-                isDoente = true; custoHpFinal = 0; // Abaixo de 40% não desconta HP, apenas zera.
+                isDoente = true; custoHpFinal = 0;
             } else {
                 sucessoPct = 0.0; failState = 'FALHA CRÍTICA (Fuga por Sobrevivência)';
                 isDoente = true; custoHpFinal = 0;
@@ -589,7 +735,7 @@
 
             let hpMatematico = gato.hpAtual - custoHpFinal;
             if (hpMatematico <= 0 && !isDoente) {
-                isDoente = true; // Se a matemática normal derrubou o HP a zero, ele adoece de qualquer forma
+                isDoente = true; 
                 failState += " (Custo de Vida Excedido)";
             }
 
@@ -644,7 +790,6 @@
                 
                 await carregarDadosBasicos();
                 await carregarMissoesAtivas();
-                renderizarQuadro();
 
             } catch (e) { console.error(e); btn.disabled = false; }
         };
