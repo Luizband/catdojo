@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CatDojo - Enfermaria</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5a4231">
+    <style>
+        /* RESET BÁSICO */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        html, body { 
+            background-color: #2c2c2c; 
+            display: flex; 
+            justify-content: center; 
+            position: fixed;
+            top: 0; 
+            bottom: 0; 
+            left: 0; 
+            right: 0;
+            width: 100%;
+            overflow: hidden; 
+        }
+
+        #app {
+            width: 100%; max-width: 414px; height: 100%; position: relative;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            background-image: url('imagens/fundodeposito.png');
+            background-size: cover; background-position: center;
+        }
+        #app::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.55); z-index: 1; 
+        }
+
+        .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+
+        /* CABEÇALHO PADRÃO */
+        header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
+        .perfil-info { display: flex; gap: 15px; }
+        .foto-cla {
+            width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;
+        }
+        .dados-cla h2 { font-size: 1em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 0.8em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
+        .economia { display: flex; gap: 15px; font-size: 0.8em; font-weight: bold; color: #4a3b32; }
+        .economia div { display: flex; align-items: center; gap: 5px; }
+        .economia img { width: 18px; }
+        
+        .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
+
+        /* ÁREA DA ENFERMARIA */
+        main { 
+            flex: 1; 
+            min-height: 0; 
+            padding: 15px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+
+        .info-enfermaria { 
+            width: 100%; 
+            font-weight: bold; 
+            color: #f1ddb0; 
+            background: rgba(90, 66, 49, 0.85); 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            border: 2px solid #dfc495;
+            text-align: center;
+            font-size: 0.82em;
+            text-transform: uppercase;
+        }
+
+        .lista-doentes {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* CARD DE GATO SICK */
+        .card-doente {
+            background-color: #f1ddb0;
+            border: 3px solid #5a4231;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            box-shadow: 0px 4px 0px #5a4231;
+            position: relative;
+        }
+
+        /* CARD DE GATO MORTO (FALECIDO) */
+        .card-doente.morto {
+            opacity: 0.65;
+            filter: grayscale(100%);
+            background-color: #c5b597;
+            cursor: pointer;
+        }
+
+        .foto-pet-container {
+            width: 70px;
+            height: 70px;
+            background-color: #dfc495;
+            border: 2px solid #5a4231;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .foto-pet-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .morte-icone-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+        .morte-icone-overlay img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .info-pet {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-pet h4 {
+            font-size: 1.05em;
+            color: #2a2a2a;
+            text-transform: uppercase;
+        }
+
+        .info-pet .faixa-label {
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #5a4231;
+        }
+
+        .timer-container {
+            margin-top: 5px;
+        }
+
+        .timer-texto {
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #b30000;
+            margin-bottom: 2px;
+        }
+
+        .barra-tempo {
+            width: 100%;
+            height: 8px;
+            background-color: #2c2c2c;
+            border-radius: 4px;
+            border: 1px solid #5a4231;
+            overflow: hidden;
+        }
+
+        .barra-tempo-preenchida {
+            height: 100%;
+            background-color: #cc3333;
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .btn-tratar {
+            background-color: #4CAF50;
+            color: white;
+            border: 2px solid #2E7D32;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0px 3px 0px #2E7D32;
+            text-transform: uppercase;
+            font-size: 0.75em;
+        }
+        .btn-tratar:active {
+            box-shadow: 0px 0px 0px #2E7D32;
+            transform: translateY(3px);
+        }
+
+        .sem-gatos {
+            text-align: center;
+            color: #f1ddb0;
+            font-weight: bold;
+            margin-top: 40px;
+            font-size: 1.1em;
+            text-transform: uppercase;
+        }
+
+        /* NAVEGAÇÃO INFERIOR UNIFICADA */
+        nav { 
+            background-color: #e5cd9e; 
+            border-top: 3px solid #5a4231; 
+            display: flex; 
+            justify-content: space-around; 
+            flex-shrink: 0;
+            padding: 10px 5px; 
+            padding-bottom: max(24px, env(safe-area-inset-bottom)); 
+        }
+        
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-size: 0.75em; 
+            font-weight: bold; 
+            color: #4a3b32; 
+            cursor: pointer; 
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        
+        .nav-item img { 
+            width: 40px; 
+            margin-bottom: 3px; 
+        }
+        
+        .nav-item.ativo img {
+            filter: drop-shadow(0px 0px 8px #ffeb99);
+        }
+
+        /* SISTEMA DE AVISOS */
+        #toastContainer { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast-msg { background-color: #2c2c2c; color: #f1ddb0; padding: 12px 24px; border: 2px solid #dfc495; border-radius: 8px; font-weight: bold; text-align: center; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); animation: fadeInOut 2s forwards; text-transform: uppercase; font-size: 0.85em; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(-10px); } 10% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
+
+        .modal-centro { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .painel-centro { background-color: #f1ddb0; width: 85%; max-width: 320px; border: 3px solid #5a4231; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0px 10px 20px rgba(0,0,0,0.5); }
+        .painel-centro p { color: #2a2a2a; font-weight: bold; margin-bottom: 20px; font-size: 1.05em; }
+        .botoes-centro { display: flex; gap: 10px; justify-content: center; }
+        .btn-centro { flex: 1; padding: 10px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; color: #2a2a2a; text-transform: uppercase; }
+        .btn-centro:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+        .btn-centro.cancelar { background-color: transparent; border: 2px dashed #a68a61; box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div id="toastContainer"></div>
+    <div class="modal-centro" id="modalConfirmacao">
+        <div class="painel-centro">
+            <p id="textoConfirmacao">Tem certeza?</p>
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" id="btnCancelarConfirm">Cancelar</button>
+                <button class="btn-centro" id="btnAceitarConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <div class="conteudo-app">
+            <header>
+                <div class="perfil-info">
+                    <div class="foto-cla" id="fotoClaContainer"><span id="placeholderFoto">FOTO</span></div>
+                    <div class="dados-cla">
+                        <h2 id="exibeNomeCla">CARREGANDO...</h2>
+                        <p id="exibeNomeMestre">Mestre...</p>
+                        <div class="economia">
+                            <div><img src="icones/moeda.png" alt="Moedas"> <span id="exibeMoedas">0</span></div>
+                            <div><img src="icones/rep.png" alt="Reputação"> <span id="exibeReputacao">0/500</span></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="titulo-pagina">Enfermaria</div>
+
+            <main>
+                <div class="info-enfermaria">
+                    ⚠️ Corredor da Morte: Gatos doentes sem tratamento falecerão em 48 horas!
+                </div>
+
+                <div class="lista-doentes" id="containerDoentes">
+                    </div>
+            </main>
+
+            <nav>
+                <a href="dojo.html" class="nav-item"><img src="icones/Dojo.png" alt="Dojo">DOJO</a>
+                <a href="adocao.html" class="nav-item"><img src="icones/adocao.png" alt="Adoção">ADOÇÃO</a>
+                <a href="arena.html" class="nav-item"><img src="icones/arena.png" alt="Arena">ARENA</a>
+                <a href="loja.html" class="nav-item"><img src="icones/loja.png" alt="Loja">LOJA</a>
+            </nav>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDoc, doc, updateDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        let jogadorUid = null;
+        let dadosGlobais = null;
+        let inventarioInstancias = [];
+        let listaGatosEnfermos = [];
+
+        function mostrarToast(mensagem) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.textContent = mensagem;
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+            setTimeout(() => { if(toast.parentElement) toast.remove(); }, 2000);
+        }
+
+        function pedirConfirmacao(mensagem, callback) {
+            document.getElementById('textoConfirmacao').textContent = mensagem;
+            document.getElementById('modalConfirmacao').style.display = 'flex';
+            document.getElementById('btnAceitarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; callback(); };
+            document.getElementById('btnCancelarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; };
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                jogadorUid = user.uid;
+                await carregarDadosUsuario();
+                await carregarEnfermaria();
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function carregarDadosUsuario() {
+            const docRef = doc(db, "Clas", jogadorUid);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                dadosGlobais = docSnap.data();
+                
+                let textoCla = dadosGlobais.nomeCla ? dadosGlobais.nomeCla.trim() : "DESCONHECIDO";
+                if (!textoCla.toUpperCase().startsWith("CLÃ")) textoCla = "CLÃ " + textoCla;
+                document.getElementById('exibeNomeCla').textContent = textoCla.toUpperCase();
+                
+                let textoMestre = dadosGlobais.nomeMestre ? dadosGlobais.nomeMestre.trim() : "...";
+                if (!textoMestre.toUpperCase().startsWith("MESTRE")) textoMestre = "Mestre " + textoMestre;
+                document.getElementById('exibeNomeMestre').textContent = textoMestre;
+                
+                document.getElementById('exibeMoedas').textContent = dadosGlobais.moedas || 0;
+                document.getElementById('exibeReputacao').textContent = `${dadosGlobais.reputacao || 0}/500`;
+                
+                if (dadosGlobais.avatar) {
+                    document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+                }
+
+                inventarioInstancias = dadosGlobais.inventarioInstancias || [];
+            }
+        }
+
+        async function carregarEnfermaria() {
+            listaGatosEnfermos = [];
+            const container = document.getElementById('containerDoentes');
+            container.innerHTML = '';
+
+            const gatosRef = collection(db, "Clas", jogadorUid, "Gatos");
+            const querySnapshot = await getDocs(gatosRef);
+            const agora = Date.now();
+
+            querySnapshot.forEach((docSnap) => {
+                let gato = { id: docSnap.id, ...docSnap.data() };
+
+                // Se o gato estiver com status "Doente" ou "Morto", ele pertence à enfermaria
+                if (gato.estado === 'Doente' || gato.estado === 'Morto') {
+                    
+                    // Salvaguarda caso doenteDesde não tenha sido gravado no dormitório
+                    if (gato.estado === 'Doente' && !gato.doenteDesde) {
+                        gato.doenteDesde = agora;
+                        const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
+                        updateDoc(gatoRef, { doenteDesde: agora });
+                    }
+
+                    // Se já passou de 48 horas reais mas o estado ainda é "Doente", atualiza no banco de dados
+                    const limiteTempo = 48 * 60 * 60 * 1000;
+                    if (gato.estado === 'Doente' && (agora - gato.doenteDesde >= limiteTempo)) {
+                        gato.estado = 'Morto';
+                        const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
+                        updateDoc(gatoRef, { estado: 'Morto' });
+                    }
+
+                    listaGatosEnfermos.push(gato);
+                }
+            });
+
+            if (listaGatosEnfermos.length === 0) {
+                container.innerHTML = `<div class="sem-gatos">🌸 Nenhum gato doente no momento. Seu Clã está saudável!</div>`;
+                return;
+            }
+
+            listaGatosEnfermos.forEach(gato => {
+                const divCard = document.createElement('div');
+                
+                if (gato.estado === 'Morto') {
+                    divCard.className = 'card-doente morto';
+                    divCard.innerHTML = `
+                        <div class="foto-pet-container">
+                            <div class="morte-icone-overlay"><img src="icones/morte.png" alt="Morte"></div>
+                            <img src="${gato.foto}" alt="${gato.nome}">
+                        </div>
+                        <div class="info-pet">
+                            <h4>${gato.nome}</h4>
+                            <span class="faixa-label" style="color: #555;">FALECIDO</span>
+                            <div class="timer-container">
+                                <span class="timer-texto">Você deixou o gato falecer...</span>
+                            </div>
+                        </div>
+                    `;
+                    divCard.onclick = () => dispensarGatoFalecido(gato);
+                } else {
+                    divCard.className = 'card-doente';
+                    divCard.innerHTML = `
+                        <div class="foto-pet-container">
+                            <img src="${gato.foto}" alt="${gato.nome}">
+                        </div>
+                        <div class="info-pet">
+                            <h4>${gato.nome}</h4>
+                            <span class="faixa-label">Faixa ${gato.faixa || 'Branca'}</span>
+                            <div class="timer-container">
+                                <span class="timer-texto" id="timer-txt-${gato.id}">Tempo restante: calculando...</span>
+                                <div class="barra-tempo">
+                                    <div class="barra-tempo-preenchida" id="barra-fill-${gato.id}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-tratar" id="btn-curar-${gato.id}">Tratar</button>
+                    `;
+                    
+                    divCard.querySelector('.btn-tratar').onclick = (e) => {
+                        e.stopPropagation();
+                        tentarTratar(gato);
+                    };
+                }
+                
+                container.appendChild(divCard);
+            });
+
+            atualizarTemporizadores();
+        }
+
+        function atualizarTemporizadores() {
+            const agora = Date.now();
+            const limiteTempo = 48 * 60 * 60 * 1000;
+
+            listaGatosEnfermos.forEach(gato => {
+                if (gato.estado === 'Morto') return;
+
+                const tempoDecorrido = agora - gato.doenteDesde;
+                const tempoRestante = limiteTempo - tempoDecorrido;
+
+                if (tempoRestante <= 0) {
+                    carregarEnfermaria(); // Força a recarga total se um gato morreu agora
+                    return;
+                }
+
+                const elTexto = document.getElementById(`timer-txt-${gato.id}`);
+                const elBarra = document.getElementById(`barra-fill-${gato.id}`);
+                
+                if (elTexto && elBarra) {
+                    const totalSegundos = Math.floor(tempoRestante / 1000);
+                    const horas = Math.floor(totalSegundos / 3600);
+                    const minutos = Math.floor((totalSegundos % 3600) / 60);
+                    const segundos = totalSegundos % 60;
+
+                    elTexto.textContent = `Tempo Restante: ${horas}h ${minutos}m ${segundos}s`;
+                    
+                    const pct = (tempoRestante / limiteTempo) * 100;
+                    elBarra.style.width = `${pct}%`;
+                }
+            });
+        }
+
+        // Roda o relógio a cada segundo
+        setInterval(atualizarTemporizadores, 1000);
+
+        // LÓGICA DE CURA COM REMÉDIO
+        async function tentarTratar(gato) {
+            // Caça a primeira caixa de remédio no depósito físico
+            const indexRemedio = inventarioInstancias.findIndex(inst => inst.itemId === 'remedio');
+
+            if (indexRemedio === -1) {
+                mostrarToast("Você não possui um Remédio no Depósito! Compre um por 40 Moedas.");
+                return;
+            }
+
+            pedirConfirmacao(`Deseja gastar 1 Remédio para tratar ${gato.nome}?`, async () => {
+                try {
+                    // 1. Remove o remédio do inventário físico
+                    inventarioInstancias.splice(indexRemedio, 1);
+
+                    // 2. Atualiza o Clã (perda do remédio)
+                    const claRef = doc(db, "Clas", jogadorUid);
+                    await updateDoc(claRef, { inventarioInstancias: inventarioInstancias });
+
+                    // 3. Atualiza o gato: cura doença, saciedade vai para 100, HP fica em 0 e entra em descanso no dormitório
+                    const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
+                    await updateDoc(gatoRef, {
+                        estado: 'Descansando',
+                        hpAtual: 0, // Inicia a regeneração lenta a partir daqui
+                        fome: 100,  // Barra de saciedade restaurada de graça
+                        doenteDesde: null,
+                        ultimaAtualizacao: Date.now()
+                    });
+
+                    mostrarToast(`${gato.nome} foi tratado e enviado para descansar no Dormitório!`);
+                    await carregarDadosUsuario();
+                    await carregarEnfermaria();
+                } catch (e) {
+                    console.error("Erro ao tratar gato:", e);
+                    mostrarToast("Ocorreu um erro de conexão.");
+                }
+            });
+        }
+
+        // CASO O JOGADOR DEIXE O GATO MORRER
+        function dispensarGatoFalecido(gato) {
+            pedirConfirmacao(`Você deixou ${gato.nome} falecer por falta de tratamento. Deseja removê-lo da coleção?`, async () => {
+                try {
+                    const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
+                    await deleteDoc(gatoRef);
+                    mostrarToast(`${gato.nome} foi removido do Clã.`);
+                    await carregarEnfermaria();
+                } catch (e) {
+                    console.error("Erro ao dispensar gato falecido:", e);
+                }
+            });
+        }
+
+        // Ativa PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+        }
+    </script>
+</body>
+</html>
