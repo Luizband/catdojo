@@ -211,7 +211,7 @@
             text-transform: uppercase;
         }
 
-        /* NAVEGAÇÃO INFERIOR UNIFICADA */
+        /* NAVEGAÇÃO INFERIOR */
         nav { 
             background-color: #e5cd9e; 
             border-top: 3px solid #5a4231; 
@@ -219,7 +219,8 @@
             justify-content: space-around; 
             flex-shrink: 0;
             padding: 10px 5px; 
-            padding-bottom: max(24px, env(safe-area-inset-bottom)); 
+            /* Protege os botões da barra de gestos do sistema (tanto no Android como no iPhone) */
+            padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
         }
         
         .nav-item { 
