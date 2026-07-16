@@ -144,8 +144,8 @@
             justify-content: space-around; 
             flex-shrink: 0;
             padding: 10px 5px; 
-            /* O 'max' garante 24px de segurança MESMO que o telemóvel falhe a ler o env() */
-            padding-bottom: max(24px, env(safe-area-inset-bottom)); 
+            /* Protege os botões da barra de gestos do sistema (tanto no Android como no iPhone) */
+            padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none;}
         .nav-item img { width: 40px; margin-bottom: 3px; }
