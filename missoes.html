@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CatDojo - Missões</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5a4231">
+    <style>
+        /* RESET BÁSICO E TRAVA DE ECRÃ */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        html, body { background-color: #2c2c2c; display: flex; justify-content: center; position: fixed; top: 0; bottom: 0; left: 0; right: 0; width: 100%; overflow: hidden; }
+
+        #app {
+            width: 100%; max-width: 414px; height: 100%; position: relative;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            background-color: #3e2723;
+            background-image: url('imagens/fundomissao.png'); background-size: cover; background-position: center;
+        }
+        #app::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.65); z-index: 1; }
+        .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+
+        header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
+        .perfil-info { display: flex; gap: 15px; }
+        .foto-cla { width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;}
+        .dados-cla h2 { font-size: 1em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 0.8em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
+        .economia { display: flex; gap: 15px; font-size: 0.8em; font-weight: bold; color: #4a3b32; }
+        .economia div { display: flex; align-items: center; gap: 5px; }
+        .economia img { width: 18px; }
+        
+        .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
+
+        /* ABAS EM FORMA DE PÍLULA */
+        .abas-container { padding: 10px 15px; display: flex; gap: 10px; background: rgba(90, 66, 49, 0.85); flex-shrink: 0;}
+        .btn-aba { flex: 1; background-color: #dfc495; color: #2a2a2a; border: 2px solid #5a4231; padding: 8px; border-radius: 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8em; box-shadow: 0px 3px 0px #5a4231; transition: 0.1s;}
+        .btn-aba:active { transform: translateY(3px); box-shadow: 0px 0px 0px #5a4231;}
+        .btn-aba.ativa { background-color: #5a4231; color: #f1ddb0; border-color: #f1ddb0; box-shadow: none; transform: translateY(3px);}
+
+        main { flex: 1; min-height: 0; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+
+        /* CARDS MISSÃO */
+        .card-missao { background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px; padding: 12px; box-shadow: 0px 4px 0px #5a4231; position: relative;}
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;}
+        .card-header h4 { font-size: 1.05em; color: #2a2a2a; text-transform: uppercase; width: 80%;}
+        .rank-badge { background-color: #cc3333; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; border: 2px solid #2a2a2a; font-size: 0.9em;}
+        .card-missao p { font-size: 0.75em; color: #5a4231; font-weight: bold; margin-bottom: 10px; line-height: 1.2em;}
+        .card-detalhes { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.75em; font-weight: bold; color: #2a2a2a; margin-bottom: 10px; background: #dfc495; padding: 6px; border-radius: 6px; border: 1px solid #a68a61;}
+        .card-detalhes span { display: flex; align-items: center; gap: 4px; }
+        .card-detalhes img { width: 14px; height: 14px; }
+        
+        .btn-acao-card { background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32; width: 100%; text-transform: uppercase; font-size: 0.85em;}
+        .btn-acao-card:active { box-shadow: 0px 0px 0px #2E7D32; transform: translateY(3px); }
+
+        /* PROGRESSO MISSÃO ATIVA */
+        .barra-progresso-bg { width: 100%; height: 14px; background-color: #2c2c2c; border-radius: 7px; border: 2px solid #5a4231; overflow: hidden; margin-top: 8px;}
+        .barra-progresso-fill { height: 100%; background-color: #3399ff; width: 0%; transition: width 1s linear;}
+        .barra-progresso-fill.concluida { background-color: #4CAF50; }
+        .tempo-restante { font-size: 0.85em; font-weight: bold; color: #b30000; text-align: center; margin-top: 5px; }
+
+        /* MODAL PREPARAÇÃO */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: flex-end; }
+        .painel-modal { background-color: #f1ddb0; width: 100%; max-width: 414px; border-top: 4px solid #5a4231; border-radius: 20px 20px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; position: relative;}
+        .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold;}
+        
+        .seletor-gato { width: 100%; padding: 10px; border: 2px solid #5a4231; border-radius: 8px; background: #dfc495; font-weight: bold; color: #2a2a2a; margin-bottom: 15px; font-size: 0.9em; outline: none;}
+        
+        .slots-itens { display: flex; gap: 10px; margin-bottom: 15px; }
+        .slot-item { flex: 1; height: 60px; background-color: #e5cd9e; border: 2px dashed #a68a61; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 0.7em; font-weight: bold; color: #5a4231; cursor: pointer; position: relative;}
+        .slot-item img { width: 35px; height: 35px; object-fit: contain; }
+        .remover-item { position: absolute; top: -5px; right: -5px; background: #cc3333; color: white; border: 2px solid #2a2a2a; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; display: none; align-items: center; justify-content: center;}
+
+        .painel-estimativa { background-color: #2c2c2c; border: 2px solid #5a4231; border-radius: 8px; padding: 15px; color: #f1ddb0; margin-bottom: 15px;}
+        .painel-estimativa h5 { text-transform: uppercase; color: #dfc495; margin-bottom: 10px; font-size: 0.8em; text-align: center; border-bottom: 1px solid #4a3b32; padding-bottom: 5px;}
+        .linha-est { display: flex; justify-content: space-between; font-size: 0.8em; font-weight: bold; margin-bottom: 6px; }
+        .linha-est span:last-child { color: #4CAF50; }
+        .alerta-hp { background-color: rgba(204,51,51,0.2); border: 2px dashed #cc3333; color: #ff9999; padding: 10px; font-size: 0.8em; text-align: center; border-radius: 8px; margin-top: 10px; display: none; font-weight: bold;}
+        
+        /* MODAL RELATÓRIO */
+        .painel-relatorio { background-color: #dfc495; width: 90%; max-width: 350px; border: 4px solid #5a4231; border-radius: 12px; padding: 20px; position: relative; box-shadow: 0px 10px 20px rgba(0,0,0,0.5);}
+        .relatorio-header { text-align: center; border-bottom: 2px dashed #a68a61; padding-bottom: 15px; margin-bottom: 15px;}
+        .relatorio-header img { width: 80px; height: 80px; border-radius: 10px; border: 3px solid #5a4231; background: #fff;}
+        .relatorio-resultado { font-size: 1.2em; font-weight: bold; text-transform: uppercase; margin-top: 10px; letter-spacing: 1px;}
+        
+        .resultado-sucesso { color: #2E7D32; }
+        .resultado-falha { color: #b30000; }
+        
+        .relatorio-linha { display: flex; justify-content: space-between; font-weight: bold; color: #2a2a2a; margin-bottom: 8px; font-size: 0.9em; background: #f1ddb0; padding: 8px; border-radius: 6px; border: 1px solid #a68a61;}
+
+        /* NAVEGAÇÃO INFERIOR UNIFICADA */
+        nav { background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; flex-shrink: 0; padding: 10px 5px; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none; text-transform: uppercase; }
+        .nav-item img { width: 40px; margin-bottom: 3px; }
+        .nav-item.ativo img { filter: drop-shadow(0px 0px 8px #ffeb99); }
+
+        /* AVISOS E CONFIRMAÇÕES */
+        #toastContainer { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast-msg { background-color: #2c2c2c; color: #f1ddb0; padding: 12px 24px; border: 2px solid #dfc495; border-radius: 8px; font-weight: bold; text-align: center; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); animation: fadeInOut 2s forwards; text-transform: uppercase; font-size: 0.85em; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(-10px); } 10% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
+
+        .modal-centro { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .painel-centro { background-color: #f1ddb0; width: 85%; max-width: 320px; border: 3px solid #5a4231; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0px 10px 20px rgba(0,0,0,0.5); }
+        .painel-centro p { color: #2a2a2a; font-weight: bold; margin-bottom: 20px; font-size: 0.95em; line-height: 1.4em;}
+        .botoes-centro { display: flex; gap: 10px; justify-content: center; }
+        .btn-centro { flex: 1; padding: 10px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; color: #2a2a2a; text-transform: uppercase; }
+        .btn-centro:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+        .btn-centro.cancelar { background-color: transparent; border: 2px dashed #a68a61; box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div id="toastContainer"></div>
+    <div class="modal-centro" id="modalConfirmacao">
+        <div class="painel-centro">
+            <p id="textoConfirmacao"></p>
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" id="btnCancelarConfirm">Cancelar</button>
+                <button class="btn-centro" id="btnAceitarConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-centro" id="modalListaItens">
+        <div class="painel-centro" style="max-height: 80vh; overflow-y: auto;">
+            <p>Selecione um Equipamento</p>
+            <div id="containerItensParaEquipar" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            <button class="btn-centro cancelar" style="margin-top: 15px; width: 100%;" onclick="document.getElementById('modalListaItens').style.display='none'">Voltar</button>
+        </div>
+    </div>
+
+    <div class="modal-centro" id="modalRelatorio">
+        <div class="painel-relatorio">
+            <div class="relatorio-header">
+                <img src="" id="relFoto" alt="Gato">
+                <div class="relatorio-resultado" id="relResultado">SUCESSO TOTAL</div>
+                <p id="relDano" style="font-size: 0.85em; font-weight: bold; color: #5a4231; margin-top: 5px;"></p>
+            </div>
+            <div class="relatorio-linha">Moedas <span id="relMoedas">+0</span></div>
+            <div class="relatorio-linha">XP Obtido <span id="relXp">+0</span></div>
+            <div class="relatorio-linha">Reputação <span id="relRep">+0</span></div>
+            
+            <button class="btn-acao-card" id="btnColetarRecompensas" style="margin-top: 15px;">Coletar e Retornar</button>
+        </div>
+    </div>
+
+    <div id="app">
+        <div class="conteudo-app">
+            <header>
+                <div class="perfil-info">
+                    <div class="foto-cla" id="fotoClaContainer"><span id="placeholderFoto">FOTO</span></div>
+                    <div class="dados-cla">
+                        <h2 id="exibeNomeCla">CARREGANDO...</h2>
+                        <div class="economia">
+                            <div><img src="icones/moeda.png" alt="M"> <span id="exibeMoedas">0</span></div>
+                            <div><img src="icones/rep.png" alt="R"> <span id="exibeReputacao">0/500</span></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="titulo-pagina">Missões e Expedições</div>
+
+            <div class="abas-container">
+                <button class="btn-aba ativa" id="abaQuadro">Disponíveis</button>
+                <button class="btn-aba" id="abaAndamento">Em Andamento (<span id="countAtivas">0</span>)</button>
+            </div>
+
+            <main id="areaQuadro">
+                </main>
+
+            <main id="areaAndamento" style="display: none;">
+                </main>
+
+            <nav>
+                <a href="dojo.html" class="nav-item"><img src="icones/Dojo.png" alt="Dojo">DOJO</a>
+                <a href="missoes.html" class="nav-item ativo"><img src="icones/escritorio.png" alt="Missões">MISSÕES</a>
+                <a href="arena.html" class="nav-item"><img src="icones/arena.png" alt="Arena">ARENA</a>
+                <a href="loja.html" class="nav-item"><img src="icones/loja.png" alt="Loja">LOJA</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalPrep">
+        <div class="painel-modal">
+            <button class="btn-fechar" onclick="fecharPrep()">X</button>
+            <h3 style="color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px; font-size: 1em;" id="prepNomeMissao">Nome</h3>
+            
+            <select class="seletor-gato" id="selectGato" onchange="calcularEstimativas()">
+                <option value="">-- Selecione um Gato Saudável --</option>
+            </select>
+
+            <div class="slots-itens">
+                <div class="slot-item" id="slot1" onclick="abrirSeletorItem(1)">
+                    <span id="txtSlot1">+ Equipar 1</span>
+                    <div class="remover-item" id="remSlot1" onclick="removerItem(event, 1)">X</div>
+                </div>
+                <div class="slot-item" id="slot2" onclick="abrirSeletorItem(2)">
+                    <span id="txtSlot2">+ Equipar 2</span>
+                    <div class="remover-item" id="remSlot2" onclick="removerItem(event, 2)">X</div>
+                </div>
+            </div>
+
+            <div class="painel-estimativa">
+                <h5>Projeção da Missão</h5>
+                <div class="linha-est">Estimativa de Sucesso: <span id="estSucesso" style="color: #3399ff;">--% a --%</span></div>
+                <div class="linha-est">Tempo de Retorno: <span id="estTempo" style="color: #dfc495;">-- h</span></div>
+                <div class="linha-est">Custo de HP: <span id="estHp" style="color: #cc3333;">-- HP</span></div>
+                <div class="alerta-hp" id="alertaMorte">⚠️ Custo maior que a vida atual. Falha garantirá a Morte!</div>
+            </div>
+
+            <button class="btn-acao-card" id="btnEnviarMissao" disabled>Enviar Gato</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDoc, doc, updateDoc, collection, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { MISSOES } from './missoes.js';
+        import { ITENS } from './itens.js';
+
+        let jogadorUid = null;
+        let dadosGlobais = null;
+        let inventarioInstancias = [];
+        let gatosDisponiveis = [];
+        let missoesAtivas = [];
+        
+        let missaoAtual = null;
+        let slot1Item = null; 
+        let slot2Item = null;
+        let resultadoRelatorio = null;
+
+        function mostrarToast(mensagem) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div'); toast.className = 'toast-msg'; toast.textContent = mensagem;
+            container.appendChild(toast); setTimeout(() => toast.remove(), 2000);
+        }
+
+        function pedirConfirmacao(mensagem, callback) {
+            document.getElementById('textoConfirmacao').textContent = mensagem;
+            document.getElementById('modalConfirmacao').style.display = 'flex';
+            document.getElementById('btnAceitarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; callback(); };
+        }
+
+        // Abas
+        document.getElementById('abaQuadro').onclick = () => {
+            document.getElementById('abaQuadro').classList.add('ativa'); document.getElementById('abaAndamento').classList.remove('ativa');
+            document.getElementById('areaQuadro').style.display = 'flex'; document.getElementById('areaAndamento').style.display = 'none';
+        };
+        document.getElementById('abaAndamento').onclick = () => {
+            document.getElementById('abaAndamento').classList.add('ativa'); document.getElementById('abaQuadro').classList.remove('ativa');
+            document.getElementById('areaAndamento').style.display = 'flex'; document.getElementById('areaQuadro').style.display = 'none';
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                jogadorUid = user.uid;
+                await carregarDadosBasicos();
+                await carregarMissoesAtivas();
+                renderizarQuadro();
+                setInterval(atualizarRelogios, 1000);
+            } else { window.location.href = "index.html"; }
+        });
+
+        async function carregarDadosBasicos() {
+            const docRef = doc(db, "Clas", jogadorUid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                dadosGlobais = docSnap.data();
+                document.getElementById('exibeNomeCla').textContent = (dadosGlobais.nomeCla || "CLÃ").toUpperCase();
+                document.getElementById('exibeMoedas').textContent = dadosGlobais.moedas || 0;
+                document.getElementById('exibeReputacao').textContent = `${dadosGlobais.reputacao || 0}/500`;
+                inventarioInstancias = dadosGlobais.inventarioInstancias || [];
+                if (dadosGlobais.avatar) document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+            }
+
+            gatosDisponiveis = [];
+            const gatosRef = collection(db, "Clas", jogadorUid, "Gatos");
+            const qSnap = await getDocs(gatosRef);
+            qSnap.forEach(doc => {
+                let g = { id: doc.id, ...doc.data() };
+                if (g.estado === 'Saudável') gatosDisponiveis.push(g);
+            });
+        }
+
+        function renderizarQuadro() {
+            const area = document.getElementById('areaQuadro');
+            area.innerHTML = '';
+            
+            Object.values(MISSOES).forEach(missao => {
+                const div = document.createElement('div');
+                div.className = 'card-missao';
+                div.innerHTML = `
+                    <div class="card-header">
+                        <h4>${missao.nome}</h4>
+                        <span class="rank-badge">RANK ${missao.rank}</span>
+                    </div>
+                    <p>${missao.desc}</p>
+                    <div class="card-detalhes">
+                        <span><img src="icones/relogio.png"> ${missao.tempoBase}h</span>
+                        <span><img src="icones/moeda.png"> ${missao.moedasBase}</span>
+                        <span>XP: ${missao.xpBase}</span>
+                        <span style="color:#b30000;">Custo: ${missao.custoHpPct}% HP</span>
+                    </div>
+                    <button class="btn-acao-card" onclick="abrirPreparo('${missao.id}')">Preparar Equipe</button>
+                `;
+                area.appendChild(div);
+            });
+        }
+
+        window.abrirPreparo = (idMissao) => {
+            missaoAtual = MISSOES[idMissao];
+            document.getElementById('prepNomeMissao').textContent = `[Rank ${missaoAtual.rank}] ${missaoAtual.nome}`;
+            
+            slot1Item = null; slot2Item = null;
+            atualizarSlotsUI();
+
+            const seletor = document.getElementById('selectGato');
+            seletor.innerHTML = '<option value="">-- Selecione um Gato Saudável --</option>';
+            
+            let temGato = false;
+            gatosDisponiveis.forEach(g => {
+                const nivelExato = g.nivel || 1;
+                if (nivelExato >= missaoAtual.minFaixa) {
+                    seletor.innerHTML += `<option value="${g.id}">${g.nome} (Faixa ${g.faixa}) - HP: ${Math.round(g.hpAtual)}</option>`;
+                    temGato = true;
+                }
+            });
+
+            if(!temGato) seletor.innerHTML = '<option value="">Nenhum gato atinge a exigência mínima.</option>';
+
+            document.getElementById('modalPrep').style.display = 'flex';
+            window.calcularEstimativas();
+        };
+
+        window.fecharPrep = () => { document.getElementById('modalPrep').style.display = 'none'; };
+
+        window.calcularEstimativas = () => {
+            const btn = document.getElementById('btnEnviarMissao');
+            const gatoId = document.getElementById('selectGato').value;
+            const alerta = document.getElementById('alertaMorte');
+
+            if (!gatoId) {
+                document.getElementById('estSucesso').textContent = '--% a --%';
+                document.getElementById('estTempo').textContent = '-- h';
+                document.getElementById('estHp').textContent = '-- HP';
+                alerta.style.display = 'none';
+                btn.disabled = true;
+                return;
+            }
+
+            const gato = gatosDisponiveis.find(g => g.id === gatoId);
+            const attrs = gato.atributos || { forca: 1, agilidade: 1, resistencia: 1, foco: 1 };
+            const idadeH = gato.idadeHoras || 0;
+            
+            let hasShuriken = false; let hasKimono = false; let hasBotas = false;
+            [slot1Item, slot2Item].forEach(instId => {
+                if (instId) {
+                    let item = inventarioInstancias.find(i => i.idInstancia === instId);
+                    if (item) {
+                        if(item.itemId === 'shuriken') hasShuriken = true;
+                        if(item.itemId === 'kimono') hasKimono = true;
+                        if(item.itemId === 'botas') hasBotas = true;
+                    }
+                }
+            });
+
+            // O Custo Real calcula em cima do HP Máximo total do gato, conforme regras
+            let custoHpTotalDaMissao = (gato.hpMax * (missaoAtual.custoHpPct / 100)) * (hasKimono ? 0.75 : 1);
+            document.getElementById('estHp').textContent = `-${Math.round(custoHpTotalDaMissao)} HP`;
+            
+            // A Trava da Doença Fatal
+            if (custoHpTotalDaMissao >= gato.hpAtual) {
+                alerta.style.display = 'block';
+            } else {
+                alerta.style.display = 'none';
+            }
+
+            // Agilidade corta o tempo
+            let horasReais = missaoAtual.tempoBase * (100 / (100 + attrs.agilidade)) * (hasBotas ? 0.8 : 1);
+            document.getElementById('estTempo').textContent = `${horasReais.toFixed(1)} Horas`;
+
+            // A Matemática Exata de Aptidão
+            let penIdade = idadeH >= 2880 ? 1.30 : 1;
+            let riscoFalha = (missaoAtual.riscoBase * penIdade) * (50 / (50 + attrs.forca));
+            if (hasShuriken) riscoFalha = riscoFalha * 0.85;
+
+            let aptidao = 100 - riscoFalha;
+            if (aptidao > 100) aptidao = 100;
+            if (aptidao < 0) aptidao = 0;
+
+            let minApt = Math.max(0, Math.floor(aptidao - 10));
+            let maxApt = Math.min(100, Math.ceil(aptidao + 10));
+            
+            document.getElementById('estSucesso').textContent = `${minApt}% a ${maxApt}%`;
+
+            btn.disabled = false;
+            btn.onclick = () => enviarParaMissao(gato, horasReais, minApt, maxApt, custoHpTotalDaMissao);
+        };
+
+        function enviarParaMissao(gato, horasReais, minApt, maxApt, custoHpTotalDaMissao) {
+            pedirConfirmacao(`O gato partirá por ${horasReais.toFixed(1)} horas reais sem poder ser cancelado. Confirmar?`, async () => {
+                document.getElementById('modalPrep').style.display = 'none';
+                
+                try {
+                    let itensRemovidos = [slot1Item, slot2Item].filter(id => id !== null);
+                    let novoInventario = inventarioInstancias.filter(i => !itensRemovidos.includes(i.idInstancia));
+                    
+                    const missaoData = {
+                        idUnico: `missao_${Date.now()}`,
+                        gatoId: gato.id,
+                        gatoNome: gato.nome,
+                        missaoId: missaoAtual.id,
+                        inicio: Date.now(),
+                        duracaoMs: horasReais * 60 * 60 * 1000,
+                        minApt: minApt,
+                        maxApt: maxApt,
+                        custoHpTotalDaMissao: custoHpTotalDaMissao,
+                        itensUsados: [slot1Item, slot2Item].map(id => id ? inventarioInstancias.find(i=>i.idInstancia===id)?.itemId : null).filter(Boolean)
+                    };
+
+                    const claRef = doc(db, "Clas", jogadorUid);
+                    await updateDoc(claRef, {
+                        inventarioInstancias: novoInventario,
+                        missoesAtivas: arrayUnion(missaoData)
+                    });
+
+                    const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
+                    await updateDoc(gatoRef, { estado: 'Em Missão' });
+
+                    mostrarToast(`${gato.nome} partiu para a missão!`);
+                    await carregarDadosBasicos();
+                    await carregarMissoesAtivas();
+                    document.getElementById('abaAndamento').click();
+
+                } catch (e) { console.error("Erro ao enviar:", e); }
+            });
+        }
+
+        window.abrirSeletorItem = (slotIndex) => {
+            const container = document.getElementById('containerItensParaEquipar');
+            container.innerHTML = '';
+            
+            let itensMissao = inventarioInstancias.filter(inst => {
+                let r = ITENS[inst.itemId];
+                return r && r.tipo === "missao";
+            });
+
+            if (itensMissao.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#b30000; font-weight:bold;">Sem equipamentos de missão no Depósito.</p>';
+            } else {
+                itensMissao.forEach(inst => {
+                    let outroItemId = slotIndex === 1 ? (slot2Item ? inventarioInstancias.find(i=>i.idInstancia===slot2Item)?.itemId : null) : (slot1Item ? inventarioInstancias.find(i=>i.idInstancia===slot1Item)?.itemId : null);
+                    if (inst.itemId === outroItemId) return;
+                    
+                    const itemDb = ITENS[inst.itemId];
+                    const div = document.createElement('div');
+                    div.style.cssText = "display:flex; align-items:center; gap:10px; padding:10px; background:#dfc495; border:2px solid #5a4231; border-radius:8px; cursor:pointer;";
+                    div.innerHTML = `<img src="${itemDb.icone}" width="40"><div style="flex:1;"><h5 style="color:#2a2a2a; margin-bottom:3px; text-transform:uppercase;">${itemDb.nome}</h5><p style="font-size:0.7em; color:#5a4231; font-weight:bold;">${itemDb.desc}</p></div>`;
+                    
+                    div.onclick = () => {
+                        if (slotIndex === 1) slot1Item = inst.idInstancia;
+                        else slot2Item = inst.idInstancia;
+                        document.getElementById('modalListaItens').style.display = 'none';
+                        atualizarSlotsUI();
+                        calcularEstimativas();
+                    };
+                    container.appendChild(div);
+                });
+            }
+            document.getElementById('modalListaItens').style.display = 'flex';
+        };
+
+        window.removerItem = (e, slotIndex) => {
+            e.stopPropagation(); 
+            if (slotIndex === 1) slot1Item = null;
+            else slot2Item = null;
+            atualizarSlotsUI();
+            calcularEstimativas();
+        };
+
+        function atualizarSlotsUI() {
+            const atualizar = (slotNum, instId) => {
+                const elTxt = document.getElementById(`txtSlot${slotNum}`);
+                const elSlot = document.getElementById(`slot${slotNum}`);
+                const elRem = document.getElementById(`remSlot${slotNum}`);
+                if (instId) {
+                    const item = inventarioInstancias.find(i => i.idInstancia === instId);
+                    elTxt.innerHTML = `<img src="${ITENS[item.itemId].icone}"><br>${ITENS[item.itemId].nome}`;
+                    elRem.style.display = 'flex';
+                    elSlot.style.borderColor = '#4CAF50';
+                } else {
+                    elTxt.innerHTML = `+ Equipar ${slotNum}`;
+                    elRem.style.display = 'none';
+                    elSlot.style.borderColor = '#a68a61';
+                }
+            };
+            atualizar(1, slot1Item);
+            atualizar(2, slot2Item);
+        }
+
+        async function carregarMissoesAtivas() {
+            const docRef = doc(db, "Clas", jogadorUid);
+            const docSnap = await getDoc(docRef);
+            missoesAtivas = docSnap.data().missoesAtivas || [];
+            document.getElementById('countAtivas').textContent = missoesAtivas.length;
+            atualizarRelogios();
+        }
+
+        function atualizarRelogios() {
+            const area = document.getElementById('areaAndamento');
+            if (document.getElementById('abaAndamento').classList.contains('ativa')) {
+                if (missoesAtivas.length === 0) {
+                    area.innerHTML = '<p style="text-align:center; color:#f1ddb0; margin-top:20px; font-weight:bold; text-transform:uppercase;">Área Livre. Envie um gato.</p>';
+                    return;
+                }
+                
+                let html = '';
+                const agora = Date.now();
+                missoesAtivas.forEach((m, idx) => {
+                    const refDb = MISSOES[m.missaoId];
+                    const fim = m.inicio + m.duracaoMs;
+                    let tempoRestanteMs = fim - agora;
+                    let pct = ((agora - m.inicio) / m.duracaoMs) * 100;
+                    if (pct > 100) pct = 100;
+
+                    let textoTempo = '';
+                    let botao = '';
+
+                    if (tempoRestanteMs <= 0) {
+                        textoTempo = "Gato disponível para retornar!";
+                        botao = `<button class="btn-acao-card" style="margin-top:10px; background-color:#d27d46; border-color:#5a4231;" onclick="gerarRelatorio(${idx})">Finalizar Missão</button>`;
+                        pct = 100;
+                    } else {
+                        const s = Math.floor(tempoRestanteMs / 1000);
+                        const h = Math.floor(s / 3600);
+                        const min = Math.floor((s % 3600) / 60);
+                        const sec = s % 60;
+                        textoTempo = `${h}h ${min}m ${sec}s restantes`;
+                    }
+
+                    html += `
+                        <div class="card-missao">
+                            <h4 style="color:#2a2a2a; text-transform:uppercase; margin-bottom:5px;">[${refDb.rank}] ${refDb.nome}</h4>
+                            <p style="font-size:0.8em; color:#5a4231; font-weight:bold;">Agente: ${m.gatoNome}</p>
+                            <div class="barra-progresso-bg">
+                                <div class="barra-progresso-fill ${pct === 100 ? 'concluida' : ''}" style="width: ${pct}%"></div>
+                            </div>
+                            <div class="tempo-restante">${textoTempo}</div>
+                            ${botao}
+                        </div>
+                    `;
+                });
+                area.innerHTML = html;
+            }
+        }
+
+        window.gerarRelatorio = async (idxMissao) => {
+            const m = missoesAtivas[idxMissao];
+            const refDb = MISSOES[m.missaoId];
+            
+            const gatoSnap = await getDoc(doc(db, "Clas", jogadorUid, "Gatos", m.gatoId));
+            if (!gatoSnap.exists()) return;
+            const gato = { id: gatoSnap.id, ...gatoSnap.data() };
+            const attrs = gato.atributos;
+
+            // O Sorteio Final
+            const sorteio = Math.floor(Math.random() * (m.maxApt - m.minApt + 1)) + m.minApt;
+            
+            let sucessoPct = 0; let failState = ''; let isDoente = false;
+            let custoHpFinal = m.custoHpTotalDaMissao;
+
+            if (sorteio >= 60) {
+                sucessoPct = 1.0; failState = 'SUCESSO TOTAL';
+            } else if (sorteio >= 40) {
+                sucessoPct = 0.5; failState = 'FALHA LEVE (Recursos Pela Metade)';
+            } else if (sorteio >= 20) {
+                sucessoPct = 0.66; failState = 'FALHA MÉDIA (Gato Gravemente Ferido)';
+                isDoente = true; custoHpFinal = 0; // Abaixo de 40% não desconta HP, apenas zera.
+            } else {
+                sucessoPct = 0.0; failState = 'FALHA CRÍTICA (Fuga por Sobrevivência)';
+                isDoente = true; custoHpFinal = 0;
+            }
+
+            let hasCatnip = m.itensUsados.includes('catnip');
+            let hasChuru = m.itensUsados.includes('churu');
+
+            let xpGanho = Math.floor((refDb.xpBase * (1 + (attrs.vigor / 100))) * (hasCatnip ? 1.5 : 1) * sucessoPct);
+            let moedasGanha = Math.floor((refDb.moedasBase * (1 + (attrs.foco / 100))) * (hasChuru ? 1.5 : 1) * sucessoPct);
+            let repGanha = Math.floor((refDb.repBase + Math.floor(refDb.repBase * (attrs.foco / 100))) * sucessoPct);
+
+            let hpMatematico = gato.hpAtual - custoHpFinal;
+            if (hpMatematico <= 0 && !isDoente) {
+                isDoente = true; // Se a matemática normal derrubou o HP a zero, ele adoece de qualquer forma
+                failState += " (Custo de Vida Excedido)";
+            }
+
+            resultadoRelatorio = {
+                missaoDbIndex: idxMissao, gatoId: gato.id,
+                xpGanho, moedasGanha, repGanha,
+                failState, isDoente, custoHpFinal,
+                novoHpAtual: isDoente ? 0 : Math.max(0, hpMatematico),
+                novoXpAtual: gato.xpAtual + xpGanho
+            };
+
+            document.getElementById('relFoto').src = gato.foto;
+            const relRes = document.getElementById('relResultado');
+            relRes.textContent = failState;
+            relRes.className = (sorteio >= 60) ? 'relatorio-resultado resultado-sucesso' : 'relatorio-resultado resultado-falha';
+            
+            if (isDoente) document.getElementById('relDano').textContent = "O GATO SOFREU DANO LETAL E VOLTOU DOENTE!";
+            else document.getElementById('relDano').textContent = `- ${Math.round(custoHpFinal)} HP Consumido`;
+
+            document.getElementById('relMoedas').textContent = `+${moedasGanha}`;
+            document.getElementById('relXp').textContent = `+${xpGanho}`;
+            document.getElementById('relRep').textContent = `+${repGanha}`;
+
+            document.getElementById('modalRelatorio').style.display = 'flex';
+        };
+
+        document.getElementById('btnColetarRecompensas').onclick = async () => {
+            const btn = document.getElementById('btnColetarRecompensas');
+            btn.disabled = true; btn.textContent = "Salvando...";
+
+            try {
+                const m = missoesAtivas[resultadoRelatorio.missaoDbIndex];
+                const claRef = doc(db, "Clas", jogadorUid);
+                await updateDoc(claRef, {
+                    missoesAtivas: arrayRemove(m),
+                    moedas: dadosGlobais.moedas + resultadoRelatorio.moedasGanha,
+                    reputacao: dadosGlobais.reputacao + resultadoRelatorio.repGanha
+                });
+
+                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", resultadoRelatorio.gatoId);
+                let updateGato = {
+                    estado: resultadoRelatorio.isDoente ? 'Doente' : 'Saudável',
+                    hpAtual: resultadoRelatorio.novoHpAtual,
+                    xpAtual: resultadoRelatorio.novoXpAtual
+                };
+                if (resultadoRelatorio.isDoente) updateGato.doenteDesde = Date.now();
+                await updateDoc(gatoRef, updateGato);
+
+                document.getElementById('modalRelatorio').style.display = 'none';
+                btn.disabled = false; btn.textContent = "Coletar e Retornar";
+                mostrarToast("Relatório Concluído! Recompensas armazenadas.");
+                
+                await carregarDadosBasicos();
+                await carregarMissoesAtivas();
+                renderizarQuadro();
+
+            } catch (e) { console.error(e); btn.disabled = false; }
+        };
+
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
+    </script>
+</body>
+</html>
