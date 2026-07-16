@@ -964,6 +964,11 @@
 
         // Botão de Expulsar do Clã
         document.getElementById('btnDispensar').onclick = () => {
+            if (gatoSelecionado.estado === 'Doente') {
+                mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
+                return;
+            }
+            
             pedirConfirmacao(`Expulsar ${gatoSelecionado.nome} do Clã é IRREVERSÍVEL. Confirmar?`, async () => {
                 try {
                     // Apaga o documento do gato definitivamente do Firebase
