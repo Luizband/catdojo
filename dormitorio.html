@@ -646,8 +646,10 @@
                         
                         let htmlIcone = '';
                         let caminhoIcone = '';
+                        let classeExtra = ''; // Para o filtro cinza
 
                         if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } 
+                        else if (gato.estado === 'Em Missão') { caminhoIcone = 'icones/escritorio.png'; classeExtra = 'vaga-bloqueada'; } // TRAVA VISUAL
                         else if (gato.fome < 30) { caminhoIcone = 'icones/fome.png'; } 
                         else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descanso.png'; }
 
@@ -655,6 +657,7 @@
                             htmlIcone = `<div class="status-icone"><img src="${caminhoIcone}" alt="Status"></div>`;
                         }
 
+                        divCard.className = `vaga-gato ${classeExtra}`;
                         divCard.innerHTML = `
                             ${htmlIcone}
                             <img src="${gato.foto}" class="foto-pet" alt="Foto">
@@ -687,6 +690,10 @@
         btnFecharModal.onclick = () => { modalGato.style.display = 'none'; gatoSelecionado = null; }
 
         function abrirPainelGato(gato) {
+            if (gato.estado === 'Em Missão') {
+                mostrarToast(`${gato.nome} está fora em uma missão!`);
+                return;
+            }
             gatoSelecionado = gato;
             modalGato.style.display = 'flex';
 
