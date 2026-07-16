@@ -43,22 +43,39 @@
         .grid-missoes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding-bottom: 20px;}
         
         .card-missao-grid { 
-            background-image: url('imagens/missoes.png'); background-size: cover; background-position: center;
-            border: 3px solid #5a4231; border-radius: 10px; aspect-ratio: 1 / 1.1; 
-            display: flex; flex-direction: column; justify-content: space-between; padding: 10px;
-            box-shadow: 0px 4px 0px #5a4231; cursor: pointer; position: relative;
+            background-image: url('imagens/missoes.png'); 
+            background-size: contain; /* Garante que as pontas do pergaminho não sejam cortadas */
+            background-position: center; 
+            background-repeat: no-repeat;
+            background-color: transparent; 
+            border: none; /* Remove a borda marrom dura */
+            box-shadow: none; /* Remove a sombra quadrada */
+            aspect-ratio: 1 / 1.1; 
+            display: flex; flex-direction: column; justify-content: center; padding: 10px;
+            cursor: pointer; position: relative;
         }
-        .card-missao-grid:active { transform: translateY(4px); box-shadow: 0px 0px 0px #5a4231; }
-        .card-missao-grid::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.4); border-radius: 7px; z-index: 1;}
+        .card-missao-grid:active { transform: scale(0.95); }
+        /* A película transparente escura que ficava por cima (::before) foi deletada! */
         
-        .card-conteudo { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; justify-content: space-between;}
-        .rank-badge { background-color: #cc3333; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 2px solid #2a2a2a; font-size: 0.8em; width: max-content; align-self: flex-end;}
+        .card-conteudo { 
+            position: relative; z-index: 2; 
+            display: flex; flex-direction: column; 
+            height: 100%; width: 100%; 
+            justify-content: center; /* Empurra todo o bloco de texto para o centro vertical */
+            align-items: center; /* Centraliza horizontalmente */
+        }
+        
+        .rank-badge { 
+            position: absolute; top: 0; right: 0; /* Solta o Rank do texto e prende-o no topo da carta */
+            background-color: #cc3333; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 2px solid #2a2a2a; font-size: 0.8em; 
+        }
         
         .titulo-missao-grid {
-            background: rgba(90, 66, 49, 0.95); color: #f1ddb0; font-size: 0.8em; font-weight: bold;
-            text-align: center; padding: 6px; border-radius: 6px; text-transform: uppercase; border: 1px solid #dfc495;
+            color: #2a2a2a; font-size: 0.85em; font-weight: 900;
+            text-align: center; text-transform: uppercase;
+            /* A caixa retangular que ficava atrás da fonte foi removida, o texto senta direto no papel */
         }
-        .timer-expiracao { font-size: 0.7em; color: #f1ddb0; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px #000; margin-top: 5px; }
+        .timer-expiracao { font-size: 0.7em; color: #b30000; font-weight: bold; text-align: center; margin-top: 5px; }
 
         /* CARDS MISSÃO EM ANDAMENTO (LISTA NORMAL) */
         .card-missao-lista { background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px; padding: 12px; box-shadow: 0px 4px 0px #5a4231; position: relative;}
