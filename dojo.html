@@ -78,7 +78,7 @@
             top: 0;
             left: 0;
             bottom: 0;
-            width: 85px; /* Largura exata do quadrado */
+            width: 90px; /* Largura exata do quadrado */
             background-color: transparent;
             border: none;
             border-radius: 0;
@@ -86,15 +86,24 @@
             overflow: hidden;
         }
 
+        /* ESTA ERA A REGRA QUE FALTAVA PARA ORGANIZAR AS LETRAS */
         .dados-cla {
-            margin-left: 85px; /* Empurra as letras para a direita, respeitando o espaço da foto */
+            margin-left: 90px; /* Empurra os textos para a direita, respeitando a foto */
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
+        /* AQUI ESTÁ A FONTE REDUZIDA QUE VOCÊ PEDIU */
+        .dados-cla h2 {
+            font-size: 0.95em; /* Ajustado para ficar entre o antigo e o Mestre */
+            color: #2a2a2a;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
         .dados-cla p {
-            font-size: 0.9em;
+            font-size: 0.85em; /* Reduzi milímetros para manter a proporção visual */
             color: #2a2a2a;
             font-weight: bold;
             margin-bottom: 5px;
@@ -210,7 +219,6 @@
         }
 
         /* BARRA DE NAVEGAÇÃO INFERIOR */
-        /* NAVEGAÇÃO INFERIOR */
         nav { 
             background-color: #e5cd9e; 
             border-top: 3px solid #5a4231; 
@@ -218,7 +226,6 @@
             justify-content: space-around; 
             flex-shrink: 0;
             padding: 10px 5px; 
-            /* Protege os botões da barra de gestos do sistema (tanto no Android como no iPhone) */
             padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
         }
 
@@ -241,7 +248,7 @@
             filter: drop-shadow(0px 0px 8px #ffeb99);
         }
 
-        /* MODAL SELEÇÃO DE AVATAR (PRIMEIRO ACESSO) */
+        /* MODAL SELEÇÃO DE AVATAR */
         .modal-avatar {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -267,7 +274,7 @@
             color: #2a2a2a;
             margin-bottom: 15px;
             text-transform: uppercase;
-            font-size: 1em;
+            font-size: 1.1em;
             letter-spacing: 1px;
         }
         
@@ -439,27 +446,21 @@
                 if (docSnap.exists()) {
                     const dados = docSnap.data();
 
-                    // 1. Formata o Nome do Clã
                     let textoCla = dados.nomeCla ? dados.nomeCla.trim() : "DESCONHECIDO";
-                    // Se o jogador não escreveu a palavra "Clã", o sistema adiciona sozinho
                     if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) {
                         textoCla = "CLÃ " + textoCla;
                     }
                     exibeNomeCla.textContent = textoCla.toUpperCase();
 
-                    // 2. Formata o Nome do Mestre
                     let textoMestre = dados.nomeMestre ? dados.nomeMestre.trim() : "...";
-                    // Se o jogador não escreveu a palavra "Mestre", o sistema adiciona sozinho
                     if (!textoMestre.toUpperCase().startsWith("MESTRE")) {
                         textoMestre = "Mestre " + textoMestre;
                     }
                     exibeNomeMestre.textContent = textoMestre;
 
-                    // 3. Moedas e Reputação
                     exibeMoedas.textContent = dados.moedas !== undefined ? dados.moedas : 50;
                     exibeReputacao.textContent = `${dados.reputacao || 0}/500`;
 
-                    // 4. Carrega o Avatar ou pede para escolher
                     if (dados.avatar) {
                         mostrarAvatarNaTela(dados.avatar);
                     } else {
@@ -472,6 +473,7 @@
         }
 
         function mostrarAvatarNaTela(caminhoImg) {
+            // A imagem agora vai esticar perfeitamente, sem o espaço invisível em baixo
             fotoClaContainer.innerHTML = `<img src="${caminhoImg}" style="display: block; width: 100%; height: 100%; object-fit: cover;">`;
         }
 
@@ -500,7 +502,7 @@
                 listaAvatars.appendChild(imgNode);
             }
         }
-        // Ativa o instalador do PWA também no Dojo
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
