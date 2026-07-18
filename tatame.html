@@ -125,7 +125,7 @@
 <body>
     <div id="toastContainer"></div>
     
-    <div class="modal-centro" id="modalConfirmacao">
+    <div class="modal-centro" id="modalConfirmacao" style="z-index: 9000;">
         <div class="painel-centro">
             <p id="textoConfirmacao" style="color: #2a2a2a; font-weight: bold; font-size: 0.95em;"></p>
             <div class="botoes-centro">
@@ -337,7 +337,14 @@
         function pedirConfirmacao(mensagem, callback) {
             document.getElementById('textoConfirmacao').textContent = mensagem;
             document.getElementById('modalConfirmacao').style.display = 'flex';
-            document.getElementById('btnAceitarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; callback(); };
+            
+            document.getElementById('btnAceitarConfirm').onclick = () => { 
+                document.getElementById('modalConfirmacao').style.display = 'none'; 
+                callback(); 
+            };
+            document.getElementById('btnCancelarConfirm').onclick = () => {
+                document.getElementById('modalConfirmacao').style.display = 'none';
+            };
         }
 
         onAuthStateChanged(auth, async (user) => {
