@@ -600,8 +600,14 @@
             let custoHpTotalDaMissao = (gato.hpMax * (missaoAtual.custoHpPct / 100)) * (hasKimono ? 0.75 : 1);
             document.getElementById('estHp').textContent = `-${Math.round(custoHpTotalDaMissao)} HP`;
             
-            if (custoHpTotalDaMissao >= gato.hpAtual) alerta.style.display = 'block';
-            else alerta.style.display = 'none';
+            let bloqueiaMissao = custoHpTotalDaMissao >= gato.hpAtual;
+            
+            if (bloqueiaMissao) {
+                alerta.style.display = 'block';
+                alerta.textContent = '⚠️ HP atual insuficiente. O gato precisa descansar!';
+            } else {
+                alerta.style.display = 'none';
+            }
 
             // Tempo
             let horasReais = missaoAtual.tempoBase * (100 / (100 + attrs.agilidade)) * (hasBotas ? 0.8 : 1);
@@ -626,8 +632,14 @@
             
             document.getElementById('estSucesso').textContent = `${minApt}% a ${maxApt}%`;
 
-            btn.disabled = false;
-            btn.onclick = () => enviarParaMissao(gato, horasReais, minApt, maxApt, custoHpTotalDaMissao);
+            // A TRAVA: Bloqueia o botão se o HP não for suficiente
+            if (bloqueiaMissao) {
+                btn.disabled = true;
+                btn.onclick = null;
+            } else {
+                btn.disabled = false;
+                btn.onclick = () => enviarParaMissao(gato, horasReais, minApt, maxApt, custoHpTotalDaMissao);
+            }
         };
 
         function enviarParaMissao(gato, horasReais, minApt, maxApt, custoHpTotalDaMissao) {
