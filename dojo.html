@@ -303,7 +303,7 @@
                 }
 
                 let countDoentes = 0;
-                let countFome = 0;
+                let countPontosLivres = 0;
                 
                 const gatosRef = collection(db, "Clas", uid, "Gatos");
                 const qSnap = await getDocs(gatosRef);
@@ -313,8 +313,10 @@
 
                     if (g.estado === 'Doente') {
                         countDoentes++;
-                    } else if (g.fome < 30 && g.estado !== 'Em Missão') {
-                        countFome++;
+                    }
+                    // NOVO: Verifica se há pontos de atributos aguardando o jogador
+                    if (g.pontosLivres && g.pontosLivres > 0) {
+                        countPontosLivres++;
                     }
                 });
 
@@ -337,14 +339,15 @@
                 } else { bEnfermaria.style.display = 'none'; }
 
                 const bDormitorio = document.getElementById('badge-dormitorio');
-                let avisosDormitorio = [];
-                if (countDoentes > 0) avisosDormitorio.push(`${countDoentes} Doente${countDoentes > 1 ? 's' : ''}`);
-                if (countFome > 0) avisosDormitorio.push(`${countFome} c/ Fome`);
-
-                if (avisosDormitorio.length > 0) {
-                    bDormitorio.textContent = `⚠️ ` + avisosDormitorio.join(' | ');
+                if (countPontosLivres > 0) {
+                    // Injeta a imagem de Level UP ao lado do número e muda a cor da badge para verde
+                    bDormitorio.innerHTML = `<img src="icones/lvlup.png" style="width: 12px; vertical-align: middle; margin-right: 3px; filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.5));"> ${countPontosLivres} UP`;
+                    bDormitorio.style.backgroundColor = '#4CAF50'; 
+                    bDormitorio.style.borderColor = '#2E7D32';
                     bDormitorio.style.display = 'block';
-                } else { bDormitorio.style.display = 'none'; }
+                } else { 
+                    bDormitorio.style.display = 'none'; 
+                }
 
             } catch (error) {
                 console.error("Erro ao carregar os dados do banco:", error);
