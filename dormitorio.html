@@ -457,6 +457,9 @@
         import { ARTES_MARCIAIS } from './artes-marciais.js';
         import { ITENS } from './itens.js';
 
+        let pontosLivresTemp = 0;
+        let treinosAtivos = []; // NOVO: Armazena quem está no tatame
+
         // ANTIGO: let inventario = {};
         let inventarioInstancias = [];
 
@@ -531,11 +534,10 @@
 
                 document.getElementById('exibeMoedas').textContent = dados.moedas !== undefined ? dados.moedas : 50;
                 document.getElementById('exibeReputacao').textContent = `${dados.reputacao || 0}/500`;
-                
-                vagasLiberadas = dados.vagasDormitorio || 3;
 
-                /// ANTIGO: inventario = dados.inventario || {};
+                vagasLiberadas = dados.vagasDormitorio || 3;
                 inventarioInstancias = dados.inventarioInstancias || [];
+                treinosAtivos = dados.treinosAtivos || []; // NOVO
 
                 if (dados.avatar) {
                     document.getElementById('fotoClaContainer').innerHTML = `<img src="${dados.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
@@ -657,11 +659,14 @@
                         
                         let htmlIcone = '';
                         let caminhoIcone = '';
-                        let classeExtra = ''; // Para o filtro cinza
+                        let classeExtra = ''; 
 
-                        // Atualize este bloco if/else:
+                        // Verifica se o gato está em algum treino ativo (como aluno ou professor)
+                        let isTreinando = treinosAtivos.some(t => t.gatoId === gato.id || t.profId === gato.id);
+
                         if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } 
                         else if (gato.estado === 'Em Missão') { caminhoIcone = 'icones/missao.png'; classeExtra = 'vaga-em-missao'; } 
+                        else if (isTreinando) { caminhoIcone = 'icones/tatame.png'; } // NOVO: Ícone de treino
                         else if (gato.fome < 30) { caminhoIcone = 'icones/fome.png'; } 
                         else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descanso.png'; }
 
@@ -1015,6 +1020,14 @@
 
         btnFecharHabilidades.onclick = () => { modalHabilidades.style.display = 'none'; };
 
+        function obterProximoPontoHabilidade(peAtual, arteKey) {
+            const tecnicas = ARTES_MARCIAIS[arteKey].tecnicas;
+            for (let t of tecnicas) {
+                if (t.pe > peAtual) return t.pe;
+            }
+            return 4000; // Máximo do GDD
+        }
+
         function abrirSeletorArtes(slotIndex) {
             slotAtivoIndex = slotIndex;
             tituloHabilidades.textContent = `Slot ${slotIndex + 1}: Escolha a Arte`;
@@ -1028,7 +1041,11 @@
             Object.keys(ARTES_MARCIAIS).forEach((chave) => {
                 const arte = ARTES_MARCIAIS[chave];
                 const pontosGato = gatoSelecionado.peArtes[chave] || 0;
-                const progressoMax = 100; 
+                
+                // NOVO: Cálculo dinâmico da barra de PE baseado na próxima técnica
+                const progressoMax = obterProximoPontoHabilidade(pontosGato, chave); 
+                let pct = (pontosGato / progressoMax) * 100;
+                if (pct > 100) pct = 100;
 
                 const divArte = document.createElement('div');
                 divArte.className = 'arte-item-dojo';
@@ -1037,8 +1054,8 @@
                     <div class="arte-info-wrapper">
                         <h4>${arte.nome}</h4>
                         <div class="arte-progresso-bg">
-                            <div class="arte-progresso-fill" style="width: ${(pontosGato/progressoMax)*100}%; background-color: ${arte.cor};"></div>
-                            <span class="arte-texto-pe">PE: ${pontosGato}/${progressoMax}</span>
+                            <div class="arte-progresso-fill" style="width: ${pct}%; background-color: ${arte.cor};"></div>
+                            <span class="arte-texto-pe">${pontosGato >= 4000 ? 'MÁXIMO' : 'PE: ' + pontosGato + '/' + progressoMax}</span>
                         </div>
                     </div>
                 `;
