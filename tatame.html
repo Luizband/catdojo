@@ -276,6 +276,33 @@
         </div>
     </div>
 
+    <!-- MODAL 4: RELATÓRIO DO TREINO -->
+    <div class="modal-centro" id="modalRelatorioTreino">
+        <div class="painel-centro" style="width: 90%; max-width: 350px;">
+            <h3 style="color: #2a2a2a; text-transform: uppercase; border-bottom: 2px dashed #a68a61; padding-bottom: 10px; margin-bottom: 15px;">Treino Concluído</h3>
+            
+            <img src="" id="relTreinoFoto" style="width: 80px; height: 80px; border-radius: 10px; border: 3px solid #5a4231; background: #fff; margin-bottom: 10px;">
+            <div style="font-size: 1.1em; font-weight: bold; color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px;" id="relTreinoNome">NOME</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; text-align: left; margin-bottom: 15px;">
+                <div style="background: #e5cd9e; padding: 10px; border-radius: 8px; border: 2px solid #a68a61; font-weight: bold; color: #4a3b32; display: flex; justify-content: space-between;">
+                    <span><img src="icones/exp.png" style="width:16px; vertical-align:middle;"> XP Recebido:</span>
+                    <span id="relTreinoXp" style="color: #3399ff;">+0</span>
+                </div>
+                <div style="background: #e5cd9e; padding: 10px; border-radius: 8px; border: 2px solid #a68a61; font-weight: bold; color: #4a3b32; display: flex; justify-content: space-between;">
+                    <span><img src="icones/treino.png" style="width:16px; vertical-align:middle;"> PE Recebido:</span>
+                    <span id="relTreinoPe" style="color: #4CAF50;">+0</span>
+                </div>
+            </div>
+
+            <div id="relTreinoAvisos" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                <!-- Avisos de Level UP e Arte Marcial injetados via JS -->
+            </div>
+
+            <button class="btn-acao" id="btnColetarTreino" style="width: 100%;">Coletar Recompensas</button>
+        </div>
+    </div>
+
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -678,12 +705,11 @@
                 if (tempoRestanteMs <= 0) {
                     elFill.style.width = '100%';
                     elFill.classList.add('concluida');
-                    elTimer.textContent = "Treino Concluído!";
                     
-                    // Substitui o texto pelo botão de resgate
+                    // A TRAVA: Só injeta o botão se ele ainda não existir na div
                     if (!elTimer.hasAttribute('data-botao')) {
                         elTimer.setAttribute('data-botao', 'true');
-                        elTimer.innerHTML = `<button class="btn-acao" onclick="resgatarTreino(${idx})">Concluir e Receber Bônus</button>`;
+                        elTimer.innerHTML = `Treino Concluído!<br><button class="btn-acao" onclick="prepararRelatorioTreino(${idx})" style="margin-top: 5px;">Visualizar Relatório</button>`;
                     }
                 } else {
                     elFill.style.width = `${pct}%`;
@@ -696,7 +722,9 @@
             });
         }
 
-        window.resgatarTreino = async (idxTreino) => {
+        let relatorioTreinoAtual = null;
+
+        window.prepararRelatorioTreino = async (idxTreino) => {
             const t = treinosAtivos[idxTreino];
             const gato = gatosDisponiveis.find(g => g.id === t.gatoId);
             if (!gato) return;
@@ -704,12 +732,10 @@
             const horas = t.duracaoMs / (60 * 60 * 1000);
             const baseTatame = TATAME_NIVEIS[tatameNivel];
             
-            // TRAVA DE SEGURANÇA PARA EVITAR O NaN
             const attrs = gato.atributos || {};
             const vigor = attrs.vigor || 1;
             const foco = attrs.foco || 1;
 
-            // Recalcula o bônus do Professor
             let profMult = 1.0;
             if (t.profId) {
                 const prof = gatosDisponiveis.find(g => g.id === t.profId);
@@ -722,17 +748,53 @@
                 }
             }
 
-            // Fórmulas usando as variáveis seguras
             const xpGanho = Math.floor((horas * baseTatame.xp) * (1 + (vigor / 100)) * profMult);
             const peGanho = Math.floor((horas * baseTatame.pe) * (1 + (foco / 100)));
 
+            // Verificar progressão
+            const xpAntigo = gato.xpAtual || 0;
+            const xpProxFaixa = gato.xpProxFaixa || 500;
+            const subiuFaixa = (xpAntigo + xpGanho) >= xpProxFaixa;
+
+            const peAntigo = (gato.peArtes && gato.peArtes[t.arteKey]) ? gato.peArtes[t.arteKey] : 0;
+            const nivelArteAntigo = obterNivelEProximoPe(peAntigo, t.arteKey).nivel;
+            const nivelArteNovo = obterNivelEProximoPe(peAntigo + peGanho, t.arteKey).nivel;
+            const subiuArte = nivelArteNovo > nivelArteAntigo;
+
+            relatorioTreinoAtual = { idxTreino, t, gato, xpGanho, peGanho, horas };
+
+            // Preencher UI do Modal
+            document.getElementById('relTreinoFoto').src = gato.foto;
+            document.getElementById('relTreinoNome').textContent = gato.nome;
+            document.getElementById('relTreinoXp').textContent = `+${xpGanho}`;
+            document.getElementById('relTreinoPe').textContent = `+${peGanho}`;
+
+            const avisosContainer = document.getElementById('relTreinoAvisos');
+            avisosContainer.innerHTML = '';
+
+            if (subiuFaixa) {
+                avisosContainer.innerHTML += `<div style="background: rgba(51, 153, 255, 0.2); border: 2px dashed #3399ff; color: #3399ff; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.85em; text-align: center;">🎉 Atingiu XP para Nova Faixa!</div>`;
+            }
+            if (subiuArte) {
+                avisosContainer.innerHTML += `<div style="background: rgba(76, 175, 80, 0.2); border: 2px dashed #4CAF50; color: #4CAF50; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.85em; text-align: center;">🥋 Alcançou o Nível ${nivelArteNovo} em ${ARTES_MARCIAIS[t.arteKey].nome}!</div>`;
+            }
+
+            document.getElementById('modalRelatorioTreino').style.display = 'flex';
+        };
+
+        document.getElementById('btnColetarTreino').onclick = async () => {
+            if (!relatorioTreinoAtual) return;
+            const btn = document.getElementById('btnColetarTreino');
+            btn.disabled = true;
+            btn.textContent = "Coletando...";
+
+            const { t, gato, xpGanho, peGanho, horas } = relatorioTreinoAtual;
+
             try {
-                // 1. Atualiza o Gato
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
                 let peArtesUpdate = gato.peArtes || {};
                 peArtesUpdate[t.arteKey] = (peArtesUpdate[t.arteKey] || 0) + peGanho;
                 
-                // O Desconto da Fome do GDD
                 let novaFome = gato.fome - (horas * 5);
                 if (novaFome < 0) novaFome = 0;
 
@@ -740,17 +802,26 @@
                     xpAtual: (gato.xpAtual || 0) + xpGanho,
                     peArtes: peArtesUpdate,
                     fome: novaFome,
-                    estado: novaFome === 0 ? 'Doente' : 'Saudável', // Se a fome zerar de vez, ele fica doente no resgate
+                    estado: novaFome === 0 ? 'Doente' : 'Saudável',
                     ultimaAtualizacao: Date.now()
                 });
 
-                // 2. Remove do Clã
                 const claRef = doc(db, "Clas", jogadorUid);
                 await updateDoc(claRef, { treinosAtivos: arrayRemove(t) });
 
-                mostrarToast(`${gato.nome} ganhou ${xpGanho} XP e ${peGanho} PE!`);
+                document.getElementById('modalRelatorioTreino').style.display = 'none';
+                mostrarToast(`${gato.nome} finalizou o treino!`);
+                
+                btn.disabled = false;
+                btn.textContent = "Coletar Recompensas";
+                relatorioTreinoAtual = null;
+
                 await carregarDados();
-            } catch (e) { console.error("Erro ao resgatar treino:", e); }
+            } catch (e) { 
+                console.error("Erro ao resgatar treino:", e); 
+                btn.disabled = false;
+                btn.textContent = "Coletar Recompensas";
+            }
         };
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
