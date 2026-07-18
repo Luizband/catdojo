@@ -14,290 +14,141 @@
             background-color: #2c2c2c; 
             display: flex; 
             justify-content: center; 
-            /* A TRAVA DEFINITIVA PARA ECRÃS MOBILE */
             position: fixed;
-            top: 0; 
-            bottom: 0; 
-            left: 0; 
-            right: 0;
+            top: 0; bottom: 0; left: 0; right: 0;
             width: 100%;
             overflow: hidden; 
         }
 
-        /* CONTAINER PRINCIPAL COM O FUNDO */
         #app {
-            width: 100%;
-            max-width: 414px;
-            height: 100%;
-            position: relative;
-            box-shadow: 0px 0px 15px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            
-            background-image: url('imagens/fundo.png');
-            background-size: cover;
-            background-position: center;
+            width: 100%; max-width: 414px; height: 100%; position: relative;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            background-image: url('imagens/fundo.png'); background-size: cover; background-position: center;
         }
 
-        /* ESCURECENDO O FUNDO */
         #app::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.4); 
-            z-index: 1; 
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.4); z-index: 1; 
         }
 
-        /* Tudo dentro do app precisa ficar acima da camada escura */
-        .conteudo-app {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
+        .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
 
-        /* CABEÇALHO (Estilo Pergaminho) */
+        /* CABEÇALHO */
         header {
-            background-color: #dfc495;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 3px solid #5a4231;
-            position: relative; /* Crucial para a foto grudar nas bordas dele */
+            background-color: #dfc495; padding: 10px 15px; display: flex; justify-content: space-between;
+            border-bottom: 3px solid #5a4231; position: relative;
         }
-        
-        .perfil-info {
-            display: flex;
-            gap: 15px;
-            flex: 1;
-        }
-
+        .perfil-info { display: flex; gap: 15px; flex: 1; }
         .foto-cla {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 90px; /* Largura exata do quadrado */
-            background-color: transparent;
-            border: none;
-            border-radius: 0;
-            box-shadow: none;
-            overflow: hidden;
+            position: absolute; top: 0; left: 0; bottom: 0; width: 90px;
+            background-color: transparent; border: none; border-radius: 0; box-shadow: none; overflow: hidden;
         }
+        .dados-cla { margin-left: 90px; display: flex; flex-direction: column; justify-content: center; }
+        .dados-cla h2 { font-size: 1.25em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 1.0em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
 
-        /* ESTA ERA A REGRA QUE FALTAVA PARA ORGANIZAR AS LETRAS */
-        .dados-cla {
-            margin-left: 90px; /* Empurra os textos para a direita, respeitando a foto */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        .economia { display: flex; gap: 15px; font-size: 0.95em; font-weight: bold; color: #4a3b32; }
+        .economia div { display: flex; align-items: center; gap: 5px; }
+        .economia img { width: 23px; }
 
-        .dados-cla h2 {
-            font-size: 1.25em; /* Aumentado de 1.1em para 1.25em */
-            color: #2a2a2a;
-            text-transform: uppercase;
-        }
-
-        .dados-cla p {
-            font-size: 1.0em; /* Aumentado de 0.9em para 1.0em */
-            color: #2a2a2a;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .economia {
-            display: flex;
-            gap: 15px;
-            font-size: 0.95em; /* Aumentado de 0.85em para 0.95em */
-            font-weight: bold;
-            color: #4a3b32;
-        }
-
-        .economia div {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .economia img {
-            width: 23px; /* Os ícones acompanham o aumento das fontes, subindo de 20px para 23px */
-        }
-
-        .botoes-topo {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        /* BOTÕES DO TOPO (Efeito 3D) */
+        .botoes-topo { display: flex; flex-direction: column; gap: 5px; }
         .botoes-topo img {
-            width: 40px;
-            background-color: #dfc495;
-            border: 2px solid #5a4231;
-            border-radius: 8px;
-            padding: 4px;
-            cursor: pointer;
-            box-shadow: 0px 3px 0px #5a4231;
-            transition: all 0.1s;
+            width: 40px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px;
+            padding: 4px; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; transition: all 0.1s;
         }
+        .botoes-topo img:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
 
-        .botoes-topo img:active {
-            box-shadow: 0px 0px 0px #5a4231;
-            transform: translateY(3px);
-        }
-
-        /* ÁREA DOS CARDS */
+        /* ÁREA PRINCIPAL E GRID DE MENU */
         main {
             flex: 1;
             padding: 15px;
             overflow-y: auto;
             display: flex;
-            flex-direction: column;
-            gap: 15px; 
-        }
-        
-        /* CARDS PRINCIPAIS */
-        .card {
-            background-color: #f1ddb0; 
-            border: 3px solid #5a4231;
-            border-radius: 10px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.1s;
-            box-shadow: 0px 5px 0px #5a4231, inset 0px 0px 15px rgba(139, 90, 43, 0.1);
+            align-items: center; /* Centraliza a grade na vertical livre */
+            justify-content: center; 
         }
 
-        .card:active {
-            box-shadow: 0px 0px 0px #5a4231, inset 0px 0px 15px rgba(139, 90, 43, 0.1);
-            transform: translateY(5px);
-        }
-
-        .card-info h3 {
-            font-size: 1.1em;
-            text-transform: uppercase;
-            color: #2a2a2a;
-        }
-
-        .card-info p {
-            font-size: 0.9em;
-            color: #4a3b32;
-            margin-top: 2px;
-        }
-
-        .alerta-vermelho {
-            color: #b30000 !important;
-            font-weight: bold;
-            font-size: 0.8em !important;
-            margin-top: 5px !important;
-        }
-
-        .barra-progresso {
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
             width: 100%;
-            height: 12px;
-            background-color: #a68a61;
-            border-radius: 5px;
-            margin-top: 8px;
-            border: 1px solid #5a4231;
-            overflow: hidden;
-        }
-        
-        .barra-preenchida {
-            width: 30%;
-            height: 100%;
-            background-color: #d27d46;
+            max-width: 300px; /* A TRAVA para os botões não esticarem */
+            margin: auto;
         }
 
-        .card-icone img {
-            width: 45px;
-        }
-
-        /* BARRA DE NAVEGAÇÃO INFERIOR */
-        nav { 
-            background-color: #e5cd9e; 
-            border-top: 3px solid #5a4231; 
-            display: flex; 
-            justify-content: space-around; 
-            flex-shrink: 0;
-            padding: 10px 5px; 
-            padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.75em;
-            font-weight: bold;
-            color: #4a3b32;
-            cursor: pointer;
-        }
-
-        .nav-item img {
-            width: 40px;
-            margin-bottom: 3px;
-        }
-
-        .nav-item.ativo img {
-            filter: drop-shadow(0px 0px 8px #ffeb99);
-        }
-
-        /* MODAL SELEÇÃO DE AVATAR */
-        .modal-avatar {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0,0,0,0.75);
-            z-index: 10;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .painel-avatar {
-            background-color: #f1ddb0;
+        .btn-menu {
+            background-color: #dfc495;
             border: 3px solid #5a4231;
             border-radius: 12px;
-            width: 85%;
-            max-width: 360px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0px 10px 20px rgba(0,0,0,0.5), inset 0px 0px 20px rgba(139, 90, 43, 0.15);
-        }
-        
-        .painel-avatar h3 {
-            color: #2a2a2a;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            font-size: 1.1em;
-            letter-spacing: 1px;
-        }
-        
-        .grid-avatars {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            max-height: 260px;
-            overflow-y: auto;
-            padding: 5px;
-        }
-        
-        .grid-avatars img {
-            width: 100%;
-            border: 2px solid #a68a61;
-            border-radius: 8px;
+            aspect-ratio: 1 / 1; /* Quadrados perfeitos para os 4 de cima */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            background-color: #fdf5e6;
-            transition: transform 0.1s;
+            box-shadow: 0px 4px 0px #5a4231;
+            transition: transform 0.1s, box-shadow 0.1s;
+            position: relative;
         }
-        
-        .grid-avatars img:active {
-            border-color: #5a4231;
-            transform: scale(0.95);
+
+        /* Enfermaria: Retângulo deitado ocupando 2 colunas */
+        .btn-menu.enfermaria {
+            grid-column: span 2;
+            aspect-ratio: auto; 
+            padding: 15px 10px; 
         }
+
+        .btn-menu:active {
+            box-shadow: 0px 0px 0px #5a4231;
+            transform: translateY(4px);
+        }
+
+        .btn-menu img {
+            width: 40px; 
+            height: 40px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3)); 
+        }
+
+        .btn-menu span {
+            font-size: 0.85em; 
+            font-weight: 900;
+            color: #2a2a2a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        /* Badges flutuantes */
+        .badge-alerta {
+            position: absolute;
+            top: -8px; right: -8px;
+            background-color: #cc3333; color: white;
+            font-weight: bold; font-size: 0.7em;
+            padding: 3px 8px; border-radius: 12px;
+            border: 2px solid #2a2a2a; box-shadow: 0px 2px 4px rgba(0,0,0,0.4);
+            z-index: 3; white-space: nowrap;
+        }
+        .badge-info { background-color: #3399ff; }
+
+        /* NAVEGAÇÃO INFERIOR */
+        nav { 
+            background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; flex-shrink: 0;
+            padding: 10px 5px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-transform: uppercase;}
+        .nav-item img { width: 40px; margin-bottom: 3px; }
+        .nav-item.ativo img { filter: drop-shadow(0px 0px 8px #ffeb99); }
+
+        /* MODAL SELEÇÃO DE AVATAR */
+        .modal-avatar { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.75); z-index: 100; display: flex; justify-content: center; align-items: center; }
+        .painel-avatar { background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 12px; width: 85%; max-width: 360px; padding: 20px; text-align: center; box-shadow: 0px 10px 20px rgba(0,0,0,0.5); }
+        .painel-avatar h3 { color: #2a2a2a; margin-bottom: 15px; text-transform: uppercase; font-size: 1.1em; letter-spacing: 1px; }
+        .grid-avatars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 260px; overflow-y: auto; padding: 5px; }
+        .grid-avatars img { width: 100%; border: 2px solid #a68a61; border-radius: 8px; cursor: pointer; background-color: #fdf5e6; transition: transform 0.1s; }
+        .grid-avatars img:active { border-color: #5a4231; transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -325,60 +176,37 @@
             </header>
 
             <main>
-                <div class="card" onclick="window.location.href='dormitorio.html'">
-                    <div class="card-info">
-                        <h3>Dormitório</h3>
-                        <p>(3/3 Vagas)</p>
-                        <p class="alerta-vermelho">⚠️ 1 GATO DOENTE / 1 GATO COM FOME</p>
-                    </div>
-                    <div class="card-icone">
+                <div class="grid-menu">
+                    
+                    <div class="btn-menu" onclick="window.location.href='dormitorio.html'">
+                        <div class="badge-alerta" id="badge-dormitorio" style="display: none;"></div>
                         <img src="icones/dormitorio.png" alt="Dormitório">
+                        <span>Dormitório</span>
                     </div>
-                </div>
 
-                <div class="card" onclick="window.location.href='tatame.html'">
-                    <div class="card-info" style="width: 100%;">
-                        <h3>Tatame</h3>
-                        <p>Tatame Nível 1</p>
-                        <p>2 Gatos Treinando</p>
-                        <div class="barra-progresso">
-                            <div class="barra-preenchida"></div>
-                        </div>
-                    </div>
-                    <div class="card-icone" style="margin-left: 10px;">
+                    <div class="btn-menu" onclick="window.location.href='tatame.html'">
+                        <div class="badge-alerta badge-info" id="badge-tatame" style="display: none;"></div>
                         <img src="icones/treino.png" alt="Tatame">
+                        <span>Tatame</span>
                     </div>
-                </div>
 
-                <div class="card" onclick="window.location.href='missoes.html'">
-                    <div class="card-info">
-                        <h3>Quadro de Missões</h3>
-                        <p>1 em andamento</p>
-                    </div>
-                    <div class="card-icone">
+                    <div class="btn-menu" onclick="window.location.href='missoes.html'">
+                        <div class="badge-alerta badge-info" id="badge-missoes" style="display: none;"></div>
                         <img src="icones/missao.png" alt="Missões">
+                        <span>Missões</span>
                     </div>
-                </div>
 
-                <div class="card" onclick="window.location.href='deposito.html'">
-                    <div class="card-info">
-                        <h3>Depósito</h3>
-                        <p>Depósito nível 1</p>
-                        <p>x itens</p>
-                    </div>
-                    <div class="card-icone">
+                    <div class="btn-menu" onclick="window.location.href='deposito.html'">
                         <img src="icones/deposito.png" alt="Depósito">
+                        <span>Depósito</span>
                     </div>
-                </div>
 
-                <div class="card" onclick="window.location.href='enfermaria.html'">
-                    <div class="card-info">
-                        <h3>Enfermaria</h3>
-                        <p class="alerta-vermelho">0 Gatos esperando tratamento</p>
-                    </div>
-                    <div class="card-icone">
+                    <div class="btn-menu enfermaria" onclick="window.location.href='enfermaria.html'">
+                        <div class="badge-alerta" id="badge-enfermaria" style="display: none;"></div>
                         <img src="icones/enfermaria.png" alt="Enfermaria">
+                        <span>Enfermaria</span>
                     </div>
+
                 </div>
             </main>
 
@@ -389,9 +217,9 @@
                 </div>
                 <div class="nav-item" onclick="window.location.href='adocao.html'">
                     <img src="icones/adocao.png" alt="Adoção">
-                    Adoção
+                    ADOÇÃO
                 </div>
-                <div class="nav-item">
+                <div class="nav-item" onclick="window.location.href='arena.html'">
                     <img src="icones/arena.png" alt="Arena">
                     ARENA
                 </div>
@@ -415,7 +243,7 @@
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDoc, doc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const exibeNomeCla = document.getElementById('exibeNomeCla');
         const exibeNomeMestre = document.getElementById('exibeNomeMestre');
@@ -441,19 +269,18 @@
                 const docRef = doc(db, "Clas", uid);
                 const docSnap = await getDoc(docRef);
 
+                let countMissoes = 0;
+                let countTreinos = 0;
+
                 if (docSnap.exists()) {
                     const dados = docSnap.data();
 
                     let textoCla = dados.nomeCla ? dados.nomeCla.trim() : "DESCONHECIDO";
-                    if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) {
-                        textoCla = "CLÃ " + textoCla;
-                    }
+                    if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) { textoCla = "CLÃ " + textoCla; }
                     exibeNomeCla.textContent = textoCla.toUpperCase();
 
                     let textoMestre = dados.nomeMestre ? dados.nomeMestre.trim() : "...";
-                    if (!textoMestre.toUpperCase().startsWith("MESTRE")) {
-                        textoMestre = "Mestre " + textoMestre;
-                    }
+                    if (!textoMestre.toUpperCase().startsWith("MESTRE")) { textoMestre = "Mestre " + textoMestre; }
                     exibeNomeMestre.textContent = textoMestre;
 
                     exibeMoedas.textContent = dados.moedas !== undefined ? dados.moedas : 50;
@@ -464,14 +291,67 @@
                     } else {
                         abrirSeletorDeAvatar();
                     }
+
+                    const missoesAtivas = dados.missoesAtivas || [];
+                    countMissoes = missoesAtivas.length;
+
+                    const treinosAtivos = dados.treinosAtivos || [];
+                    treinosAtivos.forEach(t => {
+                        countTreinos++; 
+                        if (t.profId) countTreinos++; 
+                    });
                 }
+
+                let countDoentes = 0;
+                let countFome = 0;
+                
+                const gatosRef = collection(db, "Clas", uid, "Gatos");
+                const qSnap = await getDocs(gatosRef);
+                qSnap.forEach(gatoDoc => {
+                    const g = gatoDoc.data();
+                    if (g.estado === 'Morto') return;
+
+                    if (g.estado === 'Doente') {
+                        countDoentes++;
+                    } else if (g.fome < 30 && g.estado !== 'Em Missão') {
+                        countFome++;
+                    }
+                });
+
+                const bMissoes = document.getElementById('badge-missoes');
+                if (countMissoes > 0) {
+                    bMissoes.textContent = `${countMissoes} Ativa${countMissoes > 1 ? 's' : ''}`;
+                    bMissoes.style.display = 'block';
+                } else { bMissoes.style.display = 'none'; }
+
+                const bTatame = document.getElementById('badge-tatame');
+                if (countTreinos > 0) {
+                    bTatame.textContent = `${countTreinos} Treinando`;
+                    bTatame.style.display = 'block';
+                } else { bTatame.style.display = 'none'; }
+
+                const bEnfermaria = document.getElementById('badge-enfermaria');
+                if (countDoentes > 0) {
+                    bEnfermaria.textContent = `⚠️ ${countDoentes} Doente${countDoentes > 1 ? 's' : ''}`;
+                    bEnfermaria.style.display = 'block';
+                } else { bEnfermaria.style.display = 'none'; }
+
+                const bDormitorio = document.getElementById('badge-dormitorio');
+                let avisosDormitorio = [];
+                if (countDoentes > 0) avisosDormitorio.push(`${countDoentes} Doente${countDoentes > 1 ? 's' : ''}`);
+                if (countFome > 0) avisosDormitorio.push(`${countFome} c/ Fome`);
+
+                if (avisosDormitorio.length > 0) {
+                    bDormitorio.textContent = `⚠️ ` + avisosDormitorio.join(' | ');
+                    bDormitorio.style.display = 'block';
+                } else { bDormitorio.style.display = 'none'; }
+
             } catch (error) {
                 console.error("Erro ao carregar os dados do banco:", error);
             }
         }
 
         function mostrarAvatarNaTela(caminhoImg) {
-            // A imagem agora vai esticar perfeitamente, sem o espaço invisível em baixo
             fotoClaContainer.innerHTML = `<img src="${caminhoImg}" style="display: block; width: 100%; height: 100%; object-fit: cover;">`;
         }
 
@@ -492,8 +372,7 @@
                         mostrarAvatarNaTela(caminhoAvatar);
                         modalAvatar.style.display = 'none';
                     } catch (error) {
-                        console.error("Erro ao salvar o brasão selecionado:", error);
-                        alert("Não foi possível salvar seu brasão. Tente clicar novamente.");
+                        console.error("Erro ao salvar o brasão:", error);
                     }
                 });
 
@@ -502,11 +381,7 @@
         }
 
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('PWA configurado com sucesso no Dojo!'))
-                    .catch(err => console.error('Erro ao configurar PWA no Dojo:', err));
-            });
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
         }
     </script>
 </body>
