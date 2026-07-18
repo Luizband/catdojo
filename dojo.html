@@ -152,7 +152,7 @@
         .grid-menu {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 12px;
             width: 100%;
             padding-bottom: 20px;
         }
@@ -161,32 +161,32 @@
             background-color: #dfc495;
             border: 3px solid #5a4231;
             border-radius: 12px;
-            padding: 25px 10px;
+            padding: 12px 10px; /* Reduzido para não esticar o botão */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0px 5px 0px #5a4231;
+            box-shadow: 0px 4px 0px #5a4231;
             transition: all 0.1s;
             position: relative;
         }
 
         .btn-menu:active {
             box-shadow: 0px 0px 0px #5a4231;
-            transform: translateY(5px);
+            transform: translateY(4px);
         }
 
         .btn-menu img {
-            width: 65px;
-            height: 65px;
+            width: 45px; /* Reduzido de 65px para 45px */
+            height: 45px;
             object-fit: contain;
-            margin-bottom: 12px;
-            filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.3)); /* Sombra no ícone para dar destaque */
+            margin-bottom: 8px; /* Espaço menor entre o ícone e o texto */
+            filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.3)); 
         }
 
         .btn-menu span {
-            font-size: 1.05em;
+            font-size: 0.85em; /* Reduzido de 1.05em para 0.85em */
             font-weight: 900;
             color: #2a2a2a;
             text-transform: uppercase;
@@ -194,16 +194,16 @@
             text-align: center;
         }
 
-        /* Badges flutuantes para não perder as notificações de texto do layout antigo */
+        /* Badges flutuantes */
         .badge-alerta {
             position: absolute;
-            top: -10px;
+            top: -8px;
             right: -5px;
             background-color: #cc3333;
             color: white;
             font-weight: bold;
-            font-size: 0.75em;
-            padding: 4px 10px;
+            font-size: 0.7em;
+            padding: 3px 8px;
             border-radius: 12px;
             border: 2px solid #2a2a2a;
             box-shadow: 0px 2px 4px rgba(0,0,0,0.4);
@@ -212,9 +212,8 @@
         }
         
         .badge-info {
-            background-color: #3399ff; /* Azul para informações neutras como treinos ativos */
+            background-color: #3399ff; 
         }
-
         /* BARRA DE NAVEGAÇÃO INFERIOR */
         nav { 
             background-color: #e5cd9e; 
