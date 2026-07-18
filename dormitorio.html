@@ -36,19 +36,34 @@
 
         .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
 
-        /* CABEÇALHO PADRÃO */
-        header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
-        .perfil-info { display: flex; gap: 15px; }
-        .foto-cla {
-            width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231;
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
-            color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;
+        /* CABEÇALHO PADRÃO (Estilo Pergaminho) */
+        header {
+            background-color: #dfc495; padding: 10px 15px; display: flex; justify-content: space-between;
+            border-bottom: 3px solid #5a4231; position: relative;
         }
-        .dados-cla h2 { font-size: 1em; color: #2a2a2a; text-transform: uppercase; }
-        .dados-cla p { font-size: 0.8em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
-        .economia { display: flex; gap: 15px; font-size: 0.8em; font-weight: bold; color: #4a3b32; }
+        .perfil-info { display: flex; gap: 15px; flex: 1; }
+        .foto-cla {
+            position: absolute; top: 0; left: 0; bottom: 0; width: 90px;
+            background-color: transparent; border: none; border-radius: 0; box-shadow: none; overflow: hidden;
+        }
+        .dados-cla { margin-left: 90px; display: flex; flex-direction: column; justify-content: center; }
+        .dados-cla h2 { font-size: 1.25em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 1.0em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
+
+        .economia { display: flex; gap: 15px; font-size: 0.95em; font-weight: bold; color: #4a3b32; }
         .economia div { display: flex; align-items: center; gap: 5px; }
-        .economia img { width: 18px; }
+        .economia img { width: 23px; }
+
+        .botoes-topo { display: flex; flex-direction: column; gap: 5px; }
+        .botoes-topo img {
+            width: 40px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px;
+            padding: 4px; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; transition: all 0.1s;
+        }
+        .botoes-topo img:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+
+        /* MODAL DE UPGRADE DE VAGAS */
+        .box-upgrade { background: #dfc495; border: 2px dashed #5a4231; border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 15px;}
+        .seta-up { color: #d27d46; font-size: 1.2em; font-weight: bold; margin: 10px 0; text-align: center;}
         
         .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
 
@@ -311,6 +326,35 @@
         </div>
     </div>
 
+    <!-- MODAL DE UPGRADE DO DORMITÓRIO -->
+    <div class="modal-centro" id="modalUpgrade">
+        <div class="painel-centro" style="width: 90%; max-width: 350px;">
+            <h3 style="color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px dashed #a68a61; padding-bottom: 5px;">Expandir Dormitório</h3>
+            
+            <div class="box-upgrade" style="background: #2c2c2c; border-color: #5a4231; color: white;">
+                <p style="font-size: 0.8em; text-transform: uppercase; color: #dfc495;">Capacidade Atual</p>
+                <div style="color: #f1ddb0; font-weight: bold; margin-top: 5px; font-size: 1.2em;"><span id="upgVagasAtual">3</span> Vagas</div>
+            </div>
+
+            <div class="seta-up">▼</div>
+
+            <div class="box-upgrade" id="boxProximoNivel">
+                <p style="font-size: 0.8em; text-transform: uppercase; color: #5a4231;">Nova Capacidade</p>
+                <div style="color: #2a2a2a; font-weight: bold; margin-top: 5px; font-size: 1.2em;"><span id="upgVagasProx">4</span> Vagas</div>
+                <div style="margin-top: 15px; font-weight: bold; color: #b30000; display: flex; justify-content: center; align-items: center; gap: 5px;">
+                    Custo: <img src="icones/moeda.png" width="18"> <span id="upgCusto">40</span>
+                </div>
+            </div>
+
+            <div id="txtMaxLevel" style="display: none; color: #2E7D32; font-weight: bold; margin-bottom: 15px;">DORMITÓRIO LOTADO! (MÁX. 10 VAGAS)</div>
+
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" onclick="document.getElementById('modalUpgrade').style.display='none'">Voltar</button>
+                <button class="btn-centro" id="btnConfirmarUpgrade">Comprar Vaga</button>
+            </div>
+        </div>
+    </div>
+
     <div id="app">
         <div class="conteudo-app">
             
@@ -328,16 +372,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="botoes-topo">
+                    <img src="icones/lvlup.png" alt="Evoluir" id="btnAbrirUpgrade">
+                    <img src="icones/log.png" alt="Diário">
+                </div>
             </header>
             <div class="titulo-pagina">Dormitório</div>
 
             <main>
                 <div class="grid-vagas" id="gridDormitorio">
-                    </div>
-                
-                <button class="btn-comprar-vaga" id="btnComprarVaga" style="display: none;">
-                    Expandir Dormitório (100 Moedas)
-                </button>
+                    <!-- Cards injetados via JS -->
+                </div>
             </main>
 
             <nav>
@@ -495,6 +540,7 @@
 
         // Variáveis de Estado
         let jogadorUid = null;
+        let dadosGlobais = null; // NOVO
         let vagasTotais = 10;
         let vagasLiberadas = 3; 
         let listaGatosData = [];
@@ -524,6 +570,7 @@
             const docRef = doc(db, "Clas", uid);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
+                dadosGlobais = docSnap.data();
                 const dados = docSnap.data();
                 
                 let textoCla = dados.nomeCla ? dados.nomeCla.trim() : "DESCONHECIDO";
@@ -693,13 +740,6 @@
                 }
                 gridDormitorio.appendChild(divCard);
             }
-
-            const btnComprar = document.getElementById('btnComprarVaga');
-            if (vagasLiberadas < vagasTotais) {
-                btnComprar.style.display = 'block';
-            } else {
-                btnComprar.style.display = 'none';
-            }
         }
 
         // ==========================================
@@ -780,6 +820,10 @@
                     slotDiv.onclick = () => {
                         if (gatoSelecionado.estado === 'Doente') {
                             mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
+                            return;
+                        }
+                        if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
+                            mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
                             return;
                         }
                         abrirSeletorArtes(i);
@@ -913,6 +957,10 @@
                 mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
                 return;
             }
+            if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
+                mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
+                return;
+            }
             try {
                 const novoEstado = gatoSelecionado.estado === 'Descansando' ? 'Saudável' : 'Descansando';
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
@@ -946,6 +994,10 @@
         document.getElementById('btnResetarStats').onclick = () => {
             if (gatoSelecionado.estado === 'Doente') {
                 mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
+                return;
+            }
+            if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
+                mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
                 return;
             }
             const indexBiscoito = inventarioInstancias.findIndex(inst => inst.itemId === 'biscoitinho');
@@ -992,6 +1044,10 @@
         document.getElementById('btnDispensar').onclick = () => {
             if (gatoSelecionado.estado === 'Doente') {
                 mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
+                return;
+            }
+            if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
+                mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
                 return;
             }
             
@@ -1152,6 +1208,10 @@
                     mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
                     return;
                 }
+                if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
+                    mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
+                    return;
+                }
                 if (pontosLivresTemp > 0) {
                     const attr = btn.getAttribute('data-attr');
                     atributosTemp[attr]++;
@@ -1161,11 +1221,70 @@
             };
         });
 
+        // ==========================================
+        // SISTEMA DE UPGRADE DE VAGAS
+        // ==========================================
+        const CUSTO_VAGAS = { 4: 40, 5: 40, 6: 100, 7: 100, 8: 500, 9: 500, 10: 1500 };
+
+        document.getElementById('btnAbrirUpgrade').onclick = () => {
+            document.getElementById('upgVagasAtual').textContent = vagasLiberadas;
+
+            if (vagasLiberadas < 10) {
+                const proxVaga = vagasLiberadas + 1;
+                const custo = CUSTO_VAGAS[proxVaga];
+                
+                document.getElementById('upgVagasProx').textContent = proxVaga;
+                document.getElementById('upgCusto').textContent = custo;
+                
+                document.getElementById('boxProximoNivel').style.display = 'block';
+                document.getElementById('btnConfirmarUpgrade').style.display = 'block';
+                document.getElementById('txtMaxLevel').style.display = 'none';
+
+                document.getElementById('btnConfirmarUpgrade').onclick = () => comprarNovaVaga(custo, proxVaga);
+            } else {
+                document.getElementById('boxProximoNivel').style.display = 'none';
+                document.getElementById('btnConfirmarUpgrade').style.display = 'none';
+                document.getElementById('txtMaxLevel').style.display = 'block';
+            }
+            document.getElementById('modalUpgrade').style.display = 'flex';
+        };
+
+        async function comprarNovaVaga(custo, proxVaga) {
+            const moedas = dadosGlobais.moedas !== undefined ? dadosGlobais.moedas : 50;
+            
+            if (moedas >= custo) {
+                pedirConfirmacao(`Deseja gastar ${custo} moedas para abrir a vaga ${proxVaga}?`, async () => {
+                    try {
+                        const claRef = doc(db, "Clas", jogadorUid);
+                        await updateDoc(claRef, { 
+                            moedas: moedas - custo,
+                            vagasDormitorio: proxVaga 
+                        });
+                        
+                        document.getElementById('modalUpgrade').style.display = 'none';
+                        mostrarToast("Nova vaga aberta no Dormitório!");
+                        
+                        // Atualiza a tela automaticamente
+                        await carregarCabecalho(jogadorUid);
+                        renderizarGrid();
+                    } catch (e) {
+                        console.error("Erro ao comprar vaga:", e);
+                    }
+                });
+            } else {
+                mostrarToast("Moedas insuficientes!");
+            }
+        }
+
         // Cliques do Botão -
         document.querySelectorAll('.btn-sub').forEach(btn => {
             btn.onclick = () => {
                 if (gatoSelecionado.estado === 'Doente') {
                     mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
+                    return;
+                }
+                if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
+                    mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
                     return;
                 }
                 const attr = btn.getAttribute('data-attr');
@@ -1181,6 +1300,10 @@
         document.getElementById('btnSalvarGato').onclick = async () => {
             if (gatoSelecionado.estado === 'Doente') {
                 mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
+                return;
+            }
+            if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
+                mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
                 return;
             }
             const novoNome = document.getElementById('modalNome').value.trim();
@@ -1208,6 +1331,62 @@
                 modalGato.style.display = 'none';
             } catch (e) { console.error(e); }
         };
+
+        // ==========================================
+        // SISTEMA DE UPGRADE DE VAGAS
+        // ==========================================
+        const CUSTO_VAGAS = { 4: 40, 5: 40, 6: 100, 7: 100, 8: 500, 9: 500, 10: 1500 };
+
+        document.getElementById('btnAbrirUpgrade').onclick = () => {
+            document.getElementById('upgVagasAtual').textContent = vagasLiberadas;
+
+            if (vagasLiberadas < 10) {
+                const proxVaga = vagasLiberadas + 1;
+                const custo = CUSTO_VAGAS[proxVaga];
+                
+                document.getElementById('upgVagasProx').textContent = proxVaga;
+                document.getElementById('upgCusto').textContent = custo;
+                
+                document.getElementById('boxProximoNivel').style.display = 'block';
+                document.getElementById('btnConfirmarUpgrade').style.display = 'block';
+                document.getElementById('txtMaxLevel').style.display = 'none';
+
+                document.getElementById('btnConfirmarUpgrade').onclick = () => comprarNovaVaga(custo, proxVaga);
+            } else {
+                document.getElementById('boxProximoNivel').style.display = 'none';
+                document.getElementById('btnConfirmarUpgrade').style.display = 'none';
+                document.getElementById('txtMaxLevel').style.display = 'block';
+            }
+            document.getElementById('modalUpgrade').style.display = 'flex';
+        };
+
+        async function comprarNovaVaga(custo, proxVaga) {
+            const moedas = dadosGlobais.moedas !== undefined ? dadosGlobais.moedas : 50;
+            
+            if (moedas >= custo) {
+                pedirConfirmacao(`Deseja gastar ${custo} moedas para abrir a vaga ${proxVaga}?`, async () => {
+                    try {
+                        const claRef = doc(db, "Clas", jogadorUid);
+                        await updateDoc(claRef, { 
+                            moedas: moedas - custo,
+                            vagasDormitorio: proxVaga 
+                        });
+                        
+                        document.getElementById('modalUpgrade').style.display = 'none';
+                        mostrarToast("Nova vaga aberta no Dormitório!");
+                        
+                        // Atualiza a tela automaticamente
+                        await carregarCabecalho(jogadorUid);
+                        renderizarGrid();
+                    } catch (e) {
+                        console.error("Erro ao comprar vaga:", e);
+                    }
+                });
+            } else {
+                mostrarToast("Moedas insuficientes!");
+            }
+        }
+        
         // Ativa PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
