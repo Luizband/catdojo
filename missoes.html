@@ -20,7 +20,7 @@
         #app::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.65); z-index: 1; }
         .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
 
-        /* CABEÇALHO PADRÃO (IGUAL AO DORMITÓRIO) */
+        /* CABEÇALHO PADRÃO */
         header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
         .perfil-info { display: flex; gap: 15px; }
         .foto-cla { width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;}
@@ -57,47 +57,58 @@
         }
         .card-missao-grid:active { transform: scale(0.95); }
         
+        /* Ajuste do Padding para o texto não vazar da folha */
         .card-conteudo { 
             position: relative; z-index: 2; 
             display: flex; flex-direction: column; 
             height: 100%; width: 100%; 
             justify-content: center; 
             align-items: center; 
+            padding: 15% 10% 5% 10%; 
+            box-sizing: border-box;
         }
         
+        /* Rank Badge Menor */
         .rank-badge { 
-            position: absolute; top: 0; right: 0; 
-            background-color: #cc3333; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; border: 2px solid #2a2a2a; font-size: 0.8em; 
+            position: absolute; top: 5px; right: 5px; 
+            background-color: #cc3333; color: white; padding: 2px 4px; border-radius: 4px; font-weight: bold; border: 1px solid #2a2a2a; font-size: 0.55em; 
         }
         
+        /* Fontes Menores para o Título e Temporizador */
         .titulo-missao-grid {
-            color: #2a2a2a; font-size: 0.85em; font-weight: 900;
-            text-align: center; text-transform: uppercase;
+            color: #2a2a2a; font-size: 0.65em; font-weight: 900;
+            text-align: center; text-transform: uppercase; line-height: 1.1em;
+            margin-top: 5px;
         }
-        .timer-expiracao { font-size: 0.7em; color: #b30000; font-weight: bold; text-align: center; margin-top: 5px; }
+        .timer-expiracao { font-size: 0.55em; color: #b30000; font-weight: bold; text-align: center; margin-top: 5px; }
 
-        /* CARDS MISSÃO EM ANDAMENTO (LISTA NORMAL) */
+        /* CARDS MISSÃO EM ANDAMENTO */
         .card-missao-lista { background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px; padding: 12px; box-shadow: 0px 4px 0px #5a4231; position: relative;}
         
         .btn-acao-card { background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32; width: 100%; text-transform: uppercase; font-size: 0.85em; margin-top: 10px;}
         .btn-acao-card:active { box-shadow: 0px 0px 0px #2E7D32; transform: translateY(3px); }
 
-        /* PROGRESSO MISSÃO ATIVA */
         .barra-progresso-bg { width: 100%; height: 14px; background-color: #2c2c2c; border-radius: 7px; border: 2px solid #5a4231; overflow: hidden; margin-top: 8px;}
         .barra-progresso-fill { height: 100%; background-color: #3399ff; width: 0%; transition: width 1s linear;}
         .barra-progresso-fill.concluida { background-color: #4CAF50; }
         .tempo-restante { font-size: 0.85em; font-weight: bold; color: #b30000; text-align: center; margin-top: 5px; }
 
-        /* MODAIS GERAIS (FUNDO ESCURO) */
+        /* MODAIS GERAIS */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: flex-end; }
         .painel-modal { background-color: #f1ddb0; width: 100%; max-width: 414px; border-top: 4px solid #5a4231; border-radius: 20px 20px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; position: relative;}
         .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold; z-index: 10;}
 
-        /* MODAL DETALHE DA MISSÃO */
-        .detalhe-desc { font-size: 0.9em; color: #4a3b32; font-weight: bold; line-height: 1.3em; margin-bottom: 15px; border-bottom: 2px dashed #a68a61; padding-bottom: 15px;}
-        .card-detalhes { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.8em; font-weight: bold; color: #2a2a2a; margin-bottom: 15px; background: #dfc495; padding: 10px; border-radius: 8px; border: 1px solid #a68a61;}
-        .card-detalhes span { display: flex; align-items: center; gap: 5px; }
-        .card-detalhes img { width: 16px; height: 16px; object-fit: contain;}
+        /* MODAL DETALHE DA MISSÃO - CUSTOS E RECOMPENSAS */
+        .detalhe-desc { font-size: 0.85em; color: #4a3b32; font-weight: bold; line-height: 1.3em; margin-bottom: 15px; padding-bottom: 10px;}
+        
+        .modal-secao { background: #dfc495; border: 2px solid #a68a61; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+        .modal-secao-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #a68a61; padding-bottom: 5px; margin-bottom: 10px; color: #5a4231; font-size: 0.9em; font-weight: bold; text-transform: uppercase; }
+        .modal-secao-grid { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }
+        .modal-secao-item { display: flex; flex-direction: column; align-items: center; font-size: 0.85em; font-weight: bold; color: #2a2a2a; }
+        .modal-secao-item img { width: 24px; height: 24px; margin-bottom: 4px; object-fit: contain; }
+
+        .faixa-req { display: flex; align-items: center; gap: 8px; font-size: 0.85em; font-weight: bold; color: #4a3b32; margin-bottom: 15px; background: #e5cd9e; padding: 5px 10px; border-radius: 6px; border: 1px solid #a68a61; width: fit-content;}
+        .faixa-req img { width: 35px; height: auto; }
         
         /* MODAL PREPARAÇÃO */
         .seletor-gato { width: 100%; padding: 10px; border: 2px solid #5a4231; border-radius: 8px; background: #dfc495; font-weight: bold; color: #2a2a2a; margin-bottom: 15px; font-size: 0.9em; outline: none;}
@@ -121,7 +132,7 @@
         .resultado-falha { color: #b30000; }
         .relatorio-linha { display: flex; justify-content: space-between; font-weight: bold; color: #2a2a2a; margin-bottom: 8px; font-size: 0.9em; background: #f1ddb0; padding: 8px; border-radius: 6px; border: 1px solid #a68a61;}
 
-        /* NAVEGAÇÃO INFERIOR UNIFICADA */
+        /* NAVEGAÇÃO INFERIOR UNIFICADA (Idêntica ao dojo.html) */
         nav { background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; flex-shrink: 0; padding: 10px 5px; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none; text-transform: uppercase; }
         .nav-item img { width: 40px; margin-bottom: 3px; }
@@ -178,16 +189,54 @@
     <div class="modal-overlay" id="modalDetalheMissao">
         <div class="painel-modal">
             <button class="btn-fechar" onclick="document.getElementById('modalDetalheMissao').style.display='none'">X</button>
-            <h3 style="color: #2a2a2a; text-transform: uppercase; margin-bottom: 5px; font-size: 1.1em;" id="detTitulo">Nome</h3>
-            <span class="rank-badge" id="detRank" style="display:block; margin-bottom: 15px;">RANK D</span>
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-right: 20px; margin-bottom: 5px;">
+                <h3 style="color: #2a2a2a; text-transform: uppercase; font-size: 1.1em;" id="detTitulo">Nome</h3>
+                <span class="rank-badge" id="detRank" style="position: relative; top: 0; right: 0;">RANK D</span>
+            </div>
+            
+            <div class="faixa-req">
+                <span>Exigência:</span>
+                <img id="detMinFaixa" src="" alt="Faixa Mínima">
+            </div>
             
             <p class="detalhe-desc" id="detDesc">Descrição...</p>
             
-            <div class="card-detalhes">
-                <span><img src="icones/time.png"> <span id="detTempo">1</span>h</span>
-                <span><img src="icones/moeda.png"> <span id="detMoedas">12</span></span>
-                <span><img src="icones/exp.png"> <span id="detXp">15</span></span>
-                <span style="color:#b30000; width: 100%;">Custo: <span id="detCustoHp">15</span>% do HP Máximo</span>
+            <div class="modal-secao">
+                <div class="modal-secao-header">
+                    Custos
+                </div>
+                <div class="modal-secao-grid">
+                    <div class="modal-secao-item">
+                        <img src="icones/hp.png" alt="HP">
+                        <span style="color:#b30000;"><span id="detCustoHp">15</span>% HP Máximo</span>
+                    </div>
+                    <div class="modal-secao-item">
+                        <img src="icones/time.png" alt="Tempo">
+                        <span><span id="detTempo">1</span>h Base</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-secao">
+                <div class="modal-secao-header">
+                    Recompensas
+                    <img src="icones/info.png" alt="Info" style="width: 20px; cursor: pointer;" onclick="mostrarToast('Agilidade: -Tempo | Foco: +Moedas e Reputação | Vigor: +XP | Força: -Risco')">
+                </div>
+                <div class="modal-secao-grid">
+                    <div class="modal-secao-item">
+                        <img src="icones/exp.png" alt="XP">
+                        <span><span id="detXp">15</span> XP</span>
+                    </div>
+                    <div class="modal-secao-item">
+                        <img src="icones/moeda.png" alt="Moedas">
+                        <span id="detMoedas">12</span>
+                    </div>
+                    <div class="modal-secao-item">
+                        <img src="icones/rep.png" alt="Reputação">
+                        <span id="detRepBase">1</span>
+                    </div>
+                </div>
             </div>
 
             <button class="btn-acao-card" id="btnIrParaPrep">Preparar Equipe</button>
@@ -219,6 +268,7 @@
                 <div class="linha-est">Estimativa de Sucesso: <span id="estSucesso" style="color: #3399ff;">--% a --%</span></div>
                 <div class="linha-est">Tempo de Retorno: <span id="estTempo" style="color: #dfc495;">-- h</span></div>
                 <div class="linha-est">Custo de HP: <span id="estHp" style="color: #cc3333;">-- HP</span></div>
+                <div class="linha-est">Gera Reputação: <span id="estRep" style="color: #4CAF50;">--</span></div>
                 <div class="alerta-hp" id="alertaMorte">⚠️ Custo maior que a vida atual. Falha garantirá a Morte!</div>
             </div>
 
@@ -243,7 +293,8 @@
                     </div>
                 </div>
             </header>
-            <div class="titulo-pagina">Missões e Expedições</div>
+            
+            <div class="titulo-pagina">MISSÕES</div>
 
             <div class="abas-container">
                 <button class="btn-aba ativa" id="abaQuadro">Quadro (<span id="countQuadro">0/8</span>)</button>
@@ -256,13 +307,25 @@
             </main>
 
             <main id="areaAndamento" style="display: none;">
-                </main>
+            </main>
 
             <nav>
-                <a href="dojo.html" class="nav-item"><img src="icones/Dojo.png" alt="Dojo">DOJO</a>
-                <a href="missoes.html" class="nav-item ativo"><img src="icones/escritorio.png" alt="Missões">MISSÕES</a>
-                <a href="arena.html" class="nav-item"><img src="icones/arena.png" alt="Arena">ARENA</a>
-                <a href="loja.html" class="nav-item"><img src="icones/loja.png" alt="Loja">LOJA</a>
+                <div class="nav-item" onclick="window.location.href='dojo.html'">
+                    <img src="icones/Dojo.png" alt="Dojo">
+                    DOJO
+                </div>
+                <div class="nav-item" onclick="window.location.href='adocao.html'">
+                    <img src="icones/adocao.png" alt="Adoção">
+                    ADOÇÃO
+                </div>
+                <div class="nav-item" onclick="window.location.href='arena.html'">
+                    <img src="icones/arena.png" alt="Arena">
+                    ARENA
+                </div>
+                <div class="nav-item" onclick="window.location.href='loja.html'">
+                    <img src="icones/loja.png" alt="Loja">
+                    LOJA
+                </div>
             </nav>
         </div>
     </div>
@@ -289,10 +352,10 @@
         let slot2Item = null;
         let resultadoRelatorio = null;
 
-        function mostrarToast(mensagem) {
+        window.mostrarToast = function(mensagem) {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div'); toast.className = 'toast-msg'; toast.textContent = mensagem;
-            container.appendChild(toast); setTimeout(() => toast.remove(), 2000);
+            container.appendChild(toast); setTimeout(() => toast.remove(), 2500);
         }
 
         function pedirConfirmacao(mensagem, callback) {
@@ -422,10 +485,8 @@
                 div.innerHTML = `
                     <div class="card-conteudo">
                         <span class="rank-badge">RANK ${refDb.rank}</span>
-                        <div>
-                            <div class="titulo-missao-grid">${refDb.nome}</div>
-                            <div class="timer-expiracao" id="timer-exp-${instancia.idQuadro}">Calculando...</div>
-                        </div>
+                        <div class="titulo-missao-grid">${refDb.nome}</div>
+                        <div class="timer-expiracao" id="timer-exp-${instancia.idQuadro}">Calculando...</div>
                     </div>
                 `;
                 
@@ -440,11 +501,20 @@
 
             document.getElementById('detTitulo').textContent = refDb.nome;
             document.getElementById('detRank').textContent = `RANK ${refDb.rank}`;
+            
+            // Lógica para puxar a imagem correta da faixa (ex: 01.png, 02.png)
+            let faixaImgNum = refDb.minFaixa ? refDb.minFaixa.toString().padStart(2, '0') : '01';
+            document.getElementById('detMinFaixa').src = `imagens/${faixaImgNum}.png`;
+
             document.getElementById('detDesc').textContent = refDb.desc;
             document.getElementById('detTempo').textContent = refDb.tempoBase;
             document.getElementById('detMoedas').textContent = refDb.moedasBase;
             document.getElementById('detXp').textContent = refDb.xpBase;
             document.getElementById('detCustoHp').textContent = refDb.custoHpPct;
+
+            // Tratamento da reputação base com fallback matemático do GDD caso não exista no DB
+            let repBase = refDb.repBase || (refDb.rank === 'A' ? 35 : refDb.rank === 'B' ? 15 : refDb.rank === 'C' ? 5 : 1);
+            document.getElementById('detRepBase').textContent = repBase;
 
             document.getElementById('modalDetalheMissao').style.display = 'flex';
         };
@@ -460,10 +530,12 @@
             seletor.innerHTML = '<option value="">-- Selecione um Gato Saudável --</option>';
             
             let temGato = false;
+            let reqFaixa = missaoAtual.minFaixa || 1;
+            
             gatosDisponiveis.forEach(g => {
                 const nivelExato = g.nivel || 1;
-                if (nivelExato >= missaoAtual.minFaixa) {
-                    seletor.innerHTML += `<option value="${g.id}">${g.nome} (Faixa ${g.faixa}) - HP: ${Math.round(g.hpAtual)}</option>`;
+                if (nivelExato >= reqFaixa) {
+                    seletor.innerHTML += `<option value="${g.id}">${g.nome} (Faixa ${nivelExato}) - HP: ${Math.round(g.hpAtual)}</option>`;
                     temGato = true;
                 }
             });
@@ -474,8 +546,6 @@
             window.calcularEstimativas();
         };
 
-        window.fecharPrep = () => { document.getElementById('modalPrep').style.display = 'none'; };
-
         window.calcularEstimativas = () => {
             const btn = document.getElementById('btnEnviarMissao');
             const gatoId = document.getElementById('selectGato').value;
@@ -485,6 +555,7 @@
                 document.getElementById('estSucesso').textContent = '--% a --%';
                 document.getElementById('estTempo').textContent = '-- h';
                 document.getElementById('estHp').textContent = '-- HP';
+                document.getElementById('estRep').textContent = '--';
                 alerta.style.display = 'none';
                 btn.disabled = true;
                 return;
@@ -506,15 +577,23 @@
                 }
             });
 
+            // Custo de HP
             let custoHpTotalDaMissao = (gato.hpMax * (missaoAtual.custoHpPct / 100)) * (hasKimono ? 0.75 : 1);
             document.getElementById('estHp').textContent = `-${Math.round(custoHpTotalDaMissao)} HP`;
             
             if (custoHpTotalDaMissao >= gato.hpAtual) alerta.style.display = 'block';
             else alerta.style.display = 'none';
 
+            // Tempo
             let horasReais = missaoAtual.tempoBase * (100 / (100 + attrs.agilidade)) * (hasBotas ? 0.8 : 1);
             document.getElementById('estTempo').textContent = `${horasReais.toFixed(1)} Horas`;
 
+            // Reputação Estimada (GDD: Rep Base + Math.floor(Rep Base * (Foco / 100)))
+            let repBase = missaoAtual.repBase || (missaoAtual.rank === 'A' ? 35 : missaoAtual.rank === 'B' ? 15 : missaoAtual.rank === 'C' ? 5 : 1);
+            let repGanha = repBase + Math.floor(repBase * (attrs.foco / 100));
+            document.getElementById('estRep').textContent = `+${repGanha}`;
+
+            // Sucesso
             let penIdade = idadeH >= 2880 ? 1.30 : 1;
             let riscoFalha = (missaoAtual.riscoBase * penIdade) * (50 / (50 + attrs.forca));
             if (hasShuriken) riscoFalha = riscoFalha * 0.85;
@@ -746,7 +825,9 @@
 
             let xpGanho = Math.floor((refDb.xpBase * (1 + (attrs.vigor / 100))) * (hasCatnip ? 1.5 : 1) * sucessoPct);
             let moedasGanha = Math.floor((refDb.moedasBase * (1 + (attrs.foco / 100))) * (hasChuru ? 1.5 : 1) * sucessoPct);
-            let repGanha = Math.floor((refDb.repBase + Math.floor(refDb.repBase * (attrs.foco / 100))) * sucessoPct);
+            
+            let repBase = refDb.repBase || (refDb.rank === 'A' ? 35 : refDb.rank === 'B' ? 15 : refDb.rank === 'C' ? 5 : 1);
+            let repGanha = Math.floor((repBase + Math.floor(repBase * (attrs.foco / 100))) * sucessoPct);
 
             let hpMatematico = gato.hpAtual - custoHpFinal;
             if (hpMatematico <= 0 && !isDoente) {
@@ -805,7 +886,7 @@
                 
                 await carregarDadosBasicos();
                 await carregarMissoesAtivas();
-                renderizarQuadro();
+                renderizarGridQuadro();
 
             } catch (e) { console.error(e); btn.disabled = false; }
         };
