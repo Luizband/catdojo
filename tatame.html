@@ -225,21 +225,21 @@
         </div>
     </div>
 
-    <!-- MODAL 1: SELECIONAR ARTE -->
-    <div class="modal-overlay" id="modalArtes">
-        <div class="painel-modal">
-            <button class="btn-fechar" onclick="document.getElementById('modalArtes').style.display='none'">X</button>
-            <h3 class="titulo-modal">1. Selecione a Arte Marcial</h3>
-            <div class="lista-selecao" id="listaArtesContainer"></div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: SELECIONAR GATO (COM BARRA DE PE FRACIONADA) -->
+    <!-- MODAL 1: SELECIONAR GATO -->
     <div class="modal-overlay" id="modalGatos">
         <div class="painel-modal">
             <button class="btn-fechar" onclick="document.getElementById('modalGatos').style.display='none'">X</button>
-            <h3 class="titulo-modal">2. Escolha o Aluno</h3>
+            <h3 class="titulo-modal">1. Escolha o Aluno</h3>
             <div class="lista-selecao" id="listaGatosContainer"></div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SELECIONAR ARTE (COM BARRA DE PE FRACIONADA) -->
+    <div class="modal-overlay" id="modalArtes">
+        <div class="painel-modal">
+            <button class="btn-fechar" onclick="document.getElementById('modalArtes').style.display='none'">X</button>
+            <h3 class="titulo-modal">2. Selecione a Arte Marcial</h3>
+            <div class="lista-selecao" id="listaArtesContainer"></div>
         </div>
     </div>
 
@@ -412,43 +412,15 @@
         // ==========================================
         // LÓGICA DE CRIAÇÃO DE TREINO
         // ==========================================
+        
+        // 1. O botão inicial agora abre a lista de gatos primeiro
         document.getElementById('btnAbrirArtes').onclick = () => {
-            const container = document.getElementById('listaArtesContainer');
-            container.innerHTML = '';
-            
-            Object.keys(ARTES_MARCIAIS).forEach(chave => {
-                const arte = ARTES_MARCIAIS[chave];
-                const div = document.createElement('div');
-                div.className = 'item-selecao';
-                div.innerHTML = `
-                    <img src="${arte.icone}" alt="${arte.nome}" style="background-color: ${arte.cor};">
-                    <div class="item-info">
-                        <h5>${arte.nome}</h5>
-                        <p>Foque na técnica e disciplina.</p>
-                    </div>
-                `;
-                div.onclick = () => {
-                    arteSelecionada = chave;
-                    document.getElementById('modalArtes').style.display = 'none';
-                    abrirSelecaoGato();
-                };
-                container.appendChild(div);
-            });
-            document.getElementById('modalArtes').style.display = 'flex';
+            abrirSelecaoGato();
         };
-
-        function obterProximoPontoHabilidade(peAtual, arteKey) {
-            const tecnicas = ARTES_MARCIAIS[arteKey].tecnicas;
-            for (let t of tecnicas) {
-                if (t.pe > peAtual) return t.pe;
-            }
-            return 4000; // Máximo do GDD
-        }
 
         function abrirSelecaoGato() {
             const container = document.getElementById('listaGatosContainer');
             container.innerHTML = '';
-            const arteObj = ARTES_MARCIAIS[arteSelecionada];
 
             // Filtra quem está ocupado (Em Missão, Doente, Descansando, Treinando)
             const gatosOcupados = treinosAtivos.map(t => t.gatoId).concat(treinosAtivos.filter(t => t.profId).map(t => t.profId));
@@ -458,12 +430,6 @@
                 container.innerHTML = '<p style="text-align:center; color:#5a4231; font-weight:bold;">Nenhum gato livre e saudável disponível.</p>';
             } else {
                 gatosLivres.forEach(g => {
-                    if (!g.peArtes) g.peArtes = {};
-                    const peAtual = g.peArtes[arteSelecionada] || 0;
-                    const nextPe = obterProximoPontoHabilidade(peAtual, arteSelecionada);
-                    let pct = (peAtual / nextPe) * 100;
-                    if(pct > 100) pct = 100;
-
                     const nivelGato = g.nivel || 1;
                     const imgFaixa = `imagens/${String(nivelGato).padStart(2, '0')}.png`;
 
@@ -476,21 +442,81 @@
                                 ${g.nome} 
                                 <img src="${imgFaixa}" alt="Faixa" style="width: 28px; height: 28px; border-radius: 0; box-shadow: none; object-fit: contain;">
                             </h5>
-                            <div class="barra-pe-bg">
-                                <div class="barra-pe-fill" style="width: ${pct}%; background-color: ${arteObj.cor};"></div>
-                                <span class="barra-pe-txt">${peAtual >= 4000 ? 'MÁXIMO' : peAtual + ' / ' + nextPe + ' PE'}</span>
-                            </div>
+                            <p style="color: ${g.hpAtual < (g.hpMax / 2) ? '#cc3333' : '#2E7D32'};">
+                                HP: ${Math.round(g.hpAtual)}/${g.hpMax}
+                            </p>
                         </div>
                     `;
                     div.onclick = () => {
+                        // Trava de HP: Impede o gato de treinar se tiver menos da metade da vida
+                        if (g.hpAtual < (g.hpMax / 2)) {
+                            mostrarToast(`${g.nome} precisa descansar mais antes de treinar!`);
+                            return;
+                        }
+
                         gatoSelecionado = g;
                         document.getElementById('modalGatos').style.display = 'none';
-                        abrirSetupTreino();
+                        abrirSelecaoArtes();
                     };
                     container.appendChild(div);
                 });
             }
             document.getElementById('modalGatos').style.display = 'flex';
+        }
+
+        // Função que lê os 10 níveis de técnicas do GDD para descobrir o progresso atual
+        function obterNivelEProximoPe(peAtual, arteKey) {
+            const tecnicas = ARTES_MARCIAIS[arteKey].tecnicas;
+            let nivel = 0;
+            let proximoPe = 4000; // Teto máximo
+
+            for (let i = 0; i < tecnicas.length; i++) {
+                if (peAtual >= tecnicas[i].pe) {
+                    nivel = i + 1;
+                } else {
+                    proximoPe = tecnicas[i].pe;
+                    break;
+                }
+            }
+            return { nivel, proximoPe };
+        }
+
+        function abrirSelecaoArtes() {
+            const container = document.getElementById('listaArtesContainer');
+            container.innerHTML = '';
+            
+            if (!gatoSelecionado.peArtes) gatoSelecionado.peArtes = {};
+
+            Object.keys(ARTES_MARCIAIS).forEach(chave => {
+                const arte = ARTES_MARCIAIS[chave];
+                const peAtual = gatoSelecionado.peArtes[chave] || 0;
+                
+                // Puxa o nível e o próximo alvo de PE com base no artes-marciais.js
+                const { nivel, proximoPe } = obterNivelEProximoPe(peAtual, chave);
+                
+                let pct = (peAtual / proximoPe) * 100;
+                if(pct > 100) pct = 100;
+
+                const div = document.createElement('div');
+                div.className = 'item-selecao';
+                div.innerHTML = `
+                    <img src="${arte.icone}" alt="${arte.nome}" style="background-color: ${arte.cor};">
+                    <div class="item-info">
+                        <h5>${arte.nome} <span style="font-size:0.7em; color:#5a4231;">(Nível ${nivel}/10)</span></h5>
+                        <div class="barra-pe-bg">
+                            <div class="barra-pe-fill" style="width: ${pct}%; background-color: ${arte.cor};"></div>
+                            <span class="barra-pe-txt">${peAtual >= 4000 ? 'MÁXIMO' : peAtual + ' / ' + proximoPe + ' PE'}</span>
+                        </div>
+                    </div>
+                `;
+                div.onclick = () => {
+                    arteSelecionada = chave;
+                    document.getElementById('modalArtes').style.display = 'none';
+                    abrirSetupTreino();
+                };
+                container.appendChild(div);
+            });
+            document.getElementById('modalArtes').style.display = 'flex';
         }
 
         function abrirSetupTreino() {
