@@ -316,7 +316,7 @@
 <body>
     <div id="toastContainer"></div>
     
-    <div class="modal-centro" id="modalConfirmacao">
+    <div class="modal-centro" id="modalConfirmacao" style="z-index: 9000;">
         <div class="painel-centro">
             <p id="textoConfirmacao">Tem certeza?</p>
             <div class="botoes-centro">
@@ -713,9 +713,10 @@
                         // Verifica se o gato está em algum treino ativo (como aluno ou professor)
                         let isTreinando = treinosAtivos.some(t => t.gatoId === gato.id || t.profId === gato.id);
 
-                        if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } 
+                        // Prioridade 1: Avisar que o gato tem pontos para distribuir (Level UP)
+                        if (gato.pontosLivres > 0) { caminhoIcone = 'icones/lvlup.png'; } 
                         else if (gato.estado === 'Em Missão') { caminhoIcone = 'icones/missao.png'; classeExtra = 'vaga-em-missao'; } 
-                        else if (isTreinando) { caminhoIcone = 'icones/treino.png'; } // NOVO: Ícone de treino
+                        else if (isTreinando) { caminhoIcone = 'icones/treino.png'; } 
                         else if (gato.fome < 30) { caminhoIcone = 'icones/fome.png'; } 
                         else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descanso.png'; }
 
