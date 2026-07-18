@@ -148,65 +148,80 @@
             transform: translateY(3px);
         }
 
-        /* GRID DE MENU PRINCIPAL */
-        .grid-menu {
+        /* ÁREA PRINCIPAL E GRID DE MENU */
+        main.area-menu {
+            flex: 1;
+            padding: 10px 15px;
+            overflow-y: auto;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
-            padding-bottom: 20px;
+            gap: 25px 10px; /* 25px vertical para o texto caber sem colar no botão de cima */
+            align-content: center; /* Centraliza todo o bloco de botões no meio da tela livre */
         }
 
-        .btn-menu {
-            background-color: #dfc495;
-            border: 3px solid #5a4231;
-            border-radius: 12px;
-            padding: 12px 10px; /* Reduzido para não esticar o botão */
+        .menu-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             cursor: pointer;
-            box-shadow: 0px 4px 0px #5a4231;
-            transition: all 0.1s;
-            position: relative;
         }
 
-        .btn-menu:active {
-            box-shadow: 0px 0px 0px #5a4231;
-            transform: translateY(4px);
+        /* O 5º botão centralizado na última linha */
+        .menu-item-full {
+            grid-column: span 2;
         }
 
-        .btn-menu img {
-            width: 45px; /* Reduzido de 65px para 45px */
-            height: 45px;
-            object-fit: contain;
-            margin-bottom: 8px; /* Espaço menor entre o ícone e o texto */
-            filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.3)); 
-        }
-
-        .btn-menu span {
-            font-size: 0.85em; /* Reduzido de 1.05em para 0.85em */
+        .menu-label {
+            font-size: 1.05em;
             font-weight: 900;
-            color: #2a2a2a;
+            color: #f1ddb0;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-shadow: 1px 2px 3px rgba(0,0,0,0.8);
             text-align: center;
         }
 
-        /* Badges flutuantes */
+        .menu-btn {
+            background-color: #dfc495;
+            border: 3px solid #5a4231;
+            border-radius: 22px; /* Curvatura suave inspirada no Supercards */
+            width: 100%;
+            max-width: 130px; /* Trava o limite para não virar um botão gigante de tablet */
+            aspect-ratio: 1 / 1; /* Força o botão a ser sempre um quadrado perfeito */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 6px 0px #5a4231, inset 0px 0px 15px rgba(139, 90, 43, 0.15);
+            position: relative;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .menu-item:active .menu-btn {
+            transform: translateY(6px);
+            box-shadow: 0px 0px 0px #5a4231, inset 0px 0px 15px rgba(139, 90, 43, 0.15);
+        }
+
+        .menu-btn img {
+            width: 55%; /* Ocupa metade do quadrado, bem visível */
+            height: 55%;
+            object-fit: contain;
+            filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.4)); 
+        }
+
+        /* Badges Flutuantes */
         .badge-alerta {
             position: absolute;
-            top: -8px;
-            right: -5px;
+            top: -12px;
+            right: -12px;
             background-color: #cc3333;
             color: white;
             font-weight: bold;
-            font-size: 0.7em;
-            padding: 3px 8px;
+            font-size: 0.8em;
+            padding: 4px 10px;
             border-radius: 12px;
             border: 2px solid #2a2a2a;
-            box-shadow: 0px 2px 4px rgba(0,0,0,0.4);
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
             z-index: 3;
             white-space: nowrap;
         }
@@ -322,40 +337,48 @@
                 </div>
             </header>
 
-            <main>
-                <div class="grid-menu">
-                    
-                    <div class="btn-menu" onclick="window.location.href='dormitorio.html'">
+            <main class="area-menu">
+                
+                <div class="menu-item" onclick="window.location.href='dormitorio.html'">
+                    <span class="menu-label">Dormitório</span>
+                    <div class="menu-btn">
                         <div class="badge-alerta" id="badge-dormitorio" style="display: none;"></div>
                         <img src="icones/dormitorio.png" alt="Dormitório">
-                        <span>Dormitório</span>
                     </div>
+                </div>
 
-                    <div class="btn-menu" onclick="window.location.href='tatame.html'">
+                <div class="menu-item" onclick="window.location.href='tatame.html'">
+                    <span class="menu-label">Tatame</span>
+                    <div class="menu-btn">
                         <div class="badge-alerta badge-info" id="badge-tatame" style="display: none;"></div>
                         <img src="icones/treino.png" alt="Tatame">
-                        <span>Tatame</span>
                     </div>
+                </div>
 
-                    <div class="btn-menu" onclick="window.location.href='missoes.html'">
+                <div class="menu-item" onclick="window.location.href='missoes.html'">
+                    <span class="menu-label">Missões</span>
+                    <div class="menu-btn">
                         <div class="badge-alerta badge-info" id="badge-missoes" style="display: none;"></div>
                         <img src="icones/missao.png" alt="Missões">
-                        <span>Missões</span>
                     </div>
+                </div>
 
-                    <div class="btn-menu" onclick="window.location.href='deposito.html'">
-                        <!-- Depósito geralmente não precisa de notificação, então sem badge aqui -->
+                <div class="menu-item" onclick="window.location.href='deposito.html'">
+                    <span class="menu-label">Depósito</span>
+                    <div class="menu-btn">
                         <img src="icones/deposito.png" alt="Depósito">
-                        <span>Depósito</span>
                     </div>
+                </div>
 
-                    <div class="btn-menu" onclick="window.location.href='enfermaria.html'" style="grid-column: span 2;">
+                <!-- O 5º botão centralizado na última linha (ocupa 2 colunas) -->
+                <div class="menu-item menu-item-full" onclick="window.location.href='enfermaria.html'">
+                    <span class="menu-label">Enfermaria</span>
+                    <div class="menu-btn">
                         <div class="badge-alerta" id="badge-enfermaria" style="display: none;"></div>
                         <img src="icones/enfermaria.png" alt="Enfermaria">
-                        <span>Enfermaria</span>
                     </div>
-
                 </div>
+
             </main>
 
             <nav>
