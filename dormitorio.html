@@ -710,13 +710,15 @@
                         let caminhoIcone = '';
                         let classeExtra = ''; 
 
-                        // Verifica se o gato está em algum treino ativo (como aluno ou professor)
-                        let isTreinando = treinosAtivos.some(t => t.gatoId === gato.id || t.profId === gato.id);
+                        // Verifica o papel do gato no Tatame
+                        let isAluno = treinosAtivos.some(t => t.gatoId === gato.id);
+                        let isProfessor = treinosAtivos.some(t => t.profId === gato.id);
 
                         // Prioridade 1: Avisar que o gato tem pontos para distribuir (Level UP)
                         if (gato.pontosLivres > 0) { caminhoIcone = 'icones/lvlup.png'; } 
                         else if (gato.estado === 'Em Missão') { caminhoIcone = 'icones/missao.png'; classeExtra = 'vaga-em-missao'; } 
-                        else if (isTreinando) { caminhoIcone = 'icones/treino.png'; } 
+                        else if (isAluno) { caminhoIcone = 'icones/treino.png'; } 
+                        else if (isProfessor) { caminhoIcone = 'icones/tutor.png'; } // NOVO: Ícone do Professor
                         else if (gato.fome < 30) { caminhoIcone = 'icones/fome.png'; } 
                         else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descanso.png'; }
 
