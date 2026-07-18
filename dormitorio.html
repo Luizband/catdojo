@@ -406,6 +406,8 @@
                 <div class="linha-stat">Agilidade <div class="controles-stat"><button class="btn-stat btn-sub" data-attr="agilidade">-</button> <span id="val-agi">1</span> <button class="btn-stat btn-add" data-attr="agilidade">+</button></div></div>
                 <div class="linha-stat">Resistência <div class="controles-stat"><button class="btn-stat btn-sub" data-attr="resistencia">-</button> <span id="val-res">1</span> <button class="btn-stat btn-add" data-attr="resistencia">+</button></div></div>
                 <div class="linha-stat">Foco <div class="controles-stat"><button class="btn-stat btn-sub" data-attr="foco">-</button> <span id="val-foco">1</span> <button class="btn-stat btn-add" data-attr="foco">+</button></div></div>
+                <!-- NOVO: Adicionado Vigor -->
+                <div class="linha-stat">Vigor <div class="controles-stat"><button class="btn-stat btn-sub" data-attr="vigor">-</button> <span id="val-vig">1</span> <button class="btn-stat btn-add" data-attr="vigor">+</button></div></div>
                 
                 <div class="botoes-stats-acoes">
                     <button class="btn-salvar-stats" id="btnSalvarGato">Salvar Status & Nome</button>
@@ -958,15 +960,15 @@
                         const claRef = doc(db, "Clas", jogadorUid);
                         await updateDoc(claRef, { inventarioInstancias: inventarioInstancias });
                         
-                        // 3. Soma todos os pontos atualmente gastos nos atributos
-                        const totalPontosGastos = atributosTemp.forca + atributosTemp.agilidade + atributosTemp.resistencia + atributosTemp.foco;
+                        // 3. Soma todos os pontos atualmente gastos nos 5 atributos
+                        const totalPontosGastos = atributosTemp.forca + atributosTemp.agilidade + atributosTemp.resistencia + atributosTemp.foco + (atributosTemp.vigor || 1);
                         
-                        // 4. Devolve os pontos para a carteira livre, subtraindo os 4 pontos mínimos
-                        pontosLivresTemp += (totalPontosGastos - 4);
+                        // 4. Devolve os pontos para a carteira livre, subtraindo os 5 pontos mínimos
+                        pontosLivresTemp += (totalPontosGastos - 5);
                         
                         // 5. Zera os atributos na memória temporária e na base de comparação
-                        atributosTemp = { forca: 1, agilidade: 1, resistencia: 1, foco: 1 };
-                        atributosBase = { forca: 1, agilidade: 1, resistencia: 1, foco: 1 }; 
+                        atributosTemp = { forca: 1, agilidade: 1, resistencia: 1, foco: 1, vigor: 1 };
+                        atributosBase = { forca: 1, agilidade: 1, resistencia: 1, foco: 1, vigor: 1 }; 
                         
                         // 6. Pinta a tela na hora
                         atualizarInterfaceAtributos();
@@ -1123,6 +1125,7 @@
             document.getElementById('val-agi').textContent = atributosTemp.agilidade;
             document.getElementById('val-res').textContent = atributosTemp.resistencia;
             document.getElementById('val-foco').textContent = atributosTemp.foco;
+            document.getElementById('val-vig').textContent = atributosTemp.vigor || 1;
             document.getElementById('ptsLivres').textContent = pontosLivresTemp;
 
             // Se a Resistência mudar, prevê o novo HP Máximo na tela em tempo real
@@ -1184,7 +1187,7 @@
             if(!novoNome) { mostrarToast("O gato precisa ter um nome!"); return; }
             
             // REGRA DE VALIDAÇÃO: Impede salvar se qualquer atributo for menor que 1
-            if (atributosTemp.forca < 1 || atributosTemp.agilidade < 1 || atributosTemp.resistencia < 1 || atributosTemp.foco < 1) {
+            if (atributosTemp.forca < 1 || atributosTemp.agilidade < 1 || atributosTemp.resistencia < 1 || atributosTemp.foco < 1 || atributosTemp.vigor < 1) {
                 mostrarToast("Erro: Todos os atributos devem ser iguais ou maiores que 1!");
                 return;
             }
