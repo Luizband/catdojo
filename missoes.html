@@ -801,7 +801,9 @@
             const gatoSnap = await getDoc(doc(db, "Clas", jogadorUid, "Gatos", m.gatoId));
             if (!gatoSnap.exists()) return;
             const gato = { id: gatoSnap.id, ...gatoSnap.data() };
-            const attrs = gato.atributos;
+            const attrs = gato.atributos || {};
+            const vigor = attrs.vigor || 1; 
+            const foco = attrs.foco || 1;
 
             const sorteio = Math.floor(Math.random() * (m.maxApt - m.minApt + 1)) + m.minApt;
             
@@ -823,8 +825,8 @@
             let hasCatnip = m.itensUsados.includes('catnip');
             let hasChuru = m.itensUsados.includes('churu');
 
-            let xpGanho = Math.floor((refDb.xpBase * (1 + (attrs.vigor / 100))) * (hasCatnip ? 1.5 : 1) * sucessoPct);
-            let moedasGanha = Math.floor((refDb.moedasBase * (1 + (attrs.foco / 100))) * (hasChuru ? 1.5 : 1) * sucessoPct);
+            let xpGanho = Math.floor((refDb.xpBase * (1 + (vigor / 100))) * (hasCatnip ? 1.5 : 1) * sucessoPct);
+            let moedasGanha = Math.floor((refDb.moedasBase * (1 + (foco / 100))) * (hasChuru ? 1.5 : 1) * sucessoPct);
             
             let repBase = refDb.repBase || (refDb.rank === 'A' ? 35 : refDb.rank === 'B' ? 15 : refDb.rank === 'C' ? 5 : 1);
             let repGanha = Math.floor((repBase + Math.floor(repBase * (attrs.foco / 100))) * sucessoPct);
