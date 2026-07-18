@@ -82,11 +82,22 @@
         }
         
         .status-icone {
-            position: absolute; top: -8px; right: -8px; background-color: #fdf5e6; border: 2px solid #5a4231;
-            border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0px 2px 4px rgba(0,0,0,0.3); z-index: 3;
+            position: absolute; top: -12px; right: -12px; 
+            width: 38px; height: 38px; 
+            display: flex; align-items: center; justify-content: center;
+            z-index: 3;
         }
-        .status-icone img { width: 65%; height: auto; }
+        .status-icone img { 
+            width: 100%; height: 100%; object-fit: contain; 
+            filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.6)); 
+        }
+
+        .vaga-em-missao {
+            filter: grayscale(100%); 
+            opacity: 0.7; 
+            cursor: default; 
+            box-shadow: none;
+        }
 
         .vaga-livre { background-color: #e5cd9e; border: 3px dashed #a68a61; cursor: default; box-shadow: none; justify-content: center; overflow: hidden;}
         .vaga-livre p { color: #a68a61; font-weight: bold; font-size: 0.8em; text-align: center;}
@@ -557,8 +568,8 @@
                     if (horasPassadas > 0.01) { 
                         gato.idadeHoras = (gato.idadeHoras || 0) + horasPassadas;
 
-                        // Nova Lógica: A saciedade decai SEMPRE, mesmo descansando!
-                        if (gato.fome > 0) {
+                        // Nova Lógica: A saciedade NÃO decai se estiver em missão!
+                        if (gato.fome > 0 && gato.estado !== 'Em Missão') {
                             gato.fome -= (5 * horasPassadas);
                             if (gato.fome <= 0) {
                                 gato.fome = 0;
@@ -648,8 +659,9 @@
                         let caminhoIcone = '';
                         let classeExtra = ''; // Para o filtro cinza
 
+                        // Atualize este bloco if/else:
                         if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } 
-                        else if (gato.estado === 'Em Missão') { caminhoIcone = 'icones/escritorio.png'; classeExtra = 'vaga-bloqueada'; } // TRAVA VISUAL
+                        else if (gato.estado === 'Em Missão') { caminhoIcone = 'icones/missao.png'; classeExtra = 'vaga-em-missao'; } 
                         else if (gato.fome < 30) { caminhoIcone = 'icones/fome.png'; } 
                         else if (gato.estado === 'Descansando') { caminhoIcone = 'icones/descanso.png'; }
 
