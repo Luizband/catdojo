@@ -1221,61 +1221,6 @@
             };
         });
 
-        // ==========================================
-        // SISTEMA DE UPGRADE DE VAGAS
-        // ==========================================
-        const CUSTO_VAGAS = { 4: 40, 5: 40, 6: 100, 7: 100, 8: 500, 9: 500, 10: 1500 };
-
-        document.getElementById('btnAbrirUpgrade').onclick = () => {
-            document.getElementById('upgVagasAtual').textContent = vagasLiberadas;
-
-            if (vagasLiberadas < 10) {
-                const proxVaga = vagasLiberadas + 1;
-                const custo = CUSTO_VAGAS[proxVaga];
-                
-                document.getElementById('upgVagasProx').textContent = proxVaga;
-                document.getElementById('upgCusto').textContent = custo;
-                
-                document.getElementById('boxProximoNivel').style.display = 'block';
-                document.getElementById('btnConfirmarUpgrade').style.display = 'block';
-                document.getElementById('txtMaxLevel').style.display = 'none';
-
-                document.getElementById('btnConfirmarUpgrade').onclick = () => comprarNovaVaga(custo, proxVaga);
-            } else {
-                document.getElementById('boxProximoNivel').style.display = 'none';
-                document.getElementById('btnConfirmarUpgrade').style.display = 'none';
-                document.getElementById('txtMaxLevel').style.display = 'block';
-            }
-            document.getElementById('modalUpgrade').style.display = 'flex';
-        };
-
-        async function comprarNovaVaga(custo, proxVaga) {
-            const moedas = dadosGlobais.moedas !== undefined ? dadosGlobais.moedas : 50;
-            
-            if (moedas >= custo) {
-                pedirConfirmacao(`Deseja gastar ${custo} moedas para abrir a vaga ${proxVaga}?`, async () => {
-                    try {
-                        const claRef = doc(db, "Clas", jogadorUid);
-                        await updateDoc(claRef, { 
-                            moedas: moedas - custo,
-                            vagasDormitorio: proxVaga 
-                        });
-                        
-                        document.getElementById('modalUpgrade').style.display = 'none';
-                        mostrarToast("Nova vaga aberta no Dormitório!");
-                        
-                        // Atualiza a tela automaticamente
-                        await carregarCabecalho(jogadorUid);
-                        renderizarGrid();
-                    } catch (e) {
-                        console.error("Erro ao comprar vaga:", e);
-                    }
-                });
-            } else {
-                mostrarToast("Moedas insuficientes!");
-            }
-        }
-
         // Cliques do Botão -
         document.querySelectorAll('.btn-sub').forEach(btn => {
             btn.onclick = () => {
