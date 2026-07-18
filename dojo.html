@@ -326,31 +326,31 @@
                 <div class="grid-menu">
                     
                     <div class="btn-menu" onclick="window.location.href='dormitorio.html'">
-                        <!-- Exemplo da nova Badge. Ela pode ficar oculta via JS depois -->
-                        <div class="badge-alerta">⚠️ 2</div>
+                        <div class="badge-alerta" id="badge-dormitorio" style="display: none;"></div>
                         <img src="icones/dormitorio.png" alt="Dormitório">
                         <span>Dormitório</span>
                     </div>
 
                     <div class="btn-menu" onclick="window.location.href='tatame.html'">
-                        <div class="badge-alerta badge-info">2 Treinando</div>
+                        <div class="badge-alerta badge-info" id="badge-tatame" style="display: none;"></div>
                         <img src="icones/treino.png" alt="Tatame">
                         <span>Tatame</span>
                     </div>
 
                     <div class="btn-menu" onclick="window.location.href='missoes.html'">
-                        <div class="badge-alerta badge-info">1 Ativa</div>
+                        <div class="badge-alerta badge-info" id="badge-missoes" style="display: none;"></div>
                         <img src="icones/missao.png" alt="Missões">
                         <span>Missões</span>
                     </div>
 
                     <div class="btn-menu" onclick="window.location.href='deposito.html'">
+                        <!-- Depósito geralmente não precisa de notificação, então sem badge aqui -->
                         <img src="icones/deposito.png" alt="Depósito">
                         <span>Depósito</span>
                     </div>
 
-                    <!-- O grid-column: span 2 faz esse botão esticar pegando a largura inteira -->
                     <div class="btn-menu" onclick="window.location.href='enfermaria.html'" style="grid-column: span 2;">
+                        <div class="badge-alerta" id="badge-enfermaria" style="display: none;"></div>
                         <img src="icones/enfermaria.png" alt="Enfermaria">
                         <span>Enfermaria</span>
                     </div>
@@ -391,7 +391,7 @@
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDoc, doc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const exibeNomeCla = document.getElementById('exibeNomeCla');
         const exibeNomeMestre = document.getElementById('exibeNomeMestre');
@@ -417,19 +417,19 @@
                 const docRef = doc(db, "Clas", uid);
                 const docSnap = await getDoc(docRef);
 
+                let countMissoes = 0;
+                let countTreinos = 0;
+
                 if (docSnap.exists()) {
                     const dados = docSnap.data();
 
+                    // 1. DADOS DO CABEÇALHO
                     let textoCla = dados.nomeCla ? dados.nomeCla.trim() : "DESCONHECIDO";
-                    if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) {
-                        textoCla = "CLÃ " + textoCla;
-                    }
+                    if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) { textoCla = "CLÃ " + textoCla; }
                     exibeNomeCla.textContent = textoCla.toUpperCase();
 
                     let textoMestre = dados.nomeMestre ? dados.nomeMestre.trim() : "...";
-                    if (!textoMestre.toUpperCase().startsWith("MESTRE")) {
-                        textoMestre = "Mestre " + textoMestre;
-                    }
+                    if (!textoMestre.toUpperCase().startsWith("MESTRE")) { textoMestre = "Mestre " + textoMestre; }
                     exibeNomeMestre.textContent = textoMestre;
 
                     exibeMoedas.textContent = dados.moedas !== undefined ? dados.moedas : 50;
@@ -440,7 +440,64 @@
                     } else {
                         abrirSeletorDeAvatar();
                     }
+
+                    // 2. CONTA MISSÕES E TREINOS ATIVOS
+                    const missoesAtivas = dados.missoesAtivas || [];
+                    countMissoes = missoesAtivas.length;
+
+                    const treinosAtivos = dados.treinosAtivos || [];
+                    treinosAtivos.forEach(t => {
+                        countTreinos++; // Conta o aluno
+                        if (t.profId) countTreinos++; // Conta o professor, se houver
+                    });
                 }
+
+                // 3. VARRE OS GATOS PARA CONTAR DOENTES E FAMINTOS
+                let countDoentes = 0;
+                let countFome = 0;
+                
+                const gatosRef = collection(db, "Clas", uid, "Gatos");
+                const qSnap = await getDocs(gatosRef);
+                qSnap.forEach(gatoDoc => {
+                    const g = gatoDoc.data();
+                    if (g.estado === 'Morto') return;
+
+                    if (g.estado === 'Doente') {
+                        countDoentes++;
+                    } else if (g.fome < 30 && g.estado !== 'Em Missão') {
+                        countFome++;
+                    }
+                });
+
+                // 4. ATIVA AS BADGES NA TELA
+                const bMissoes = document.getElementById('badge-missoes');
+                if (countMissoes > 0) {
+                    bMissoes.textContent = `${countMissoes} Ativa${countMissoes > 1 ? 's' : ''}`;
+                    bMissoes.style.display = 'block';
+                } else { bMissoes.style.display = 'none'; }
+
+                const bTatame = document.getElementById('badge-tatame');
+                if (countTreinos > 0) {
+                    bTatame.textContent = `${countTreinos} Treinando`;
+                    bTatame.style.display = 'block';
+                } else { bTatame.style.display = 'none'; }
+
+                const bEnfermaria = document.getElementById('badge-enfermaria');
+                if (countDoentes > 0) {
+                    bEnfermaria.textContent = `⚠️ ${countDoentes} Doente${countDoentes > 1 ? 's' : ''}`;
+                    bEnfermaria.style.display = 'block';
+                } else { bEnfermaria.style.display = 'none'; }
+
+                const bDormitorio = document.getElementById('badge-dormitorio');
+                let avisosDormitorio = [];
+                if (countDoentes > 0) avisosDormitorio.push(`${countDoentes} Doente${countDoentes > 1 ? 's' : ''}`);
+                if (countFome > 0) avisosDormitorio.push(`${countFome} c/ Fome`);
+
+                if (avisosDormitorio.length > 0) {
+                    bDormitorio.textContent = `⚠️ ` + avisosDormitorio.join(' | ');
+                    bDormitorio.style.display = 'block';
+                } else { bDormitorio.style.display = 'none'; }
+
             } catch (error) {
                 console.error("Erro ao carregar os dados do banco:", error);
             }
