@@ -20,15 +20,30 @@
         #app::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.65); z-index: 1; }
         .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
 
-        /* CABEÇALHO PADRÃO */
-        header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
-        .perfil-info { display: flex; gap: 15px; }
-        .foto-cla { width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;}
-        .dados-cla h2 { font-size: 1em; color: #2a2a2a; text-transform: uppercase; }
-        .dados-cla p { font-size: 0.8em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
-        .economia { display: flex; gap: 15px; font-size: 0.8em; font-weight: bold; color: #4a3b32; }
+       /* CABEÇALHO PADRÃO (Estilo Pergaminho) */
+        header {
+            background-color: #dfc495; padding: 10px 15px; display: flex; justify-content: space-between;
+            border-bottom: 3px solid #5a4231; position: relative;
+        }
+        .perfil-info { display: flex; gap: 15px; flex: 1; }
+        .foto-cla {
+            position: absolute; top: 0; left: 0; bottom: 0; width: 90px;
+            background-color: transparent; border: none; border-radius: 0; box-shadow: none; overflow: hidden;
+        }
+        .dados-cla { margin-left: 90px; display: flex; flex-direction: column; justify-content: center; }
+        .dados-cla h2 { font-size: 1.25em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 1.0em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
+
+        .economia { display: flex; gap: 15px; font-size: 0.95em; font-weight: bold; color: #4a3b32; }
         .economia div { display: flex; align-items: center; gap: 5px; }
-        .economia img { width: 18px; }
+        .economia img { width: 23px; }
+
+        .botoes-topo { display: flex; flex-direction: column; gap: 5px; }
+        .botoes-topo img {
+            width: 40px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px;
+            padding: 4px; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; transition: all 0.1s;
+        }
+        .botoes-topo img:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
         
         .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
 
@@ -292,6 +307,10 @@
                         </div>
                     </div>
                 </div>
+                <div class="botoes-topo">
+                    <img src="icones/config.png" alt="Configurações">
+                    <img src="icones/log.png" alt="Diário">
+                </div>
             </header>
             
             <div class="titulo-pagina">MISSÕES</div>
@@ -403,7 +422,7 @@
                 inventarioInstancias = dadosGlobais.inventarioInstancias || [];
                 missoesNoQuadro = dadosGlobais.missoesNoQuadro || [];
                 
-                if (dadosGlobais.avatar) document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+                if (dadosGlobais.avatar) document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="display: block; width: 100%; height: 100%; object-fit: cover;">`;
             }
 
             gatosDisponiveis = [];
