@@ -148,80 +148,71 @@
             transform: translateY(3px);
         }
 
-        /* ÁREA PRINCIPAL E GRID DE MENU */
-        main.area-menu {
-            flex: 1;
-            padding: 10px 15px;
-            overflow-y: auto;
+        /* GRID DE MENU PRINCIPAL */
+        .grid-menu {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 25px 10px; /* 25px vertical para o texto caber sem colar no botão de cima */
-            align-content: center; /* Centraliza todo o bloco de botões no meio da tela livre */
+            gap: 15px;
+            width: 100%;
         }
 
-        .menu-item {
+        .btn-menu {
+            background-color: #dfc495;
+            border: 3px solid #5a4231;
+            border-radius: 12px;
+            aspect-ratio: 1 / 1; /* Força os 4 primeiros a serem quadrados perfeitos */
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             cursor: pointer;
+            box-shadow: 0px 4px 0px #5a4231;
+            transition: transform 0.1s, box-shadow 0.1s;
+            position: relative;
         }
 
-        /* O 5º botão centralizado na última linha */
-        .menu-item-full {
+        /* Botão da Enfermaria: Ocupa 2 colunas e vira retângulo */
+        .btn-menu.enfermaria {
             grid-column: span 2;
+            aspect-ratio: auto; 
+            padding: 15px 10px; 
         }
 
-        .menu-label {
-            font-size: 1.05em;
+        .btn-menu:active {
+            box-shadow: 0px 0px 0px #5a4231;
+            transform: translateY(4px);
+        }
+
+        .btn-menu img {
+            width: 42px; /* Ícones menores e proporcionais */
+            height: 42px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3)); 
+        }
+
+        .btn-menu span {
+            font-size: 0.85em; 
             font-weight: 900;
-            color: #f1ddb0;
+            color: #2a2a2a;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
-            text-shadow: 1px 2px 3px rgba(0,0,0,0.8);
             text-align: center;
         }
 
-        .menu-btn {
-            background-color: #dfc495;
-            border: 3px solid #5a4231;
-            border-radius: 22px; /* Curvatura suave inspirada no Supercards */
-            width: 100%;
-            max-width: 130px; /* Trava o limite para não virar um botão gigante de tablet */
-            aspect-ratio: 1 / 1; /* Força o botão a ser sempre um quadrado perfeito */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0px 6px 0px #5a4231, inset 0px 0px 15px rgba(139, 90, 43, 0.15);
-            position: relative;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-
-        .menu-item:active .menu-btn {
-            transform: translateY(6px);
-            box-shadow: 0px 0px 0px #5a4231, inset 0px 0px 15px rgba(139, 90, 43, 0.15);
-        }
-
-        .menu-btn img {
-            width: 55%; /* Ocupa metade do quadrado, bem visível */
-            height: 55%;
-            object-fit: contain;
-            filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.4)); 
-        }
-
-        /* Badges Flutuantes */
+        /* Badges flutuantes */
         .badge-alerta {
             position: absolute;
-            top: -12px;
-            right: -12px;
+            top: -8px;
+            right: -8px;
             background-color: #cc3333;
             color: white;
             font-weight: bold;
-            font-size: 0.8em;
-            padding: 4px 10px;
+            font-size: 0.7em;
+            padding: 3px 8px;
             border-radius: 12px;
             border: 2px solid #2a2a2a;
-            box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.4);
             z-index: 3;
             white-space: nowrap;
         }
@@ -337,48 +328,41 @@
                 </div>
             </header>
 
-            <main class="area-menu">
-                
-                <div class="menu-item" onclick="window.location.href='dormitorio.html'">
-                    <span class="menu-label">Dormitório</span>
-                    <div class="menu-btn">
+            <!-- justify-content: center centraliza o grid e mantém o rodapé embaixo -->
+            <main style="justify-content: center;">
+                <div class="grid-menu">
+                    
+                    <div class="btn-menu" onclick="window.location.href='dormitorio.html'">
                         <div class="badge-alerta" id="badge-dormitorio" style="display: none;"></div>
                         <img src="icones/dormitorio.png" alt="Dormitório">
+                        <span>Dormitório</span>
                     </div>
-                </div>
 
-                <div class="menu-item" onclick="window.location.href='tatame.html'">
-                    <span class="menu-label">Tatame</span>
-                    <div class="menu-btn">
+                    <div class="btn-menu" onclick="window.location.href='tatame.html'">
                         <div class="badge-alerta badge-info" id="badge-tatame" style="display: none;"></div>
                         <img src="icones/treino.png" alt="Tatame">
+                        <span>Tatame</span>
                     </div>
-                </div>
 
-                <div class="menu-item" onclick="window.location.href='missoes.html'">
-                    <span class="menu-label">Missões</span>
-                    <div class="menu-btn">
+                    <div class="btn-menu" onclick="window.location.href='missoes.html'">
                         <div class="badge-alerta badge-info" id="badge-missoes" style="display: none;"></div>
                         <img src="icones/missao.png" alt="Missões">
+                        <span>Missões</span>
                     </div>
-                </div>
 
-                <div class="menu-item" onclick="window.location.href='deposito.html'">
-                    <span class="menu-label">Depósito</span>
-                    <div class="menu-btn">
+                    <div class="btn-menu" onclick="window.location.href='deposito.html'">
                         <img src="icones/deposito.png" alt="Depósito">
+                        <span>Depósito</span>
                     </div>
-                </div>
 
-                <!-- O 5º botão centralizado na última linha (ocupa 2 colunas) -->
-                <div class="menu-item menu-item-full" onclick="window.location.href='enfermaria.html'">
-                    <span class="menu-label">Enfermaria</span>
-                    <div class="menu-btn">
+                    <!-- Botão da enfermaria com a classe extra para virar retângulo -->
+                    <div class="btn-menu enfermaria" onclick="window.location.href='enfermaria.html'">
                         <div class="badge-alerta" id="badge-enfermaria" style="display: none;"></div>
                         <img src="icones/enfermaria.png" alt="Enfermaria">
+                        <span>Enfermaria</span>
                     </div>
-                </div>
 
+                </div>
             </main>
 
             <nav>
