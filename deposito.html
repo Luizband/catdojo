@@ -14,14 +14,9 @@
             background-color: #2c2c2c; 
             display: flex; 
             justify-content: center; 
-            /* A TRAVA DEFINITIVA PARA ECRÃS MOBILE */
             position: fixed;
-            top: 0; 
-            bottom: 0; 
-            left: 0; 
-            right: 0;
-            width: 100%;
-            overflow: hidden; 
+            top: 0; bottom: 0; left: 0; right: 0;
+            width: 100%; overflow: hidden; 
         }
 
         #app {
@@ -36,20 +31,31 @@
 
         .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
 
-        /* CABEÇALHO PADRÃO */
-        header { background-color: #dfc495; padding: 10px 15px; border-bottom: 3px solid #5a4231; }
-        .perfil-info { display: flex; gap: 15px; }
-        .foto-cla {
-            width: 60px; height: 60px; background-color: #ffffff; border: 3px solid #5a4231;
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
-            color: #a68a61; font-size: 0.7em; font-weight: bold; box-shadow: 0px 3px 0px #5a4231;
+        /* CABEÇALHO PADRÃO (Estilo Pergaminho) */
+        header {
+            background-color: #dfc495; padding: 10px 15px; display: flex; justify-content: space-between;
+            border-bottom: 3px solid #5a4231; position: relative;
         }
-        .dados-cla h2 { font-size: 1em; color: #2a2a2a; text-transform: uppercase; }
-        .dados-cla p { font-size: 0.8em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
-        .economia { display: flex; gap: 15px; font-size: 0.8em; font-weight: bold; color: #4a3b32; }
+        .perfil-info { display: flex; gap: 15px; flex: 1; }
+        .foto-cla {
+            position: absolute; top: 0; left: 0; bottom: 0; width: 90px;
+            background-color: transparent; border: none; border-radius: 0; box-shadow: none; overflow: hidden;
+        }
+        .dados-cla { margin-left: 90px; display: flex; flex-direction: column; justify-content: center; }
+        .dados-cla h2 { font-size: 1.25em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 1.0em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
+
+        .economia { display: flex; gap: 15px; font-size: 0.95em; font-weight: bold; color: #4a3b32; }
         .economia div { display: flex; align-items: center; gap: 5px; }
-        .economia img { width: 18px; }
-        
+        .economia img { width: 23px; }
+
+        .botoes-topo { display: flex; flex-direction: column; gap: 5px; }
+        .botoes-topo img {
+            width: 40px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px;
+            padding: 4px; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; transition: all 0.1s;
+        }
+        .botoes-topo img:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+
         .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;}
 
         /* ÁREA DO DEPÓSITO (TETRIS) */
@@ -129,12 +135,9 @@
             color: #ff9999; font-weight: bold; text-transform: uppercase; text-align: center;
         }
 
-        .btn-upgrade {
-            margin-top: 15px; background-color: #d27d46; color: white; border: 2px solid #5a4231; 
-            padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; 
-            box-shadow: 0px 4px 0px #5a4231; width: 100%; text-transform: uppercase;
-        }
-        .btn-upgrade:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(4px); }
+        /* MODAL DE UPGRADE DO DEPÓSITO */
+        .box-upgrade { background: #dfc495; border: 2px dashed #5a4231; border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 15px;}
+        .seta-up { color: #d27d46; font-size: 1.2em; font-weight: bold; margin: 10px 0; text-align: center;}
 
         /* NAVEGAÇÃO INFERIOR */
         nav { 
@@ -144,10 +147,9 @@
             justify-content: space-around; 
             flex-shrink: 0;
             padding: 10px 5px; 
-            /* Protege os botões da barra de gestos do sistema (tanto no Android como no iPhone) */
             padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none;}
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none; text-transform: uppercase;}
         .nav-item img { width: 40px; margin-bottom: 3px; }
 
         /* SISTEMA DE AVISOS */
@@ -176,8 +178,38 @@
         </div>
     </div>
 
+    <!-- MODAL DE UPGRADE DO DEPÓSITO -->
+    <div class="modal-centro" id="modalUpgrade">
+        <div class="painel-centro" style="width: 90%; max-width: 350px;">
+            <h3 style="color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px dashed #a68a61; padding-bottom: 5px;">Expandir Depósito</h3>
+            
+            <div class="box-upgrade" style="background: #2c2c2c; border-color: #5a4231; color: white;">
+                <p style="font-size: 0.8em; text-transform: uppercase; color: #dfc495;">Nível Atual (<span id="upgNivelAtual">1</span>)</p>
+                <div style="color: #f1ddb0; font-weight: bold; margin-top: 5px;">Tamanho: 5x<span id="upgLinhasAtual">7</span></div>
+            </div>
+
+            <div class="seta-up">▼</div>
+
+            <div class="box-upgrade" id="boxProximoNivel">
+                <p style="font-size: 0.8em; text-transform: uppercase; color: #5a4231;">Próximo Nível (<span id="upgNivelProx">2</span>)</p>
+                <div style="color: #2a2a2a; font-weight: bold; margin-top: 5px;">Tamanho: 5x<span id="upgLinhasProx">8</span></div>
+                <div style="margin-top: 15px; font-weight: bold; color: #b30000; display: flex; justify-content: center; align-items: center; gap: 5px;">
+                    Custo: <img src="icones/moeda.png" width="18"> <span id="upgCusto">100</span>
+                </div>
+            </div>
+
+            <div id="txtMaxLevel" style="display: none; color: #2E7D32; font-weight: bold; margin-bottom: 15px;">DEPÓSITO NO ESPAÇO MÁXIMO!</div>
+
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" onclick="document.getElementById('modalUpgrade').style.display='none'">Voltar</button>
+                <button class="btn-centro" id="btnConfirmarUpgrade">Evoluir</button>
+            </div>
+        </div>
+    </div>
+
     <div id="app">
         <div class="conteudo-app">
+            
             <header>
                 <div class="perfil-info">
                     <div class="foto-cla" id="fotoClaContainer"><span id="placeholderFoto">FOTO</span></div>
@@ -190,13 +222,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="botoes-topo">
+                    <img src="icones/lvlup.png" alt="Evoluir" id="btnAbrirUpgrade">
+                    <img src="icones/log.png" alt="Diário">
+                </div>
             </header>
+
             <div class="titulo-pagina">Depósito</div>
 
             <main>
                 <div class="info-deposito">
                     <span id="txtNivelDeposito">Nível 1 (5x7)</span>
-                    <span id="txtOcupacao">0/35 Itens</span>
+                    <span id="txtOcupacao">0 Itens Ocupando Espaço</span>
                 </div>
 
                 <div id="gridContainer">
@@ -205,17 +242,21 @@
                 <div class="lixeira-zona" id="zonaLixeira">
                     🗑️ Arraste um item aqui para excluí-lo
                 </div>
-
-                <button class="btn-upgrade" id="btnUpgrade" style="display: none;">
-                    Expandir Linha (100 Moedas)
-                </button>
             </main>
 
             <nav>
-                <a href="dojo.html" class="nav-item"><img src="icones/Dojo.png" alt="Dojo">Dojo</a>
-                <a href="dormitorio.html" class="nav-item"><img src="icones/dormitorio.png" alt="Dormitório">Dormitório</a>
-                <div class="nav-item"><img src="icones/arena.png" alt="Arena">Arena</div>
-                <a href="loja.html" class="nav-item"><img src="icones/loja.png" alt="Loja">Loja</a>
+                <div class="nav-item" onclick="window.location.href='dojo.html'">
+                    <img src="icones/Dojo.png" alt="Dojo">DOJO
+                </div>
+                <div class="nav-item" onclick="window.location.href='dormitorio.html'">
+                    <img src="icones/dormitorio.png" alt="Dormitório">DORMITÓRIO
+                </div>
+                <div class="nav-item" onclick="window.location.href='arena.html'">
+                    <img src="icones/arena.png" alt="Arena">ARENA
+                </div>
+                <div class="nav-item" onclick="window.location.href='loja.html'">
+                    <img src="icones/loja.png" alt="Loja">LOJA
+                </div>
             </nav>
         </div>
     </div>
@@ -233,12 +274,12 @@
         let linhasTotais = 7;
         let inventarioInstancias = [];
 
-        // Controle do Drag & Drop Atualizado (As variáveis certas agora)
+        // Controle do Drag & Drop 
         let isDragging = false;
         let dragItem = null;
         let ghostEl = null;
-        let indicadorEl = null; // A marcação verde/vermelha
-        let celBaseW = 0; // Medidas da célula
+        let indicadorEl = null; 
+        let celBaseW = 0; 
         let celBaseH = 0;
 
         function mostrarToast(mensagem) {
@@ -283,13 +324,15 @@
                 document.getElementById('exibeNomeMestre').textContent = textoMestre;
                 document.getElementById('exibeMoedas').textContent = dadosGlobais.moedas || 0;
                 document.getElementById('exibeReputacao').textContent = `${dadosGlobais.reputacao || 0}/500`;
-                if (dadosGlobais.avatar) document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+                if (dadosGlobais.avatar) {
+                    document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="display: block; width: 100%; height: 100%; object-fit: cover;">`;
+                }
 
                 nivelDeposito = dadosGlobais.nivelDeposito || 1;
                 linhasTotais = 6 + nivelDeposito; // Nivel 1 = 7, Nivel 2 = 8, etc.
                 inventarioInstancias = dadosGlobais.inventarioInstancias || [];
 
-                // MIGRAR INVENTÁRIO ANTIGO (Caso o jogador já tenha comprado itens antes da física existir)
+                // MIGRAR INVENTÁRIO ANTIGO
                 if (dadosGlobais.inventario) {
                     let houveMigracao = false;
                     for (let itemId in dadosGlobais.inventario) {
@@ -309,40 +352,60 @@
                         }
                     }
                     if (houveMigracao) {
-                        // Salva o novo inventário físico e deleta o velho (apenas números)
                         await updateDoc(docRef, { inventarioInstancias: inventarioInstancias, inventario: deleteField() });
                         mostrarToast("Seus itens foram desencaixotados no Depósito!");
                     }
                 }
 
                 renderizarGrid();
-                atualizarBotoesDeUpgrade();
             }
         }
 
-        function atualizarBotoesDeUpgrade() {
-            const btn = document.getElementById('btnUpgrade');
+        // ==========================================
+        // SISTEMA DE UPGRADE DO DEPÓSITO
+        // ==========================================
+        document.getElementById('btnAbrirUpgrade').onclick = () => {
+            document.getElementById('upgNivelAtual').textContent = nivelDeposito;
+            document.getElementById('upgLinhasAtual').textContent = linhasTotais;
+
             if (nivelDeposito < 4) {
+                const proxNivel = nivelDeposito + 1;
                 const precos = { 1: 100, 2: 300, 3: 500 };
                 const custo = precos[nivelDeposito];
-                btn.style.display = 'block';
-                btn.textContent = `Expandir Linha (${custo} Moedas)`;
-                btn.onclick = () => comprarUpgrade(custo);
-            } else {
-                btn.style.display = 'none';
-            }
-        }
+                
+                document.getElementById('upgNivelProx').textContent = proxNivel;
+                document.getElementById('upgLinhasProx').textContent = 6 + proxNivel;
+                document.getElementById('upgCusto').textContent = custo;
+                
+                document.getElementById('boxProximoNivel').style.display = 'block';
+                document.getElementById('btnConfirmarUpgrade').style.display = 'block';
+                document.getElementById('txtMaxLevel').style.display = 'none';
 
-        async function comprarUpgrade(custo) {
-            if (dadosGlobais.moedas >= custo) {
+                // Configura o evento do botão confirmar
+                document.getElementById('btnConfirmarUpgrade').onclick = () => comprarUpgrade(custo, proxNivel);
+            } else {
+                document.getElementById('boxProximoNivel').style.display = 'none';
+                document.getElementById('btnConfirmarUpgrade').style.display = 'none';
+                document.getElementById('txtMaxLevel').style.display = 'block';
+            }
+            document.getElementById('modalUpgrade').style.display = 'flex';
+        };
+
+        async function comprarUpgrade(custo, proxNivel) {
+            if ((dadosGlobais.moedas || 0) >= custo) {
                 pedirConfirmacao(`Deseja gastar ${custo} moedas para expandir o depósito?`, async () => {
-                    const docRef = doc(db, "Clas", jogadorUid);
-                    await updateDoc(docRef, { 
-                        moedas: dadosGlobais.moedas - custo,
-                        nivelDeposito: nivelDeposito + 1 
-                    });
-                    mostrarToast("Depósito expandido!");
-                    carregarDeposito(); // Recarrega tudo
+                    try {
+                        const docRef = doc(db, "Clas", jogadorUid);
+                        await updateDoc(docRef, { 
+                            moedas: (dadosGlobais.moedas || 0) - custo,
+                            nivelDeposito: proxNivel 
+                        });
+                        document.getElementById('modalUpgrade').style.display = 'none';
+                        mostrarToast("Depósito expandido!");
+                        carregarDeposito(); 
+                    } catch (e) {
+                        console.error(e);
+                    }
                 });
             } else {
                 mostrarToast("Moedas insuficientes!");
@@ -353,16 +416,13 @@
         // LÓGICA DE GRID E FÍSICA (TETRIS)
         // ==========================================
         function podeColocar(x, y, larg, alt, ignorarId) {
-            // Saiu dos limites?
             if (x < 0 || y < 0 || x + larg > 5 || y + alt > linhasTotais) return false;
             
-            // Colisão com outro item?
             for (let inst of inventarioInstancias) {
                 if (inst.idInstancia === ignorarId) continue;
                 let ref = ITENS[inst.itemId];
                 if (!ref) continue;
                 
-                // Checagem de sobreposição geométrica (AABB)
                 if (x < inst.x + ref.espaco.largura && x + larg > inst.x &&
                     y < inst.y + ref.espaco.altura && y + alt > inst.y) {
                     return false;
@@ -388,14 +448,13 @@
             document.getElementById('txtNivelDeposito').textContent = `Nível ${nivelDeposito} (5x${linhasTotais})`;
             document.getElementById('txtOcupacao').textContent = `${inventarioInstancias.length} Itens Ocupando Espaço`;
 
-            // Desenha o Grid Base (O fundo onde os itens pisam)
+            // Desenha o Grid Base 
             for (let y = 0; y < linhasTotais; y++) {
                 for (let x = 0; x < 5; x++) {
                     let divCel = document.createElement('div');
                     divCel.className = 'celula-grid';
                     divCel.dataset.x = x;
                     divCel.dataset.y = y;
-                    // A magia do CSS Grid: localizamos a célula exatamente na matriz
                     divCel.style.gridColumn = `${x + 1}`; 
                     divCel.style.gridRow = `${y + 1}`;
                     container.appendChild(divCel);
@@ -409,7 +468,6 @@
 
                 let divItem = document.createElement('div');
                 divItem.className = 'item-instancia';
-                // Ocupa o número exato de espaços na horizontal e vertical
                 divItem.style.gridColumn = `${inst.x + 1} / span ${refDb.espaco.largura}`;
                 divItem.style.gridRow = `${inst.y + 1} / span ${refDb.espaco.altura}`;
                 
@@ -434,7 +492,6 @@
             const refDb = ITENS[instancia.itemId];
             const celulaRect = document.querySelector('.celula-grid').getBoundingClientRect();
             
-            // Grava o tamanho exato de um quadrado para a física funcionar perfeita
             celBaseW = celulaRect.width;
             celBaseH = celulaRect.height;
 
@@ -447,7 +504,6 @@
             document.body.appendChild(ghostEl);
             elementOriginal.style.opacity = '0.3'; 
 
-            // Cria a marcação (holograma) invisível inicialmente
             indicadorEl = document.createElement('div');
             indicadorEl.className = 'indicador-drop';
             document.getElementById('gridContainer').appendChild(indicadorEl);
@@ -462,12 +518,10 @@
             const x = e.touches ? e.touches[0].clientX : e.clientX;
             const y = e.touches ? e.touches[0].clientY : e.clientY;
             
-            // Move a caixa que acompanha o dedo
             ghostEl.style.left = `${x - ghostEl.offsetWidth / 2}px`;
             ghostEl.style.top = `${y - ghostEl.offsetHeight / 2}px`;
 
             if (indicadorEl) {
-                // MÁGICA: Em vez do dedo, lemos a célula exata que bate no topo-esquerdo do item
                 const ghostRect = ghostEl.getBoundingClientRect();
                 const pontoX = ghostRect.left + (celBaseW / 2);
                 const pontoY = ghostRect.top + (celBaseH / 2);
@@ -480,19 +534,17 @@
                     const novoY = parseInt(celula.dataset.y);
                     const refDb = ITENS[dragItem.itemId];
 
-                    // Mostra e posiciona a marcação na Grid
                     indicadorEl.style.display = 'block';
                     indicadorEl.style.gridColumn = `${novoX + 1} / span ${refDb.espaco.largura}`;
                     indicadorEl.style.gridRow = `${novoY + 1} / span ${refDb.espaco.altura}`;
 
-                    // Pinta de verde ou vermelho
                     if (podeColocar(novoX, novoY, refDb.espaco.largura, refDb.espaco.altura, dragItem.idInstancia)) {
                         indicadorEl.classList.remove('invalido');
                     } else {
                         indicadorEl.classList.add('invalido');
                     }
                 } else {
-                    indicadorEl.style.display = 'none'; // Esconde se sair da Grid
+                    indicadorEl.style.display = 'none'; 
                 }
             }
         }
@@ -504,7 +556,6 @@
             const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
             const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
             
-            // Soltou na lixeira? (Lê o ponteiro normal)
             const elementoAbaixoMouse = document.elementFromPoint(x, y);
             if (elementoAbaixoMouse && elementoAbaixoMouse.closest('#zonaLixeira')) {
                 ghostEl.remove(); ghostEl = null;
@@ -519,7 +570,6 @@
                 return;
             }
 
-            // Lê onde o holograma estava para fazer o encaixe real
             const ghostRect = ghostEl.getBoundingClientRect();
             const pontoX = ghostRect.left + (celBaseW / 2);
             const pontoY = ghostRect.top + (celBaseH / 2);
@@ -546,13 +596,11 @@
             renderizarGrid();
         }
 
-        // Eventos Globais para segurar o arraste onde quer que o dedo vá
         window.addEventListener('mousemove', moverFantasma);
         window.addEventListener('touchmove', moverFantasma, {passive: false});
         window.addEventListener('mouseup', finalizarDrag);
         window.addEventListener('touchend', finalizarDrag);
 
-        // Ativa PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
         }
