@@ -776,9 +776,15 @@
             document.getElementById('txtXp').textContent = `${gato.xpAtual}/${gato.xpProxFaixa}`;
             document.getElementById('fillXp').style.width = `${(gato.xpAtual / gato.xpProxFaixa) * 100}%`;
 
-            // Carrega os pontos reais do banco para a nossa memória temporária
-            atributosBase = { ...gato.atributos };
-            atributosTemp = { ...gato.atributos };
+            // Carrega os pontos reais com trava de segurança para gatos antigos
+            atributosBase = { 
+                forca: gato.atributos.forca || 1, 
+                agilidade: gato.atributos.agilidade || 1, 
+                resistencia: gato.atributos.resistencia || 1, 
+                foco: gato.atributos.foco || 1, 
+                vigor: gato.atributos.vigor || 1 
+            };
+            atributosTemp = { ...atributosBase };
             pontosLivresTemp = gato.pontosLivres || 0; 
             
             atualizarInterfaceAtributos(); // Pinta os números na tela 
