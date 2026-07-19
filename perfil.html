@@ -163,7 +163,7 @@
                     </div>
 
                     <div class="linha-destaque">
-                        <img src="imagens/gato00.png" id="fotoGatoMissao" alt="Gato">
+                        <img src="icones/log.png" id="fotoGatoMissao" alt="Gato">
                         <div class="destaque-info">
                             <h5>Maior Agente</h5>
                             <p><span id="nomeGatoMissao">Nenhum</span> (<span id="valGatoMissao">0</span> Missões)</p>
@@ -171,7 +171,7 @@
                     </div>
 
                     <div class="linha-destaque">
-                        <img src="imagens/gato00.png" id="fotoGatoArena" alt="Gato">
+                        <img src="icones/arena.png" id="fotoGatoArena" alt="Gato">
                         <div class="destaque-info">
                             <h5>Campeão da Arena</h5>
                             <p><span id="nomeGatoArena">Nenhum</span> (<span id="valGatoArena">0</span> Vitórias)</p>
@@ -228,9 +228,8 @@
             const docSnap = await getDoc(docRef);
             
             let gatosVivosCount = 0;
-            let melhorAgente = { nome: "Nenhum", foto: "imagens/gato00.png", missoes: 0 };
-            let campeaoArena = { nome: "Nenhum", foto: "imagens/gato00.png", vitorias: 0 };
-
+            let melhorAgente = { nome: "Nenhum", foto: "icones/log.png", missoes: 0 };
+            let campeaoArena = { nome: "Nenhum", foto: "icones/arena.png", vitorias: 0 };
             if (docSnap.exists()) {
                 dadosGlobais = docSnap.data();
                 
