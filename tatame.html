@@ -456,9 +456,13 @@
             const container = document.getElementById('listaGatosContainer');
             container.innerHTML = '';
 
-            // Filtra quem está ocupado (Em Missão, Doente, Descansando, Treinando)
+            // Filtra quem está ocupado 
             const gatosOcupados = treinosAtivos.map(t => t.gatoId).concat(treinosAtivos.filter(t => t.profId).map(t => t.profId));
-            const gatosLivres = gatosDisponiveis.filter(g => g.estado === 'Saudável' && !gatosOcupados.includes(g.id));
+            
+            // Flexibiliza o estado para não barrar gatos salvos sem acentuação no banco
+            const gatosLivres = gatosDisponiveis.filter(g => 
+                (g.estado === 'Saudável' || g.estado === 'Saudavel') && !gatosOcupados.includes(g.id)
+            );
 
             if (gatosLivres.length === 0) {
                 container.innerHTML = '<p style="text-align:center; color:#5a4231; font-weight:bold;">Nenhum gato livre e saudável disponível.</p>';
@@ -466,6 +470,11 @@
                 gatosLivres.forEach(g => {
                     const nivelGato = g.nivel || 1;
                     const imgFaixa = `imagens/${String(nivelGato).padStart(2, '0')}.png`;
+
+                    // Cálculo seguro de HP Max para gatos antigos da conta
+                    const hpMaxSeguro = g.hpMax || (250 + ((g.atributos?.resistencia || 1) * 15));
+                    const hpAtualSeguro = g.hpAtual !== undefined ? g.hpAtual : hpMaxSeguro;
+                    const precisaDescansar = hpAtualSeguro < (hpMaxSeguro / 2);
 
                     const div = document.createElement('div');
                     div.className = 'item-selecao';
@@ -476,14 +485,14 @@
                                 ${g.nome} 
                                 <img src="${imgFaixa}" alt="Faixa" style="width: 28px; height: 28px; border-radius: 0; box-shadow: none; object-fit: contain;">
                             </h5>
-                            <p style="color: ${g.hpAtual < (g.hpMax / 2) ? '#cc3333' : '#2E7D32'};">
-                                HP: ${Math.round(g.hpAtual)}/${g.hpMax}
+                            <p style="color: ${precisaDescansar ? '#cc3333' : '#2E7D32'};">
+                                HP: ${Math.round(hpAtualSeguro)}/${hpMaxSeguro}
                             </p>
                         </div>
                     `;
                     div.onclick = () => {
-                        // Trava de HP: Impede o gato de treinar se tiver menos da metade da vida
-                        if (g.hpAtual < (g.hpMax / 2)) {
+                        // Trava de HP consertada
+                        if (precisaDescansar) {
                             mostrarToast(`${g.nome} precisa descansar mais antes de treinar!`);
                             return;
                         }
@@ -656,6 +665,10 @@
 
             treinosAtivos.forEach((t, idx) => {
                 const arteObj = ARTES_MARCIAIS[t.arteKey];
+                
+                // Previne crash fantasma caso a chave da Arte Marcial seja deletada ou inválida
+                if (!arteObj) return; 
+
                 const div = document.createElement('div');
                 div.className = 'card-treino';
                 
