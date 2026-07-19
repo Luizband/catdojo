@@ -364,6 +364,7 @@
         let gatosDisponiveis = [];
         let missoesAtivas = [];
         let missoesNoQuadro = []; 
+        let treinosAtivos = []; // NOVO: Guarda quem está no tatame
         
         let missaoAtual = null; 
         let missaoQuadroInstanciaId = null; 
@@ -421,6 +422,7 @@
                 
                 inventarioInstancias = dadosGlobais.inventarioInstancias || [];
                 missoesNoQuadro = dadosGlobais.missoesNoQuadro || [];
+                treinosAtivos = dadosGlobais.treinosAtivos || []; // Lê o tatame
                 
                 if (dadosGlobais.avatar) document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="display: block; width: 100%; height: 100%; object-fit: cover;">`;
             }
@@ -546,12 +548,18 @@
             atualizarSlotsUI();
 
             const seletor = document.getElementById('selectGato');
-            seletor.innerHTML = '<option value="">-- Selecione um Gato Saudável --</option>';
+            seletor.innerHTML = '<option value="">-- Selecione um Gato Livre --</option>';
             
             let temGato = false;
             let reqFaixa = missaoAtual.minFaixa || 1;
             
+            // Reúne as IDs de todo mundo que está suando a camisa (ou dando aula) no Tatame
+            const gatosOcupados = treinosAtivos.map(t => t.gatoId).concat(treinosAtivos.filter(t => t.profId).map(t => t.profId));
+            
             gatosDisponiveis.forEach(g => {
+                // A TRAVA: Pula o gato imediatamente se ele estiver na lista de ocupados
+                if (gatosOcupados.includes(g.id)) return;
+
                 const nivelExato = g.nivel || 1;
                 if (nivelExato >= reqFaixa) {
                     seletor.innerHTML += `<option value="${g.id}">${g.nome} (Faixa ${nivelExato}) - HP: ${Math.round(g.hpAtual)}</option>`;
@@ -559,7 +567,7 @@
                 }
             });
 
-            if(!temGato) seletor.innerHTML = '<option value="">Nenhum gato atinge a exigência mínima.</option>';
+            if(!temGato) seletor.innerHTML = '<option value="">Nenhum gato livre atinge a exigência mínima.</option>';
 
             document.getElementById('modalPrep').style.display = 'flex';
             window.calcularEstimativas();
