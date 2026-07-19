@@ -1,42 +1,78 @@
-const CACHE_NAME = 'catdojo-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './dojo.html',
-  './firebase-config.js',
-  './imagens/logo.png',
-  './imagens/fundo.png'
-];
+// =========================================================================
+// 1. IMPORTAÇÕES DO FIREBASE (Sempre no topo)
+// =========================================================================
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-// Instalação do PWA e salvamento dos arquivos essenciais em cache
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    }).then(() => self.skipWaiting())
-  );
+// 2. INICIALIZAÇÃO DO FIREBASE EM SEGUNDO PLANO
+firebase.initializeApp({
+  apiKey: "COLE_AQUI_SUA_API_KEY",
+  authDomain: "catdojo-ff9f3.firebaseapp.com",
+  projectId: "catdojo-ff9f3",
+  storageBucket: "catdojo-ff9f3.appspot.com",
+  messagingSenderId: "COLE_AQUI_O_SENDER_ID",
+  appId: "COLE_AQUI_O_APP_ID"
 });
 
-// Ativação do Service Worker
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
+const messaging = firebase.messaging();
 
-// Estratégia de carregamento: tenta buscar da rede, se cair (offline), busca no cache
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    fetch(e.request).catch(() => {
-      return caches.match(e.request);
-    })
-  );
+// =========================================================================
+// 3. SEU CÓDIGO ORIGINAL DO PWA (Cache e Offline)
+// =========================================================================
+const CACHE_NAME = 'catdojo-v1';[cite: 1]
+const ASSETS = [[cite: 1]
+  './',[cite: 1]
+  './index.html',[cite: 1]
+  './dojo.html',[cite: 1]
+  './firebase-config.js',[cite: 1]
+  './imagens/logo.png',[cite: 1]
+  './imagens/fundo.png'[cite: 1]
+];[cite: 1]
+
+// Instalação do PWA e salvamento dos arquivos essenciais em cache[cite: 1]
+self.addEventListener('install', (e) => {[cite: 1]
+  e.waitUntil([cite: 1]
+    caches.open(CACHE_NAME).then((cache) => {[cite: 1]
+      return cache.addAll(ASSETS);[cite: 1]
+    }).then(() => self.skipWaiting())[cite: 1]
+  );[cite: 1]
+});[cite: 1]
+
+// Ativação do Service Worker[cite: 1]
+self.addEventListener('activate', (e) => {[cite: 1]
+  e.waitUntil([cite: 1]
+    caches.keys().then((keys) => {[cite: 1]
+      return Promise.all([cite: 1]
+        keys.map((key) => {[cite: 1]
+          if (key !== CACHE_NAME) {[cite: 1]
+            return caches.delete(key);[cite: 1]
+          }[cite: 1]
+        })[cite: 1]
+      );[cite: 1]
+    }).then(() => self.clients.claim())[cite: 1]
+  );[cite: 1]
+});[cite: 1]
+
+// Estratégia de carregamento: tenta buscar da rede, se cair (offline), busca no cache[cite: 1]
+self.addEventListener('fetch', (e) => {[cite: 1]
+  e.respondWith([cite: 1]
+    fetch(e.request).catch(() => {[cite: 1]
+      return caches.match(e.request);[cite: 1]
+    })[cite: 1]
+  );[cite: 1]
+});[cite: 1]
+
+// =========================================================================
+// 4. O CÓDIGO DO MENSAGEIRO (Escuta as notificações com o jogo fechado)
+// =========================================================================
+messaging.onBackgroundMessage((payload) => {
+  console.log('Mensagem recebida do robô com o jogo fechado:', payload);
+  
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: './imagens/logo.png' // Aproveitando sua imagem de logo que já está no cache
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
