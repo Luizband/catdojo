@@ -407,9 +407,9 @@
             });
         };
 
-        // ATIVAR NOTIFICAÇÕES (Vinculando ao botão das configurações)
+                // ATIVAR NOTIFICAÇÕES (Versão Corrigida para o sw.js)
         document.getElementById('btnNotificacao').onclick = async () => {
-            if (!jogadorUid) return; // Proteção para garantir que o jogador carregou
+            if (!jogadorUid) return; 
 
             const messaging = getMessaging();
             
@@ -418,9 +418,13 @@
                 const permission = await Notification.requestPermission();
                 
                 if (permission === 'granted') {
-                    // Gera a credencial do aparelho usando a sua chave gerada
+                    // 1. Pega o Service Worker (sw.js) que já está instalado no navegador
+                    const swRegistration = await navigator.serviceWorker.ready;
+                    
+                    // 2. Avisa ao Firebase para usar o nosso SW na hora de gerar o token
                     const token = await getToken(messaging, { 
-                        vapidKey: 'BOnT9mNjR-uD7ANeuxKcYYF-MNcF6NwusPpmKFWdW1cQWukGfmGxXuKxbDLm8EDsif-y1etAFFIQ2m7XpBzwYEw' 
+                        vapidKey: 'BOnT9mNjR-uD7ANeuxKcYYF-MNcF6NwusPpmKFWdW1cQWukGfmGxXuKxbDLm8EDsif-y1etAFFIQ2m7XpBzwYEw',
+                        serviceWorkerRegistration: swRegistration
                     });
                     
                     if (token) {
@@ -429,16 +433,18 @@
                         await updateDoc(claRef, { fcmToken: token });
                         
                         alert("Perfeito, Mestre! As notificações do Dojo estão ativadas.");
-                        document.getElementById('modalConfig').style.display='none'; // Fecha o modal
+                        document.getElementById('modalConfig').style.display='none';
                     }
                 } else {
                     alert("Permissão negada. O dojo ficará silencioso.");
                 }
             } catch (error) {
                 console.error("Erro ao configurar notificações:", error);
-                alert("Erro ao tentar ativar as notificações. Veja o console.");
+                // Agora o erro real vai aparecer escrito na tela do seu celular!
+                alert("Erro técnico: " + error.message); 
             }
         };
+        
 
         // --- MANTER ESTE SEU CÓDIGO DO FINAL INTACTO ---
         if ('serviceWorker' in navigator) {
