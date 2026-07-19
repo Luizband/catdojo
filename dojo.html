@@ -248,6 +248,7 @@
             <h3 style="margin-bottom: 20px;">Configurações</h3>
             
             <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button id="btnNotificacao" style="background-color: #3399ff; color: white; border: 2px solid #005cbf; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 4px 0px #005cbf; text-transform: uppercase; width: 100%; font-size: 0.9em;">🔔 Ativar Notificações</button>
                 <button id="btnSairConta" style="background-color: #cc3333; color: white; border: 2px solid #800000; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 4px 0px #800000; text-transform: uppercase; width: 100%; font-size: 0.9em;">Sair da Conta</button>
             </div>
         </div>
@@ -257,6 +258,7 @@
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDoc, doc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
         const exibeNomeCla = document.getElementById('exibeNomeCla');
         const exibeNomeMestre = document.getElementById('exibeNomeMestre');
@@ -405,6 +407,40 @@
             });
         };
 
+        // ATIVAR NOTIFICAÇÕES (Vinculando ao botão das configurações)
+        document.getElementById('btnNotificacao').onclick = async () => {
+            if (!jogadorUid) return; // Proteção para garantir que o jogador carregou
+
+            const messaging = getMessaging();
+            
+            try {
+                // Pede a permissão pro celular do usuário
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    // Gera a credencial do aparelho usando a sua chave gerada
+                    const token = await getToken(messaging, { 
+                        vapidKey: 'BOnT9mNjR-uD7ANeuxKcYYF-MNcF6NwusPpmKFWdW1cQWukGfmGxXuKxbDLm8EDsif-y1etAFFIQ2m7XpBzwYEw' 
+                    });
+                    
+                    if (token) {
+                        // Salva lá no Firestore no documento do clã deste jogador
+                        const claRef = doc(db, "Clas", jogadorUid); 
+                        await updateDoc(claRef, { fcmToken: token });
+                        
+                        alert("Perfeito, Mestre! As notificações do Dojo estão ativadas.");
+                        document.getElementById('modalConfig').style.display='none'; // Fecha o modal
+                    }
+                } else {
+                    alert("Permissão negada. O dojo ficará silencioso.");
+                }
+            } catch (error) {
+                console.error("Erro ao configurar notificações:", error);
+                alert("Erro ao tentar ativar as notificações. Veja o console.");
+            }
+        };
+
+        // --- MANTER ESTE SEU CÓDIGO DO FINAL INTACTO ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
         }
