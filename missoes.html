@@ -873,7 +873,8 @@
                 xpGanho, moedasGanha, repGanha,
                 failState, isDoente, custoHpFinal,
                 novoHpAtual: isDoente ? 0 : Math.max(0, hpMatematico),
-                novoXpAtual: gato.xpAtual + xpGanho
+                novoXpAtual: gato.xpAtual + xpGanho,
+                missoesConcluidasAtuais: gato.missoesConcluidas || 0 // Puxa o histórico atual do gato
             };
 
             document.getElementById('relFoto').src = gato.foto;
@@ -898,10 +899,20 @@
             try {
                 const m = missoesAtivas[resultadoRelatorio.missaoDbIndex];
                 const claRef = doc(db, "Clas", jogadorUid);
+                
+                // Calcula as estatísticas do Clã (Sucesso vs Fracasso)
+                let statsCla = dadosGlobais.estatisticas || { missoesConcluidas: 0, missoesFracassadas: 0 };
+                if (resultadoRelatorio.isDoente) {
+                    statsCla.missoesFracassadas += 1;
+                } else {
+                    statsCla.missoesConcluidas += 1;
+                }
+
                 await updateDoc(claRef, {
                     missoesAtivas: arrayRemove(m),
                     moedas: dadosGlobais.moedas + resultadoRelatorio.moedasGanha,
-                    reputacao: dadosGlobais.reputacao + resultadoRelatorio.repGanha
+                    reputacao: dadosGlobais.reputacao + resultadoRelatorio.repGanha,
+                    estatisticas: statsCla // Salva o novo placar do Clã
                 });
 
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", resultadoRelatorio.gatoId);
@@ -910,7 +921,14 @@
                     hpAtual: resultadoRelatorio.novoHpAtual,
                     xpAtual: resultadoRelatorio.novoXpAtual
                 };
-                if (resultadoRelatorio.isDoente) updateGato.doenteDesde = Date.now();
+                
+                // Se falhou feio, fica doente. Se teve sucesso, soma +1 missão no currículo do gato!
+                if (resultadoRelatorio.isDoente) {
+                    updateGato.doenteDesde = Date.now();
+                } else {
+                    updateGato.missoesConcluidas = resultadoRelatorio.missoesConcluidasAtuais + 1;
+                }
+
                 await updateDoc(gatoRef, updateGato);
 
                 document.getElementById('modalRelatorio').style.display = 'none';
