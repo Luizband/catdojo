@@ -170,7 +170,7 @@
                     </div>
                 </div>
                 <div class="botoes-topo">
-                    <img src="icones/config.png" alt="Configurações">
+                    <img src="icones/config.png" alt="Configurações" onclick="document.getElementById('modalConfig').style.display='flex'">
                     <img src="icones/log.png" alt="Diário" onclick="window.location.href='perfil.html'">
                 </div>
             </header>
@@ -233,16 +233,29 @@
     </div>
 
     <div id="modalAvatar" class="modal-avatar" style="display: none;">
-        <div class="painel-avatar">
+        <div class="painel-avatar" style="position: relative;">
+            <button style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold; z-index: 10;" onclick="document.getElementById('modalAvatar').style.display='none'">X</button>
             <h3>Escolha o Brasão do Clã</h3>
             <div class="grid-avatars" id="listaAvatars">
                 </div>
         </div>
     </div>
 
+    <!-- NOVO: MODAL DE CONFIGURAÇÕES -->
+    <div id="modalConfig" class="modal-avatar" style="display: none;">
+        <div class="painel-avatar" style="position: relative;">
+            <button style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold; z-index: 10;" onclick="document.getElementById('modalConfig').style.display='none'">X</button>
+            <h3 style="margin-bottom: 20px;">Configurações</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button id="btnSairConta" style="background-color: #cc3333; color: white; border: 2px solid #800000; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 4px 0px #800000; text-transform: uppercase; width: 100%; font-size: 0.9em;">Sair da Conta</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { auth, db } from './firebase-config.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDoc, doc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const exibeNomeCla = document.getElementById('exibeNomeCla');
@@ -382,6 +395,15 @@
                 listaAvatars.appendChild(imgNode);
             }
         }
+
+        // LOGOUT: Sair da conta de forma segura
+        document.getElementById('btnSairConta').onclick = () => {
+            signOut(auth).then(() => {
+                window.location.href = "index.html"; // Joga o usuário de volta pro Login
+            }).catch((error) => {
+                console.error("Erro ao deslogar:", error);
+            });
+        };
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
