@@ -6,12 +6,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-comp
 
 // 2. INICIALIZAÇÃO DO FIREBASE EM SEGUNDO PLANO
 firebase.initializeApp({
-  apiKey: "COLE_AQUI_SUA_API_KEY",
+  apiKey: "AIzaSyBQffvPhcKvIX3Kgwr2M103I8uG6wqA4xM",
   authDomain: "catdojo-ff9f3.firebaseapp.com",
   projectId: "catdojo-ff9f3",
-  storageBucket: "catdojo-ff9f3.appspot.com",
-  messagingSenderId: "COLE_AQUI_O_SENDER_ID",
-  appId: "COLE_AQUI_O_APP_ID"
+  storageBucket: "catdojo-ff9f3.firebasestorage.app",
+  messagingSenderId: "246691703665",
+  appId: "1:246691703665:web:6fafdb4bfd51c0bed024d0"
 });
 
 const messaging = firebase.messaging();
