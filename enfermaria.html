@@ -553,7 +553,7 @@
                 try {
                     const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
                     await deleteDoc(gatoRef);
-                    mostrarToast(`${gato.nome} foi removido do Clã.`);
+                    mostrarToast(`${gato.nome} virou uma estrelinha.`);
                     await carregarEnfermaria();
                 } catch (e) {
                     console.error("Erro ao dispensar gato falecido:", e);
