@@ -714,9 +714,12 @@
                         let isAluno = treinosAtivos.some(t => t.gatoId === gato.id);
                         let isProfessor = treinosAtivos.some(t => t.profId === gato.id);
 
+                        let isMortoVelhice = gato.idadeHoras >= 4380;
+
                         // Prioridade de exibição dos ícones
-                        if (gato.pontosLivres > 0) { caminhoIcone = 'icones/lvlup.png'; } 
-                        else if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } // A regra voltou!
+                        if (isMortoVelhice) { caminhoIcone = 'icones/morte.png'; classeExtra = 'vaga-em-missao'; } // Usa a mesma classe da missão para ficar cinza
+                        else if (gato.pontosLivres > 0) { caminhoIcone = 'icones/lvlup.png'; } 
+                        else if (gato.estado === 'Doente') { caminhoIcone = 'icones/doente.png'; } 
                         else if (gato.estado === 'Em Missão') { caminhoIcone = 'icones/missao.png'; classeExtra = 'vaga-em-missao'; } 
                         else if (isAluno) { caminhoIcone = 'icones/treino.png'; } 
                         else if (isProfessor) { caminhoIcone = 'icones/tutor.png'; } 
@@ -733,7 +736,13 @@
                             <img src="${gato.foto}" class="foto-pet" alt="Foto">
                             <div class="pilula-nome">${gato.nome}</div>
                         `;
-                        divCard.onclick = () => abrirPainelGato(gato);
+                        
+                        // Redireciona o clique se ele estiver morto de velhice
+                        if (isMortoVelhice) {
+                            divCard.onclick = () => abrirModalMorte(gato);
+                        } else {
+                            divCard.onclick = () => abrirPainelGato(gato);
+                        }
                     } else {
                         divCard.className = 'vaga-gato vaga-livre';
                         divCard.innerHTML = `<p>VAGA LIVRE</p>`;
@@ -749,6 +758,21 @@
         // ==========================================
         // LÓGICA DO MODAL (PAINEL DO GATO)
         // ==========================================
+
+        window.abrirModalMorte = (gato) => {
+            pedirConfirmacao(`${gato.nome} atingiu a idade máxima (6 meses) e faleceu de velhice. Clique em Confirmar para se despedir.`, async () => {
+                try {
+                    const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
+                    // Salva como morto. Ele desaparece do dormitório, mas mantém os recordes vivos no Perfil!
+                    await updateDoc(gatoRef, { estado: 'Morto' });
+                    
+                    mostrarToast(`${gato.nome} partiu para o paraíso dos felinos.`);
+                    carregarDormitorio(jogadorUid); 
+                } catch(e) {
+                    console.error("Erro ao registrar óbito:", e);
+                }
+            });
+        };
         
         btnFecharModal.onclick = () => { modalGato.style.display = 'none'; gatoSelecionado = null; }
 
