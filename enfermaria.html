@@ -549,7 +549,7 @@
 
         // CASO O JOGADOR DEIXE O GATO MORRER
         function dispensarGatoFalecido(gato) {
-            pedirConfirmacao(`Você deixou ${gato.nome} falecer por falta de tratamento. Deseja removê-lo da coleção?`, async () => {
+            pedirConfirmacao(`Você deixou ${gato.nome} falecer por falta de tratamento. É hora de dar adeus.`, async () => {
                 try {
                     const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
                     await deleteDoc(gatoRef);
