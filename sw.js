@@ -19,48 +19,48 @@ const messaging = firebase.messaging();
 // =========================================================================
 // 3. SEU CÓDIGO ORIGINAL DO PWA (Cache e Offline)
 // =========================================================================
-const CACHE_NAME = 'catdojo-v4';[cite: 1]
-const ASSETS = [[cite: 1]
-  './',[cite: 1]
-  './index.html',[cite: 1]
-  './dojo.html',[cite: 1]
-  './firebase-config.js',[cite: 1]
-  './imagens/logo.png',[cite: 1]
-  './imagens/fundo.png'[cite: 1]
-];[cite: 1]
+const CACHE_NAME = 'catdojo-v5'; 
+const ASSETS = [
+  './',
+  './index.html',
+  './dojo.html',
+  './firebase-config.js',
+  './imagens/logo.png',
+  './imagens/fundo.png'
+];
 
-// Instalação do PWA e salvamento dos arquivos essenciais em cache[cite: 1]
-self.addEventListener('install', (e) => {[cite: 1]
-  e.waitUntil([cite: 1]
-    caches.open(CACHE_NAME).then((cache) => {[cite: 1]
-      return cache.addAll(ASSETS);[cite: 1]
-    }).then(() => self.skipWaiting())[cite: 1]
-  );[cite: 1]
-});[cite: 1]
+// Instalação do PWA e salvamento dos arquivos essenciais em cache
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    }).then(() => self.skipWaiting())
+  );
+});
 
-// Ativação do Service Worker[cite: 1]
-self.addEventListener('activate', (e) => {[cite: 1]
-  e.waitUntil([cite: 1]
-    caches.keys().then((keys) => {[cite: 1]
-      return Promise.all([cite: 1]
-        keys.map((key) => {[cite: 1]
-          if (key !== CACHE_NAME) {[cite: 1]
-            return caches.delete(key);[cite: 1]
-          }[cite: 1]
-        })[cite: 1]
-      );[cite: 1]
-    }).then(() => self.clients.claim())[cite: 1]
-  );[cite: 1]
-});[cite: 1]
+// Ativação do Service Worker
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
 
-// Estratégia de carregamento: tenta buscar da rede, se cair (offline), busca no cache[cite: 1]
-self.addEventListener('fetch', (e) => {[cite: 1]
-  e.respondWith([cite: 1]
-    fetch(e.request).catch(() => {[cite: 1]
-      return caches.match(e.request);[cite: 1]
-    })[cite: 1]
-  );[cite: 1]
-});[cite: 1]
+// Estratégia de carregamento: tenta buscar da rede, se cair (offline), busca no cache
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    fetch(e.request).catch(() => {
+      return caches.match(e.request);
+    })
+  );
+});
 
 // =========================================================================
 // 4. O CÓDIGO DO MENSAGEIRO (Escuta as notificações com o jogo fechado)
@@ -71,7 +71,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: './imagens/logo.png' // Aproveitando sua imagem de logo que já está no cache
+    icon: './imagens/logo.png' 
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
