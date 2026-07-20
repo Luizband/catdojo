@@ -411,7 +411,7 @@
         };
 
                 // ATIVAR NOTIFICAÇÕES (Versão Corrigida para o sw.js)
-        // ATIVAR NOTIFICAÇÕES (Modo Debug)
+        // ATIVAR NOTIFICAÇÕES (Modo Blindado)
         document.getElementById('btnNotificacao').onclick = async () => {
             if (!jogadorUid) return; 
 
@@ -422,12 +422,19 @@
                 alert("2. Permissão do celular: " + permission);
                 
                 if (permission === 'granted') {
-                    const swRegistration = await navigator.serviceWorker.ready;
-                    alert("3. Service Worker encontrado");
+                    // Ao invés de esperar infinitamente, nós caçamos o robô ativamente
+                    let swRegistration = await navigator.serviceWorker.getRegistration();
                     
-                    alert("4. Gerando Token na nuvem... (Isso pode demorar uns segundos)");
+                    if (!swRegistration) {
+                        alert("ERRO: Service Worker não instalado! O robô falhou ao baixar os arquivos da lista ASSETS no sw.js.");
+                        // Tenta forçar a instalação na marra para não travar
+                        swRegistration = await navigator.serviceWorker.register('./sw.js');
+                    } else {
+                        alert("3. Service Worker capturado!");
+                    }
                     
-                    // Como nós já importamos o 'messaging' lá em cima, só passamos ele aqui direto
+                    alert("4. Gerando Token na nuvem... (Aguarde alguns segundos)");
+                    
                     const token = await getToken(messaging, { 
                         vapidKey: 'BOnT9mNjR-uD7ANeuxKcYYF-MNcF6NwusPpmKFWdW1cQWukGfmGxXuKxbDLm8EDsif-y1etAFFIQ2m7XpBzwYEw',
                         serviceWorkerRegistration: swRegistration
