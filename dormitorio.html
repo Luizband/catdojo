@@ -620,11 +620,27 @@
                         gato.idadeHoras = (gato.idadeHoras || 0) + horasPassadas;
 
                         // Nova Lógica: A saciedade NÃO decai se estiver em missão!
-                        if (gato.fome > 0 && gato.estado !== 'Em Missão') {
+                        if (gato.estado !== 'Em Missão') {
                             gato.fome -= (5 * horasPassadas);
+
                             if (gato.fome <= 0) {
+                                // Descobre exatamente quantas horas o gato ficou no zero durante esse período offline
+                                let horasNoZero = Math.abs(gato.fome) / 5;
                                 gato.fome = 0;
-                                if (gato.estado !== 'Doente') gato.estado = 'Doente';
+                                
+                                // Acumula o tempo que ele está passando fome
+                                gato.horasComFomeZero = (gato.horasComFomeZero || 0) + horasNoZero;
+
+                                // A TRAVA DE 2 HORAS
+                                if (gato.horasComFomeZero >= 2 && gato.estado !== 'Doente') {
+                                    gato.estado = 'Doente';
+                                    gato.hpAtual = 0; // Zera a vida
+                                    gato.doenteDesde = agora; // Enfermaria usa isso
+                                    gato.horasComFomeZero = 0; // Reseta o contador
+                                }
+                            } else {
+                                // Se ele tem comida na barriga, o contador de fome zera
+                                gato.horasComFomeZero = 0;
                             }
                         }
 
@@ -673,7 +689,9 @@
 
                 if (precisaSalvar) {
                     const gatoRef = doc(db, "Clas", uid, "Gatos", gato.id);
-                    atualizacoesPendentes.push(updateDoc(gatoRef, {
+                    
+                    // Prepara os dados para salvar
+                    let dadosParaSalvar = {
                         fome: gato.fome !== undefined ? gato.fome : 100,
                         hpAtual: gato.hpAtual !== undefined ? gato.hpAtual : 250,
                         estado: gato.estado || 'Saudável',
@@ -683,8 +701,16 @@
                         nivel: gato.nivel,
                         faixa: gato.faixa,
                         pontosLivres: gato.pontosLivres,
-                        xpProxFaixa: gato.xpProxFaixa
-                    }));
+                        xpProxFaixa: gato.xpProxFaixa,
+                        horasComFomeZero: gato.horasComFomeZero || 0
+                    };
+
+                    // Só adiciona a data da doença se ele realmente ficou doente agora
+                    if (gato.estado === 'Doente' && gato.doenteDesde) {
+                        dadosParaSalvar.doenteDesde = gato.doenteDesde;
+                    }
+
+                    atualizacoesPendentes.push(updateDoc(gatoRef, dadosParaSalvar));
                 }
             });
 
