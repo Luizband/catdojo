@@ -255,11 +255,14 @@
     </div>
 
     <script type="module">
-        import { auth, db } from './firebase-config.js';
+        // Puxe o 'messaging' daqui agora:
+        import { auth, db, messaging } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDoc, doc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+        // Só importe o getToken daqui:
+        import { getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
+        
         const exibeNomeCla = document.getElementById('exibeNomeCla');
         const exibeNomeMestre = document.getElementById('exibeNomeMestre');
         const exibeMoedas = document.getElementById('exibeMoedas');
@@ -408,27 +411,31 @@
         };
 
                 // ATIVAR NOTIFICAÇÕES (Versão Corrigida para o sw.js)
+        // ATIVAR NOTIFICAÇÕES (Modo Debug)
         document.getElementById('btnNotificacao').onclick = async () => {
             if (!jogadorUid) return; 
 
-            const messaging = getMessaging();
+            alert("1. Iniciando processo..."); 
             
             try {
-                // Pede a permissão pro celular do usuário
                 const permission = await Notification.requestPermission();
+                alert("2. Permissão do celular: " + permission);
                 
                 if (permission === 'granted') {
-                    // 1. Pega o Service Worker (sw.js) que já está instalado no navegador
                     const swRegistration = await navigator.serviceWorker.ready;
+                    alert("3. Service Worker encontrado");
                     
-                    // 2. Avisa ao Firebase para usar o nosso SW na hora de gerar o token
+                    alert("4. Gerando Token na nuvem... (Isso pode demorar uns segundos)");
+                    
+                    // Como nós já importamos o 'messaging' lá em cima, só passamos ele aqui direto
                     const token = await getToken(messaging, { 
                         vapidKey: 'BOnT9mNjR-uD7ANeuxKcYYF-MNcF6NwusPpmKFWdW1cQWukGfmGxXuKxbDLm8EDsif-y1etAFFIQ2m7XpBzwYEw',
                         serviceWorkerRegistration: swRegistration
                     });
                     
+                    alert("5. Token Gerado: " + (token ? "SIM" : "NÃO"));
+                    
                     if (token) {
-                        // Salva lá no Firestore no documento do clã deste jogador
                         const claRef = doc(db, "Clas", jogadorUid); 
                         await updateDoc(claRef, { fcmToken: token });
                         
@@ -439,9 +446,8 @@
                     alert("Permissão negada. O dojo ficará silencioso.");
                 }
             } catch (error) {
-                console.error("Erro ao configurar notificações:", error);
-                // Agora o erro real vai aparecer escrito na tela do seu celular!
-                alert("Erro técnico: " + error.message); 
+                console.error("Erro completo:", error);
+                alert("Erro técnico (Passo Travou): " + error.message); 
             }
         };
         
