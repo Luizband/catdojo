@@ -1,9 +1,9 @@
-// firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+// NOVO: Importamos o Mensageiro aqui na central
+import { getMessaging } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js"; 
 
-// SUBSTITUA ESTE OBJETO PELAS CHAVES DO SEU FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyBQffvPhcKvIX3Kgwr2M103I8uG6wqA4xM",
   authDomain: "catdojo-ff9f3.firebaseapp.com",
@@ -17,6 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+// NOVO: Ligamos o mensageiro ao nosso aplicativo
+const messaging = getMessaging(app); 
 
-// Exportando para usar nas outras telas
-export { db, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc };
+// NOVO: Adicionamos o 'messaging' na lista de exportação lá no final
+export { db, auth, messaging, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc };
