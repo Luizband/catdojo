@@ -626,12 +626,17 @@
                             if (gato.fome <= 0) {
                                 // Descobre exatamente quantas horas o gato ficou no zero durante esse período offline
                                 let horasNoZero = Math.abs(gato.fome) / 5;
-                                gato.fome = 0;
+                                gato.fome = 0; // Trava visualmente no zero
                                 
-                                // Acumula o tempo que ele está passando fome
+                                // Muda o status oficial para 'Com Fome' assim que a barra zera
+                                if (gato.estado !== 'Doente' && gato.estado !== 'Com Fome') {
+                                    gato.estado = 'Com Fome';
+                                }
+                                
+                                // Acumula o tempo de sofrimento
                                 gato.horasComFomeZero = (gato.horasComFomeZero || 0) + horasNoZero;
 
-                                // A TRAVA DE 2 HORAS
+                                // A TRAVA DE 2 HORAS PARA ADOECER
                                 if (gato.horasComFomeZero >= 2 && gato.estado !== 'Doente') {
                                     gato.estado = 'Doente';
                                     gato.hpAtual = 0; // Zera a vida
@@ -639,11 +644,12 @@
                                     gato.horasComFomeZero = 0; // Reseta o contador
                                 }
                             } else {
-                                // Se ele tem comida na barriga, o contador de fome zera
+                                // Se a barra for 1 ou mais, reseta o contador de fome extrema
                                 gato.horasComFomeZero = 0;
                             }
                         }
 
+                        // Lógica do Descanso
                         if (gato.estado === 'Descansando' && gato.hpAtual < gato.hpMax) {
                             gato.hpAtual += (gato.hpMax * 0.10) * horasPassadas;
                             if (gato.hpAtual >= gato.hpMax) {
@@ -690,7 +696,6 @@
                 if (precisaSalvar) {
                     const gatoRef = doc(db, "Clas", uid, "Gatos", gato.id);
                     
-                    // Prepara os dados para salvar
                     let dadosParaSalvar = {
                         fome: gato.fome !== undefined ? gato.fome : 100,
                         hpAtual: gato.hpAtual !== undefined ? gato.hpAtual : 250,
@@ -705,7 +710,6 @@
                         horasComFomeZero: gato.horasComFomeZero || 0
                     };
 
-                    // Só adiciona a data da doença se ele realmente ficou doente agora
                     if (gato.estado === 'Doente' && gato.doenteDesde) {
                         dadosParaSalvar.doenteDesde = gato.doenteDesde;
                     }
@@ -983,28 +987,55 @@
                 let novoHp = gatoSelecionado.hpAtual + (itemDb.recuperaHp || 0);
                 if (novoHp > gatoSelecionado.hpMax) novoHp = gatoSelecionado.hpMax;
 
-                // NOVO: Exclui a primeira caixa física que ele encontrar dessa ração na grid
+                // Exclui a primeira caixa física que ele encontrar dessa ração na grid
                 const index = inventarioInstancias.findIndex(inst => inst.itemId === idItem);
                 if (index !== -1) {
                     inventarioInstancias.splice(index, 1);
                 }
 
                 const agora = Date.now();
-                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
-                await updateDoc(gatoRef, { fome: novaFome, hpAtual: novoHp, ultimaAtualizacao: agora });
+                
+                // Calcula em qual exato milissegundo no futuro a fome vai chegar a zero
+                const tempoParaFomeZeroMs = (novaFome / 5) * 60 * 60 * 1000;
+                const fomeZeroEm = agora + tempoParaFomeZeroMs;
 
-                // NOVO: Salva a matriz inteira atualizada de volta
+                // Tira o gato do status "Com Fome" se a comida passou de zero
+                let novoEstado = gatoSelecionado.estado;
+                if (gatoSelecionado.estado === 'Com Fome' && novaFome > 0) {
+                    novoEstado = 'Saudável';
+                }
+
+                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
+                
+                // Salvamos tudo no Firebase: o novo status, o relógio da notificação e resetamos o cronômetro
+                await updateDoc(gatoRef, { 
+                    fome: novaFome, 
+                    hpAtual: novoHp, 
+                    estado: novoEstado,
+                    horasComFomeZero: 0, // Como ele comeu, zera o tempo de sofrimento
+                    ultimaAtualizacao: agora,
+                    fomeZeroEm: fomeZeroEm,
+                    avisoFomeEnviado: false 
+                });
+
+                // Salva o inventário atualizado
                 const claRef = doc(db, "Clas", jogadorUid);
                 await updateDoc(claRef, { inventarioInstancias: inventarioInstancias }); 
 
                 gatoSelecionado.fome = novaFome;
                 gatoSelecionado.hpAtual = novoHp;
+                gatoSelecionado.estado = novoEstado;
                 gatoSelecionado.ultimaAtualizacao = agora;
                 
+                // Atualiza as barras na interface
                 document.getElementById('txtFome').textContent = `${Math.round(novaFome)}/100`;
                 document.getElementById('fillFome').style.width = `${novaFome}%`;
                 document.getElementById('txtHp').textContent = `${Math.round(novoHp)}/${gatoSelecionado.hpMax}`;
                 document.getElementById('fillHp').style.width = `${(novoHp / gatoSelecionado.hpMax) * 100}%`;
+                
+                const estadoEl = document.getElementById('modalEstado');
+                estadoEl.textContent = novoEstado;
+                estadoEl.style.color = novoEstado === 'Doente' ? '#cc3333' : '#2E7D32';
 
                 document.getElementById('modalAlimentos').style.display = 'none';
                 mostrarToast(`${gatoSelecionado.nome} consumiu ${itemDb.nome}!`);
