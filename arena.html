@@ -117,13 +117,28 @@
             <!-- LISTA DE CLÃS (PVE) -->
             <div id="aba-pve" class="lista-container ativa">
                 <div id="vistaClas">
-                    <h3 style="color: #dfc495; text-align: center; margin-bottom: 10px;">Clãs Disponíveis</h3>
-                    <!-- Bloco Fixo do Clã dos Caninos -->
-                    <div class="card-adv" onclick="abrirListaNpcs()">
+                    <h3 style="color: #dfc495; text-align: center; margin-bottom: 10px;">Dojos Rivais</h3>
+                    
+                    <div class="card-adv" onclick="abrirListaNpcs('Clã dos Caninos')">
                         <img src="imagens/cla01.png" onerror="this.src='icones/Dojo.png'">
                         <div class="info-adv">
                             <h4>Clã dos Caninos</h4>
-                            <span class="badge-dificuldade">Fácil</span>
+                        </div>
+                        <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
+                    </div>
+                    
+                    <div class="card-adv" onclick="abrirListaNpcs('Clã da Presa')">
+                        <img src="imagens/cla02.png" onerror="this.src='icones/Dojo.png'">
+                        <div class="info-adv">
+                            <h4>Clã da Presa</h4>
+                        </div>
+                        <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
+                    </div>
+
+                    <div class="card-adv" onclick="abrirListaNpcs('Clã Archea')">
+                        <img src="imagens/cla03.png" onerror="this.src='icones/Dojo.png'">
+                        <div class="info-adv">
+                            <h4>Clã Archea</h4>
                         </div>
                         <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
                     </div>
@@ -249,9 +264,10 @@
             document.getElementById(`aba-${aba}`).classList.add('ativa');
         };
 
-        window.abrirListaNpcs = () => {
+        window.abrirListaNpcs = (nomeDoCla) => {
             document.getElementById('vistaClas').style.display = 'none';
             document.getElementById('vistaNpcs').style.display = 'flex';
+            carregarListaNpcs(nomeDoCla); // Chama o construtor com o filtro
         };
         window.voltarParaClas = () => {
             document.getElementById('vistaNpcs').style.display = 'none';
@@ -298,26 +314,47 @@
             }
         });
 
-        function carregarListaNpcs() {
+        function carregarListaNpcs(claSelecionado) {
             const containerHtml = document.getElementById('listaInimigosHtml');
             containerHtml.innerHTML = '';
             
-            LISTA_NPCS.forEach(npc => {
+            // Filtra a lista total de NPCs para mostrar apenas os do clã clicado
+            const npcsDoCla = LISTA_NPCS.filter(npc => npc.cla === claSelecionado);
+
+            npcsDoCla.forEach(npc => {
                 const card = document.createElement('div');
                 card.className = 'card-adv';
                 
-                // Força o número da faixa a ter dois dígitos (1 vira "01", 20 continua "20")
                 let numImgFaixa = String(npc.faixa).padStart(2, '0');
-
-                // Travando a altura em 28px e deixando a largura no automático!
-                card.innerHTML = `
-                    <img src="${npc.foto}">
-                    <div class="info-adv">
-                        <h4>${npc.nome}</h4>
-                        <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain;"> 
-                    </div>
-                    <button class="btn-desafiar">Lutar</button>
-                `;
+                
+                // Tratamento especial se o personagem for um Boss
+                if (npc.isBoss) {
+                    card.style.borderColor = '#ffbb00';
+                    card.style.backgroundColor = '#fff3cd'; // Fundo levemente dourado
+                    
+                    card.innerHTML = `
+                        <img src="${npc.foto}" style="border-color: #ffbb00;">
+                        <div class="info-adv">
+                            <h4 style="color: #856404;">${npc.nome}</h4>
+                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain;"> 
+                            <div style="margin-top: 5px; font-size: 0.8em; color: #cc3333; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                                <img src="icones/rep.png" style="width: 14px; height: 14px; border: none;"> -${npc.custoRep}
+                                <span title="Derrotar o Líder concede recompensa maciça!" style="margin-left: 5px; color: #4CAF50; cursor: help; border-bottom: 1px dotted #4CAF50;">&#9432; Recompensa: ${npc.moedasBoss} Moedas</span>
+                            </div>
+                        </div>
+                        <button class="btn-desafiar" style="background-color: #ffc107; color: #856404; border-color: #ffbb00;">Lutar</button>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <img src="${npc.foto}">
+                        <div class="info-adv">
+                            <h4>${npc.nome}</h4>
+                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain;"> 
+                        </div>
+                        <button class="btn-desafiar">Lutar</button>
+                    `;
+                }
+                
                 card.querySelector('button').onclick = () => abrirSeletorGato(true, npc);
                 containerHtml.appendChild(card);
             });
@@ -337,10 +374,10 @@
         function abrirSeletorGato(isPvE, npcData = null) {
             inimigoPveAtual = npcData;
             
-            // TRAVA DO BOSS: Exige e consome reputação
-            if (isPvE && npcData.id === "cpu5") {
-                if (reputacaoAtual < 150) {
-                    alert(`Fama Insuficiente! Você precisa de 150 de Reputação para desafiar o ${npcData.nome}. Você tem: ${reputacaoAtual}`);
+            // TRAVA DO BOSS DINÂMICA: Exige a reputação definida no npcData
+            if (isPvE && npcData.isBoss) {
+                if (reputacaoAtual < npcData.custoRep) {
+                    alert(`Fama Insuficiente! Você precisa de ${npcData.custoRep} de Reputação para desafiar o ${npcData.nome}. Você tem: ${reputacaoAtual}`);
                     return;
                 }
             }
@@ -362,10 +399,10 @@
                 btn.onclick = async () => {
                     document.getElementById('modalSeletor').style.display = 'none';
                     if(isPvE) {
-                        // Desconta reputação se for o boss
-                        if (inimigoPveAtual.id === "cpu5") {
+                        // Desconta reputação se for o boss baseado no custo específico
+                        if (inimigoPveAtual.isBoss) {
                             const claRef = doc(db, "Clas", jogadorUid);
-                            reputacaoAtual -= 150;
+                            reputacaoAtual -= inimigoPveAtual.custoRep;
                             await updateDoc(claRef, { reputacao: reputacaoAtual });
                         }
                         iniciarBatalhaPvE(gato, inimigoPveAtual);
@@ -694,11 +731,13 @@
                 let foco = meuLutadorProcessado.foco || 1;
                 let nivelInimigo = inimigoGato.faixa || 1;
                 
-                // REGRA DO BOSS: Recompensa Específica Fixa
-                if (inimigoGato.cpuId === "cpu5") {
-                    xpGanho = Math.floor(500 * (1 + (vigor / 100)));
-                    moedasGanhas = 1000;
-                    repGanha = 50; 
+                // O Auto-Battler puxa os dados direto do npcs.js pela ID do cpu
+                const npcOriginal = LISTA_NPCS.find(n => n.id === inimigoGato.cpuId);
+                
+                if (npcOriginal && npcOriginal.isBoss) {
+                    xpGanho = Math.floor(npcOriginal.xpBoss * (1 + (vigor / 100)));
+                    moedasGanhas = npcOriginal.moedasBoss;
+                    repGanha = npcOriginal.repBoss; 
                 } else {
                     xpGanho = Math.floor((15 + (nivelInimigo * 5)) * (1 + (vigor / 100)));
                     moedasGanhas = Math.floor((10 + (nivelInimigo * 2)) * (1 + (foco / 100)));
@@ -723,7 +762,6 @@
             }
             await updateDoc(gatoRef, updatesGato);
 
-            // PREENCHE O MODAL RELATÓRIO
             document.getElementById('tituloRelatorio').textContent = venceu ? "VITÓRIA!" : "DERROTA";
             document.getElementById('tituloRelatorio').style.color = venceu ? "#4CAF50" : "#cc3333";
             document.getElementById('subRelatorio').textContent = venceu ? "Seu gato superou o desafio." : "Seu gato foi enviado à enfermaria.";
