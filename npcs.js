@@ -65,7 +65,7 @@ const claDaPresa = [
     },
     { 
       id: "cpu10", cla: "Clã da Presa", nome: "Don Dilo", foto: "imagens/cpu10.png", 
-      faixa: 25, slots: 6, 
+      faixa: 20, slots: 6, 
       forca: 60, agilidade: 120, resistencia: 50, foco: 70, vigor: 70, 
       isBoss: true, custoRep: 250, moedasBoss: 2000, xpBoss: 1200, repBoss: 100,
       habilidadesEquipadas: ["O Salto da Pantera", "Parafuso", "Axé", "Armada", "Meia-Lua", "Vento Forte"]
@@ -101,8 +101,8 @@ const claArchea = [
       habilidadesEquipadas: ["Estrangulamento", "Imobilização", "Quebra-Ossos", "Bofetada Base"]
     },
     { 
-      id: "cpu15", cla: "Clã Archea", nome: "Conde Zero", foto: "imagens/cpu15.png", 
-      faixa: 30, slots: 6, 
+      id: "cpu15", cla: "Clã Archea", nome: "Conde Pena", foto: "imagens/cpu15.png", 
+      faixa: 20, slots: 6, 
       forca: 90, agilidade: 70, resistencia: 110, foco: 150, vigor: 100, 
       isBoss: true, custoRep: 400, moedasBoss: 4000, xpBoss: 2500, repBoss: 200,
       habilidadesEquipadas: ["O Triângulo de Ferro", "Quebra-Ossos", "Estrangulamento", "Respiração de Solo", "Imobilização", "Jiu-Gato"]
