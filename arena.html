@@ -309,12 +309,12 @@
                 // Força o número da faixa a ter dois dígitos (1 vira "01", 20 continua "20")
                 let numImgFaixa = String(npc.faixa).padStart(2, '0');
 
-                // Anulando a borda e o fundo branco herdados do CSS geral
+                // Largura aumentada para 100px e altura no auto para não esmagar a imagem
                 card.innerHTML = `
                     <img src="${npc.foto}">
                     <div class="info-adv">
                         <h4>${npc.nome}</h4>
-                        <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="width: 60px; height: 16px; border: none; background: transparent; box-shadow: none; margin-top: 4px; object-fit: contain; border-radius: 0;"> 
+                        <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="width: 100px; height: auto; border: none; background: transparent; box-shadow: none; margin-top: 6px; border-radius: 0; display: block;"> 
                     </div>
                     <button class="btn-desafiar">Lutar</button>
                 `;
@@ -322,7 +322,7 @@
                 containerHtml.appendChild(card);
             });
         }
-
+        
         async function carregarMeusGatos() {
             meusGatos = [];
             const gatosSnap = await getDocs(collection(db, "Clas", jogadorUid, "Gatos"));
