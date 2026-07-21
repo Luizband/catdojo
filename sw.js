@@ -19,7 +19,7 @@ const messaging = firebase.messaging();
 // =========================================================================
 // 3. SEU CÓDIGO ORIGINAL DO PWA (Cache e Offline)
 // =========================================================================
-const CACHE_NAME = 'catdojo-v5'; 
+const CACHE_NAME = 'catdojo-v6'; 
 const ASSETS = [
   './',
   './index.html',
