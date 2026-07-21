@@ -27,56 +27,81 @@
         .lista-container { flex: 1; overflow-y: auto; padding: 15px; display: none; }
         .lista-container.ativa { display: flex; flex-direction: column; gap: 10px; }
 
-        /* CARDS DE ADVERSÁRIOS E PVP */
-        .card-adv { background-color: #dfc495; border: 3px solid #5a4231; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 10px; }
+        /* CARDS E BOTÕES GERAIS */
+        .card-adv { background-color: #dfc495; border: 3px solid #5a4231; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer;}
         .card-adv img { width: 60px; height: 60px; border-radius: 8px; border: 2px solid #5a4231; object-fit: cover; background: #fff;}
         .info-adv { flex: 1; }
         .info-adv h4 { color: #2a2a2a; margin-bottom: 3px; text-transform: uppercase; font-size: 0.9em; }
         .info-adv p { font-size: 0.75em; color: #5a4231; font-weight: bold; }
+        
+        .badge-dificuldade { display: inline-block; padding: 3px 6px; border-radius: 4px; font-size: 0.7em; color: white; background: #4CAF50; }
+        
         .btn-desafiar { background-color: #d27d46; color: white; border: 2px solid #5a4231; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; }
         .btn-desafiar:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
-
         .btn-ficar-online { background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 4px 0px #2E7D32; width: 100%; text-transform: uppercase; margin-bottom: 15px; flex-shrink: 0;}
 
         /* O PALCO DA BATALHA */
         #telaBatalha { display: none; flex-direction: column; height: 100%; background: url('imagens/fundotatame.png') center/cover; position: relative; z-index: 3;}
-        .barra-topo { background: rgba(0,0,0,0.8); padding: 10px; display: flex; justify-content: space-between; color: white; font-weight: bold; font-size: 0.8em; border-bottom: 2px solid #dfc495;}
         
-        .lutadores-area { flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 20px; position: relative; }
-        .lutador-box { display: flex; flex-direction: column; align-items: center; width: 45%; position: relative; }
-        .sprite-gato { width: 120px; height: 120px; object-fit: contain; transition: all 0.3s ease; position: relative; z-index: 10;}
+        /* CONTROLES DE VELOCIDADE */
+        .barra-controles { background: rgba(0,0,0,0.85); padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #dfc495;}
+        .btn-speed { background: #5a4231; color: #dfc495; border: 1px solid #dfc495; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-speed.ativo { background: #d27d46; color: white; }
+        .btn-pular { background: #cc3333; color: white; border: 1px solid #ff9999; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        .lutadores-area { flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 20px 10px; position: relative; }
+        .lutador-box { display: flex; flex-direction: column; align-items: center; width: 48%; position: relative; }
+        .sprite-gato { width: 110px; height: 110px; object-fit: contain; transition: all 0.3s ease; position: relative; z-index: 10;}
         
         /* BARRAS DE STATUS NA BATALHA */
-        .status-batalha { width: 100%; background: #2c2c2c; border: 2px solid #dfc495; border-radius: 6px; padding: 5px; margin-top: 10px; }
-        .nome-lutador { color: #f1ddb0; font-size: 0.8em; text-align: center; margin-bottom: 5px; font-weight: bold; text-transform: uppercase;}
-        .bar-wrap { width: 100%; background: #000; height: 12px; border-radius: 4px; border: 1px solid #5a4231; overflow: hidden; margin-bottom: 3px; position: relative; }
+        .status-batalha { width: 100%; background: #2c2c2c; border: 2px solid #dfc495; border-radius: 6px; padding: 5px; margin-top: 5px; }
+        .nome-lutador { color: #f1ddb0; font-size: 0.75em; text-align: center; margin-bottom: 5px; font-weight: bold; text-transform: uppercase;}
+        .bar-wrap { width: 100%; background: #000; height: 10px; border-radius: 4px; border: 1px solid #5a4231; overflow: hidden; margin-bottom: 3px; position: relative; }
         .fill-hp { height: 100%; background: #cc3333; width: 100%; transition: width 0.3s; }
         .fill-pa { height: 100%; background: #3399ff; width: 0%; transition: width 0.3s; }
-        .text-bar { position: absolute; top: 0; width: 100%; text-align: center; font-size: 0.65em; color: white; line-height: 12px; font-weight: bold; }
+        .text-bar { position: absolute; top: 0; width: 100%; text-align: center; font-size: 0.6em; color: white; line-height: 10px; font-weight: bold; }
 
-        .log-batalha { height: 35%; background: rgba(0,0,0,0.85); border-top: 3px solid #dfc495; color: white; overflow-y: auto; padding: 10px; font-size: 0.8em; display: flex; flex-direction: column;}
-        .log-batalha p { margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 3px; }
+        /* SLOTS DE HABILIDADES (Substituindo o Log) */
+        .area-slots { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 8px; }
+        .slot-hab { 
+            background: #4a3b32; border: 1px solid #dfc495; border-radius: 4px; 
+            padding: 4px; text-align: center; font-size: 0.55em; color: #f1ddb0; 
+            font-weight: bold; position: relative; height: 35px; display: flex; 
+            align-items: center; justify-content: center; overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        .slot-mask {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
+            font-size: 2em; color: white; z-index: 2; opacity: 0; pointer-events: none;
+        }
+        .slot-mask.ativo { opacity: 1; }
+        .slot-hab.usando { background: #d27d46; color: white; transform: scale(1.1); box-shadow: 0 0 10px #ffbb00; z-index: 5;}
 
         /* ANIMAÇÕES VISUAIS */
-        @keyframes animAtaqueEsq { 0% { transform: translateX(0); } 50% { transform: translateX(50px) scale(1.1); z-index: 20;} 100% { transform: translateX(0); } }
-        @keyframes animAtaqueDir { 0% { transform: translateX(0); } 50% { transform: translateX(-50px) scale(1.1); z-index: 20;} 100% { transform: translateX(0); } }
+        @keyframes animAtaqueEsq { 0% { transform: translateX(0); } 50% { transform: translateX(40px) scale(1.1); z-index: 20;} 100% { transform: translateX(0); } }
+        @keyframes animAtaqueDir { 0% { transform: translateX(0); } 50% { transform: translateX(-40px) scale(1.1); z-index: 20;} 100% { transform: translateX(0); } }
         @keyframes animDano { 0% { filter: brightness(1); transform: translateX(0); } 20% { filter: brightness(0.3) sepia(1) hue-rotate(-50deg) saturate(5); transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-5px); } 100% { filter: brightness(1); transform: translateX(0); } }
         @keyframes animEsquiva { 0% { transform: translateX(0); opacity: 1; } 50% { transform: translateX(-30px); opacity: 0.5; } 100% { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
+        @keyframes fadeUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-40px) scale(1.5); } }
 
-        .atacando-esq { animation: animAtaqueEsq 0.4s ease forwards; }
-        .atacando-dir { animation: animAtaqueDir 0.4s ease forwards; }
-        .tomando-dano { animation: animDano 0.4s ease forwards; }
-        .esquivando { animation: animEsquiva 0.5s ease forwards; }
+        .atacando-esq { animation: animAtaqueEsq 0.3s ease forwards; }
+        .atacando-dir { animation: animAtaqueDir 0.3s ease forwards; }
+        .tomando-dano { animation: animDano 0.3s ease forwards; }
+        .esquivando { animation: animEsquiva 0.4s ease forwards; }
 
         .dano-flutuante { position: absolute; color: #ff4444; font-weight: bold; font-size: 1.5em; text-shadow: 2px 2px 0 #000; animation: fadeUp 1s forwards; pointer-events: none; z-index: 100;}
         .critico-flutuante { color: #ffbb00; font-size: 1.8em; text-transform: uppercase; }
         .esquiva-flutuante { color: #aaa; font-size: 1.2em; font-style: italic; }
 
-        /* MODAL DE SELEÇÃO DE GATO */
-        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        /* MODAIS */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .painel-modal { background: #dfc495; border: 3px solid #5a4231; border-radius: 12px; width: 90%; max-height: 80vh; padding: 20px; overflow-y: auto; text-align: center; }
         .btn-fechar { background: #cc3333; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: right; font-weight: bold; cursor: pointer; }
+        
+        .info-relatorio { background: #f1ddb0; border: 2px solid #5a4231; border-radius: 8px; padding: 15px; margin-top: 15px; text-align: left;}
+        .info-relatorio p { margin-bottom: 8px; font-weight: bold; color: #4a3b32; font-size: 0.9em;}
+        .info-relatorio span { color: #2a2a2a; }
     </style>
 </head>
 <body>
@@ -89,9 +114,26 @@
                 <div class="aba" onclick="mudarAba('pvp')">PvP (Ao Vivo)</div>
             </div>
 
-            <!-- LISTA PVE -->
+            <!-- LISTA DE CLÃS (PVE) -->
             <div id="aba-pve" class="lista-container ativa">
-                <!-- Injetado via JS -->
+                <div id="vistaClas">
+                    <h3 style="color: #dfc495; text-align: center; margin-bottom: 10px;">Clãs Disponíveis</h3>
+                    <!-- Bloco Fixo do Clã dos Caninos -->
+                    <div class="card-adv" onclick="abrirListaNpcs()">
+                        <img src="imagens/cla01.png" onerror="this.src='icones/Dojo.png'">
+                        <div class="info-adv">
+                            <h4>Clã dos Caninos</h4>
+                            <span class="badge-dificuldade">Fácil</span>
+                        </div>
+                        <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
+                    </div>
+                </div>
+
+                <!-- LISTA DE NPCS DENTRO DO CLÃ (Oculta Inicialmente) -->
+                <div id="vistaNpcs" style="display: none; flex-direction: column; gap: 10px;">
+                    <button onclick="voltarParaClas()" style="padding: 8px; background: #5a4231; color: #dfc495; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">&larr; Voltar aos Clãs</button>
+                    <div id="listaInimigosHtml"></div>
+                </div>
             </div>
 
             <!-- LISTA PVP -->
@@ -109,37 +151,39 @@
 
         <!-- TELA DE BATALHA -->
         <div id="telaBatalha">
-            <div class="barra-topo">
-                <span id="txtTurno">Turno: 1</span>
-                <span style="color:#d27d46; cursor:pointer;" onclick="fugirDaLuta()">FUGIR DA LUTA</span>
+            <div class="barra-controles">
+                <span id="txtTurno" style="color: white; font-weight: bold;">Turno: 1</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-speed ativo" id="btnSpd1" onclick="mudarVelocidade(1)">1x</button>
+                    <button class="btn-speed" id="btnSpd2" onclick="mudarVelocidade(2)">2x</button>
+                    <button class="btn-pular" onclick="pularBatalha=true">PULAR &raquo;</button>
+                </div>
             </div>
             
             <div class="lutadores-area">
-                <!-- LUTADOR 1 (Sempre O SEU GATO) -->
+                <!-- LUTADOR 1 -->
                 <div class="lutador-box" id="boxLutador1">
                     <img src="" class="sprite-gato" id="imgLutador1">
                     <div class="status-batalha">
                         <div class="nome-lutador" id="nomeLutador1">Meu Gato</div>
                         <div class="bar-wrap"><div class="fill-hp" id="hpLutador1"></div><span class="text-bar" id="txtHp1"></span></div>
                         <div class="bar-wrap"><div class="fill-pa" id="paLutador1"></div><span class="text-bar" id="txtPa1"></span></div>
+                        <div class="area-slots" id="slotsLutador1"></div>
                     </div>
                 </div>
 
-                <div style="font-size: 2em; font-weight: bold; color: #dfc495; text-shadow: 2px 2px #000;">VS</div>
+                <div style="font-size: 1.5em; font-weight: bold; color: #dfc495; text-shadow: 2px 2px #000; position: absolute; left: 50%; top: 30%; transform: translateX(-50%);">VS</div>
 
-                <!-- LUTADOR 2 (Inimigo) -->
+                <!-- LUTADOR 2 -->
                 <div class="lutador-box" id="boxLutador2">
                     <img src="" class="sprite-gato" id="imgLutador2" style="transform: scaleX(-1);">
                     <div class="status-batalha">
                         <div class="nome-lutador" id="nomeLutador2">Adversário</div>
                         <div class="bar-wrap"><div class="fill-hp" id="hpLutador2"></div><span class="text-bar" id="txtHp2"></span></div>
                         <div class="bar-wrap"><div class="fill-pa" id="paLutador2"></div><span class="text-bar" id="txtPa2"></span></div>
+                        <div class="area-slots" id="slotsLutador2"></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="log-batalha" id="caixaDeLog">
-                <p style="color: #dfc495;">A batalha começou!</p>
             </div>
         </div>
     </div>
@@ -150,6 +194,23 @@
             <button class="btn-fechar" onclick="cancelarSelecao()">X</button>
             <h3 style="color: #2a2a2a; margin-bottom: 15px; text-transform: uppercase;">Escolha seu Campeão</h3>
             <div id="listaMeusGatos" style="display: flex; flex-direction: column; gap: 10px; text-align: left;"></div>
+        </div>
+    </div>
+
+    <!-- NOVO: MODAL RELATÓRIO PÓS-LUTA (PvE) -->
+    <div class="modal" id="modalRelatorio">
+        <div class="painel-modal">
+            <h2 id="tituloRelatorio" style="text-transform: uppercase; margin-bottom: 5px;">RESULTADO</h2>
+            <p id="subRelatorio" style="color: #5a4231; font-weight: bold; font-size: 0.9em;"></p>
+            
+            <div class="info-relatorio">
+                <p>HP Perdido: <span id="relHp"></span></p>
+                <p>XP Recebido: <span id="relXp" style="color: #3399ff;"></span></p>
+                <p>Moedas: <span id="relMoedas" style="color: #d27d46;"></span></p>
+                <p>Reputação: <span id="relRep" style="color: #4CAF50;"></span></p>
+            </div>
+            
+            <button onclick="window.location.reload()" style="background-color: #d27d46; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 1.1em;">Voltar ao Dojo</button>
         </div>
     </div>
 
@@ -164,7 +225,12 @@
         
         let jogadorUid = null;
         let claNome = "Mestre";
+        let reputacaoAtual = 0; 
         let meusGatos = [];
+        
+        // Variáveis de Controle Batalha Visual
+        let velMult = 1;
+        window.pularBatalha = false;
         
         // Variáveis PvP
         let salaAtiva = null;
@@ -173,7 +239,9 @@
         let unsubscribeListaPvP = null;
         let inimigoPveAtual = null;
 
-        // Controles de Janela
+        // ==========================================
+        // 1. CONTROLES DE INTERFACE
+        // ==========================================
         window.mudarAba = (aba) => {
             document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
             document.querySelectorAll('.lista-container').forEach(el => el.classList.remove('ativa'));
@@ -181,7 +249,25 @@
             document.getElementById(`aba-${aba}`).classList.add('ativa');
         };
 
-        window.fugirDaLuta = () => alert("Na Arena do CatDojo, lutar é até o fim!");
+        window.abrirListaNpcs = () => {
+            document.getElementById('vistaClas').style.display = 'none';
+            document.getElementById('vistaNpcs').style.display = 'flex';
+        };
+        window.voltarParaClas = () => {
+            document.getElementById('vistaNpcs').style.display = 'none';
+            document.getElementById('vistaClas').style.display = 'block';
+        };
+
+        window.mudarVelocidade = (v) => {
+            velMult = v;
+            document.querySelectorAll('.btn-speed').forEach(btn => btn.classList.remove('ativo'));
+            document.getElementById(`btnSpd${v}`).classList.add('ativo');
+        };
+
+        async function waitFast(ms) {
+            if (window.pularBatalha) return; 
+            await new Promise(r => setTimeout(r, ms / velMult));
+        }
 
         window.cancelarSelecao = async () => {
             document.getElementById('modalSeletor').style.display = 'none';
@@ -199,9 +285,12 @@
             if (user) {
                 jogadorUid = user.uid;
                 const claSnap = await getDoc(doc(db, "Clas", jogadorUid));
-                if (claSnap.exists()) claNome = claSnap.data().nomeCla || "Mestre";
+                if (claSnap.exists()) {
+                    claNome = claSnap.data().nomeCla || "Mestre";
+                    reputacaoAtual = claSnap.data().reputacao || 0;
+                }
                 
-                carregarListaPvE();
+                carregarListaNpcs();
                 await carregarMeusGatos();
                 escutarListaPvP();
             } else {
@@ -210,24 +299,29 @@
         });
 
         // ==========================================
-        // 1. CARREGAMENTO E SELEÇÃO DE GATOS
+        // 2. MONTAGEM DA LISTA PVE E SELEÇÃO
         // ==========================================
-        function carregarListaPvE() {
-            const divPve = document.getElementById('aba-pve');
-            divPve.innerHTML = '';
+        function carregarListaNpcs() {
+            const containerHtml = document.getElementById('listaInimigosHtml');
+            containerHtml.innerHTML = '';
+            
             LISTA_NPCS.forEach(npc => {
                 const card = document.createElement('div');
                 card.className = 'card-adv';
+                // Mostra a Faixa ao invés de texto "Nível"
                 card.innerHTML = `
                     <img src="${npc.foto}">
                     <div class="info-adv">
                         <h4>${npc.nome}</h4>
-                        <p>Nível: ${npc.faixa} | Prêmio: ${npc.recompensa}</p>
+                        <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
+                            <img src="imagens/faixa${npc.faixa}.png" onerror="this.src='icones/treino.png'" style="width:25px; height:8px; border:none; border-radius:2px;"> 
+                            <span style="font-size:0.7em; color:#5a4231; font-weight:bold;">Rank: ${npc.faixa}</span>
+                        </div>
                     </div>
                     <button class="btn-desafiar">Lutar</button>
                 `;
                 card.querySelector('button').onclick = () => abrirSeletorGato(true, npc);
-                divPve.appendChild(card);
+                containerHtml.appendChild(card);
             });
         }
 
@@ -244,6 +338,15 @@
 
         function abrirSeletorGato(isPvE, npcData = null) {
             inimigoPveAtual = npcData;
+            
+            // TRAVA DO BOSS: Exige e consome reputação
+            if (isPvE && npcData.id === "cpu5") {
+                if (reputacaoAtual < 150) {
+                    alert(`Fama Insuficiente! Você precisa de 150 de Reputação para desafiar o ${npcData.nome}. Você tem: ${reputacaoAtual}`);
+                    return;
+                }
+            }
+
             const listaDiv = document.getElementById('listaMeusGatos');
             listaDiv.innerHTML = '';
 
@@ -254,14 +357,21 @@
             meusGatos.forEach(gato => {
                 const btn = document.createElement('div');
                 btn.className = 'card-adv';
-                btn.style.cursor = 'pointer';
                 btn.innerHTML = `
                     <img src="${gato.foto}">
                     <div class="info-adv"><h4>${gato.nome}</h4><p>HP: ${Math.round(gato.hpAtual)}/${gato.hpMax}</p></div>
                 `;
-                btn.onclick = () => {
+                btn.onclick = async () => {
                     document.getElementById('modalSeletor').style.display = 'none';
-                    if(isPvE) iniciarBatalhaPvE(gato, inimigoPveAtual);
+                    if(isPvE) {
+                        // Desconta reputação se for o boss
+                        if (inimigoPveAtual.id === "cpu5") {
+                            const claRef = doc(db, "Clas", jogadorUid);
+                            reputacaoAtual -= 150;
+                            await updateDoc(claRef, { reputacao: reputacaoAtual });
+                        }
+                        iniciarBatalhaPvE(gato, inimigoPveAtual);
+                    }
                     else selecionarGatoPvP(gato);
                 };
                 listaDiv.appendChild(btn);
@@ -270,107 +380,9 @@
         }
 
         // ==========================================
-        // 2. LÓGICA DO LOBBY PVP
-        // ==========================================
-        document.getElementById('btnFicarOnline').onclick = async () => {
-            const btn = document.getElementById('btnFicarOnline');
-            btn.textContent = "Aguardando Oponentes...";
-            btn.disabled = true;
-            btn.style.backgroundColor = "#7b7b7b";
-
-            salaAtiva = jogadorUid;
-            isHost = true;
-            
-            await setDoc(doc(db, "ArenaLive", jogadorUid), {
-                hostId: jogadorUid, hostName: claNome,
-                status: 'waiting',
-                guestId: null, guestName: null,
-                hostCat: null, guestCat: null, roteiro: null
-            });
-            escutarMinhaSala(jogadorUid);
-        };
-
-        function escutarListaPvP() {
-            unsubscribeListaPvP = onSnapshot(collection(db, "ArenaLive"), (snapshot) => {
-                const listaDiv = document.getElementById('listaJogadoresOnline');
-                listaDiv.innerHTML = '';
-                snapshot.forEach(docSnap => {
-                    const sala = docSnap.data();
-                    if (sala.status === 'waiting' && sala.hostId !== jogadorUid) {
-                        const card = document.createElement('div');
-                        card.className = 'card-adv';
-                        card.innerHTML = `
-                            <div class="info-adv"><h4>Clã: ${sala.hostName}</h4><p>Buscando Batalha</p></div>
-                            <button class="btn-desafiar">Desafiar</button>
-                        `;
-                        card.querySelector('button').onclick = () => desafiarJogador(sala.hostId);
-                        listaDiv.appendChild(card);
-                    }
-                });
-            });
-        }
-
-        async function desafiarJogador(hostId) {
-            isHost = false;
-            salaAtiva = hostId;
-            await updateDoc(doc(db, "ArenaLive", hostId), {
-                status: 'selecting',
-                guestId: jogadorUid,
-                guestName: claNome
-            });
-            escutarMinhaSala(hostId);
-        }
-
-        function escutarMinhaSala(salaId) {
-            if(unsubscribeSala) unsubscribeSala();
-            
-            unsubscribeSala = onSnapshot(doc(db, "ArenaLive", salaId), async (docSnap) => {
-                if (!docSnap.exists()) {
-                    if (document.getElementById('telaBatalha').style.display !== 'flex') {
-                        alert("O adversário fechou a sala!");
-                        window.location.reload();
-                    }
-                    return;
-                }
-
-                const sala = docSnap.data();
-
-                if (sala.status === 'selecting' && document.getElementById('modalSeletor').style.display === 'none') {
-                    const qualCatFalta = isHost ? sala.hostCat : sala.guestCat;
-                    if (!qualCatFalta) abrirSeletorGato(false); 
-                }
-
-                if (sala.status === 'selecting' && sala.hostCat && sala.guestCat && isHost) {
-                    await updateDoc(doc(db, "ArenaLive", salaId), { status: 'calculando' });
-                    const roteiro = simularMatematicaBatalha(sala.hostCat, sala.guestCat);
-                    await updateDoc(doc(db, "ArenaLive", salaId), { status: 'fighting', roteiro: roteiro });
-                }
-
-                if (sala.status === 'fighting' && sala.roteiro) {
-                    if(unsubscribeSala) unsubscribeSala(); 
-                    document.getElementById('telaLobby').style.display = 'none';
-                    document.getElementById('telaBatalha').style.display = 'flex';
-                    
-                    const meuLutador = isHost ? sala.hostCat : sala.guestCat;
-                    const inimigoLutador = isHost ? sala.guestCat : sala.hostCat;
-                    
-                    reproduzirRoteiroBatalha(meuLutador, inimigoLutador, sala.roteiro, salaId);
-                }
-            });
-        }
-
-        async function selecionarGatoPvP(meuGato) {
-            const catPreparado = prepararLutador(meuGato, false);
-            const campo = isHost ? 'hostCat' : 'guestCat';
-            await updateDoc(doc(db, "ArenaLive", salaAtiva), { [campo]: catPreparado });
-            document.getElementById('telaLobby').innerHTML = `<h3 style="color:#dfc495; text-align:center; margin-top:50px;">Aguardando o oponente escolher o gato...</h3>`;
-        }
-
-        // ==========================================
-        // 3. O MOTOR MATEMÁTICO (IA E LEITURA DE SLOTS)
+        // 3. MOTOR MATEMÁTICO (Simulação Invisível)
         // ==========================================
         function rolarDado(chance) { return (Math.random() * 100) <= chance; }
-        const sleep = ms => new Promise(r => setTimeout(r, ms));
 
         function prepararLutador(dados, isCpu = false) {
             const res = dados.resistencia || dados.atributos?.resistencia || 1;
@@ -383,8 +395,8 @@
             let habilidades = dados.habilidadesEquipadas || [];
             
             return {
-                id: dados.id, nome: dados.nome, foto: dados.foto, isCpu: isCpu,
-                hpAtual: isCpu ? hpMax : dados.hpAtual, hpMax: hpMax,
+                id: dados.id, nome: dados.nome, foto: dados.foto, isCpu: isCpu, cpuId: dados.id,
+                hpAtual: isCpu ? hpMax : dados.hpAtual, hpMax: hpMax, hpInicial: isCpu ? hpMax : dados.hpAtual,
                 faixa: dados.faixa || (isCpu ? dados.faixa : 1),
                 paAtual: 0, 
                 paMax: 100 + Math.floor(vig / 2),
@@ -394,7 +406,7 @@
                 esquivaPct: (agi / (agi + 100)) * 100,
                 criticoPct: (foco / (foco + 100)) * 100,
                 habilidadesEquipadas: habilidades,
-                cooldowns: {}, // Bloquinho de notas para as recargas
+                cooldowns: {}, 
                 tecnicaPadrao: { nome: "Arranhão Básico", custo_pa: 0, danoPct: 80, geraPa: 15, tipo: "Ataque" }
             };
         }
@@ -411,11 +423,9 @@
             let techEscolhida = null;
             let gerouPa = 0;
 
-            // 1. Lê os Slots da Esquerda pra Direita
             if (atacante.habilidadesEquipadas.length > 0) {
                 for (let nomeTecnica of atacante.habilidadesEquipadas) {
                     if (!nomeTecnica) continue; 
-                    
                     let nomeString = typeof nomeTecnica === 'object' ? nomeTecnica.nomeTecnica : nomeTecnica;
                     let techDB = buscarDadosDaTecnica(nomeString);
                     if (!techDB) continue;
@@ -430,53 +440,44 @@
                 }
             }
 
-            // 2. Rede de Segurança
-            if (!techEscolhida) {
-                techEscolhida = atacante.tecnicaPadrao;
-            }
+            if (!techEscolhida) techEscolhida = atacante.tecnicaPadrao;
 
-            // 3. Economia de Energia e Recarga
             atacante.paAtual -= (techEscolhida.custo_pa || 0);
             
-            if (techEscolhida === atacante.tecnicaPadrao) {
-                gerouPa = techEscolhida.geraPa;
-            } else if (techEscolhida.desc && techEscolhida.desc.includes("gera 10 PA")) {
-                gerouPa = 10;
-            } else if (techEscolhida.desc && techEscolhida.desc.includes("gera 15 PA")) {
-                gerouPa = 15;
-            }
+            if (techEscolhida === atacante.tecnicaPadrao) gerouPa = techEscolhida.geraPa;
+            else if (techEscolhida.desc && techEscolhida.desc.includes("gera 10 PA")) gerouPa = 10;
+            else if (techEscolhida.desc && techEscolhida.desc.includes("gera 15 PA")) gerouPa = 15;
+            
             atacante.paAtual = Math.min(atacante.paMax, atacante.paAtual + gerouPa);
 
             if (techEscolhida.recarga > 0) {
                 atacante.cooldowns[techEscolhida.nome] = turno + techEscolhida.recarga + 1;
             }
 
-            // 4. Aplicação do Dano e Rolagens
             let evadiu = rolarDado(defensor.esquivaPct);
             let critico = false;
             let danoFinal = 0;
 
             if (!evadiu && techEscolhida.tipo !== "Buff" && techEscolhida.tipo !== "Cura" && techEscolhida.tipo !== "Defesa") {
                 let multDefesa = 100 / (100 + defensor.resistencia);
-                
                 let matchDano = techEscolhida.desc ? techEscolhida.desc.match(/Causa (\d+)%/) : null;
                 let danoPct = matchDano ? parseInt(matchDano[1]) / 100 : 1.0; 
 
                 danoFinal = (atacante.ataqueBruto * danoPct) * multDefesa;
-
-                if (rolarDado(atacante.criticoPct)) {
-                    danoFinal *= 1.5;
-                    critico = true;
-                }
+                if (rolarDado(atacante.criticoPct)) { danoFinal *= 1.5; critico = true; }
                 
                 danoFinal = Math.max(1, Math.floor(danoFinal));
                 defensor.hpAtual = Math.max(0, defensor.hpAtual - danoFinal);
             }
 
+            // Precisamos clonar os cooldowns para o estado do turno para desenhar na tela depois
+            let estadoCd = {};
+            for(let key in atacante.cooldowns) estadoCd[key] = atacante.cooldowns[key];
+
             return {
                 tipo: "ataque", turno: turno, atacanteCod: codLutador,
                 nomeTecnica: techEscolhida.nome, esquiva: evadiu, critico: critico, dano: danoFinal,
-                hpDefensor: defensor.hpAtual
+                hpDefensor: defensor.hpAtual, cooldownsAtualizados: estadoCd
             };
         }
 
@@ -503,18 +504,64 @@
         }
 
         // ==========================================
-        // 4. O SHOW NA TELA E RECOMPENSAS
+        // 4. REPRODUTOR VISUAL & SLOTS
         // ==========================================
+        function criarUiSlots(lado, lutador) {
+            const container = document.getElementById(`slotsLutador${lado}`);
+            container.innerHTML = '';
+            
+            let arr = lutador.habilidadesEquipadas.length > 0 ? lutador.habilidadesEquipadas : [lutador.tecnicaPadrao.nome];
+            arr.forEach((nomeHab, idx) => {
+                let nomeString = typeof nomeHab === 'object' ? nomeHab.nomeTecnica : nomeHab;
+                let idSlot = `slot_${lado}_${idx}`;
+                
+                let el = document.createElement('div');
+                el.className = 'slot-hab';
+                el.id = idSlot;
+                el.setAttribute('data-nome', nomeString);
+                
+                // Nome resumido p/ caber
+                el.innerHTML = `<span>${nomeString}</span><div class="slot-mask" id="mask_${idSlot}"></div>`;
+                container.appendChild(el);
+            });
+        }
+
+        function atualizarSlots(lado, cooldownsNoTurno, turnoAtual) {
+            const container = document.getElementById(`slotsLutador${lado}`);
+            const slots = container.querySelectorAll('.slot-hab');
+            
+            slots.forEach(slot => {
+                let nomeHab = slot.getAttribute('data-nome');
+                let mask = slot.querySelector('.slot-mask');
+                
+                let turnoLivre = cooldownsNoTurno[nomeHab] || 0;
+                let falta = turnoLivre - turnoAtual;
+                
+                if (falta > 0) {
+                    mask.textContent = falta;
+                    mask.classList.add('ativo');
+                } else {
+                    mask.classList.remove('ativo');
+                }
+            });
+        }
+
+        function piscarSlot(lado, nomeHab) {
+            const container = document.getElementById(`slotsLutador${lado}`);
+            const slots = container.querySelectorAll('.slot-hab');
+            slots.forEach(slot => {
+                if (slot.getAttribute('data-nome') === nomeHab) {
+                    slot.classList.add('usando');
+                    setTimeout(() => slot.classList.remove('usando'), 600 / velMult);
+                }
+            });
+        }
+
         function atualizarHUD(lado, lutador) {
             document.getElementById(`hpLutador${lado}`).style.width = `${(lutador.hpAtual / lutador.hpMax) * 100}%`;
             document.getElementById(`txtHp${lado}`).textContent = `${Math.round(lutador.hpAtual)} / ${lutador.hpMax}`;
             document.getElementById(`paLutador${lado}`).style.width = `${(lutador.paAtual / lutador.paMax) * 100}%`;
             document.getElementById(`txtPa${lado}`).textContent = `${Math.round(lutador.paAtual)} PA`;
-        }
-
-        function escreverLog(msg, cor = "#fff") {
-            const log = document.getElementById('caixaDeLog');
-            log.innerHTML = `<p style="color: ${cor}">${msg}</p>` + log.innerHTML;
         }
 
         function animarTextoFlutuante(lado, texto, classe) {
@@ -538,15 +585,29 @@
             if(salaIdParaDeletar === null) codMeuLado = 'A'; 
 
             atualizarHUD(1, meuGato); atualizarHUD(2, inimigoGato);
-            await sleep(1000);
+            criarUiSlots(1, meuGato); criarUiSlots(2, inimigoGato);
+            
+            await waitFast(800);
 
             for (const acao of roteiro) {
+                if (window.pularBatalha) {
+                    // Fast-forward do estado final
+                    if (acao.tipo === "fimTurno") {
+                        meuGato.paAtual = codMeuLado === 'A' ? acao.paL1 : acao.paL2;
+                        inimigoGato.paAtual = codMeuLado === 'A' ? acao.paL2 : acao.paL1;
+                    } else if (acao.tipo === "ataque") {
+                        let objDefensor = (acao.atacanteCod === codMeuLado) ? inimigoGato : meuGato;
+                        objDefensor.hpAtual = acao.hpDefensor;
+                    }
+                    continue; // Pula as animações
+                }
+
                 if (acao.tipo === "fimTurno") {
                     document.getElementById('txtTurno').textContent = `Turno: ${acao.turno + 1}`;
                     meuGato.paAtual = codMeuLado === 'A' ? acao.paL1 : acao.paL2;
                     inimigoGato.paAtual = codMeuLado === 'A' ? acao.paL2 : acao.paL1;
                     atualizarHUD(1, meuGato); atualizarHUD(2, inimigoGato);
-                    await sleep(800);
+                    await waitFast(400);
                     continue;
                 }
 
@@ -556,58 +617,61 @@
                     let objAtacante = idAtacante === 1 ? meuGato : inimigoGato;
                     let objDefensor = idDefensor === 1 ? meuGato : inimigoGato;
 
+                    // 1. Destaca o Slot usado e atualiza Cooldowns
+                    piscarSlot(idAtacante, acao.nomeTecnica);
+                    atualizarSlots(idAtacante, acao.cooldownsAtualizados, acao.turno);
+
                     const animClass = idAtacante === 1 ? 'atacando-esq' : 'atacando-dir';
                     const imgAtk = document.getElementById(`imgLutador${idAtacante}`);
                     imgAtk.classList.add(animClass);
                     
-                    await sleep(300); 
+                    await waitFast(250); 
 
                     if (acao.esquiva) {
-                        escreverLog(`${objAtacante.nome} usou <b>[${acao.nomeTecnica}]</b>, mas ${objDefensor.nome} ESQUIVOU!`);
                         const imgDef = document.getElementById(`imgLutador${idDefensor}`);
                         imgDef.classList.add('esquivando');
                         animarTextoFlutuante(idDefensor, "Esquivou!", "esquiva-flutuante");
-                        setTimeout(() => imgDef.classList.remove('esquivando'), 500);
-                    } else if (acao.dano === 0) {
-                        escreverLog(`${objAtacante.nome} usou <b>[${acao.nomeTecnica}]</b>.`);
-                    } else {
+                        setTimeout(() => imgDef.classList.remove('esquivando'), 400);
+                    } else if (acao.dano > 0) {
                         objDefensor.hpAtual = acao.hpDefensor;
                         const imgDef = document.getElementById(`imgLutador${idDefensor}`);
                         imgDef.classList.add('tomando-dano');
-                        setTimeout(() => imgDef.classList.remove('tomando-dano'), 400);
+                        setTimeout(() => imgDef.classList.remove('tomando-dano'), 300);
                         
-                        if (acao.critico) {
-                            animarTextoFlutuante(idDefensor, `-${acao.dano} CRÍTICO!`, "critico-flutuante");
-                            escreverLog(`💥 CRÍTICO! ${objAtacante.nome} usou <b>[${acao.nomeTecnica}]</b> e causou ${acao.dano} de dano!`, '#ffbb00');
-                        } else {
-                            animarTextoFlutuante(idDefensor, `-${acao.dano}`, "");
-                            escreverLog(`${objAtacante.nome} usou <b>[${acao.nomeTecnica}]</b> causando ${acao.dano} de dano.`);
-                        }
+                        if (acao.critico) animarTextoFlutuante(idDefensor, `-${acao.dano} CRÍTICO!`, "critico-flutuante");
+                        else animarTextoFlutuante(idDefensor, `-${acao.dano}`, "");
                     }
 
                     setTimeout(() => imgAtk.classList.remove(animClass), 200);
                     atualizarHUD(idAtacante, objAtacante); atualizarHUD(idDefensor, objDefensor);
                     
-                    const logContainer = document.getElementById('caixaDeLog');
-                    logContainer.scrollTop = logContainer.scrollHeight;
-                    await sleep(1000);
+                    await waitFast(600);
                 }
             }
 
-            await sleep(1500);
-            const venci = meuGato.hpAtual > 0;
-            
-            if (venci) escreverLog(`🏆 VITÓRIA! ${meuGato.nome} venceu!`, '#4CAF50');
-            else escreverLog(`💀 DERROTA... ${meuGato.nome} desmaiou.`, '#cc3333');
+            // Se pulou, atualiza a HUD no estado final
+            if (window.pularBatalha) {
+                atualizarHUD(1, meuGato); atualizarHUD(2, inimigoGato);
+            }
 
+            await waitFast(1000);
+            
             if (salaIdParaDeletar && isHost) {
                 await deleteDoc(doc(db, "ArenaLive", salaIdParaDeletar));
             }
 
-            await aplicarRecompensas(meuGato, inimigoGato, venci, meuGato.hpAtual);
+            const venci = meuGato.hpAtual > 0;
+            // O modal só vale pro PvE. Pro PvP, continua com alert simples pra não cruzar lógicas
+            if (salaIdParaDeletar === null) {
+                await aplicarRecompensasPvE(meuGato, inimigoGato, venci);
+            } else {
+                alert(venci ? "VITÓRIA NO PVP!" : "DERROTA NO PVP!");
+                window.location.reload();
+            }
         }
 
         async function iniciarBatalhaPvE(gatoPlayerRaw, npcRaw) {
+            window.pularBatalha = false;
             document.getElementById('telaLobby').style.display = 'none';
             document.getElementById('telaBatalha').style.display = 'flex';
 
@@ -618,48 +682,144 @@
             await reproduzirRoteiroBatalha(l1, l2, roteiro, null);
         }
 
-        async function aplicarRecompensas(gatoPlayer, inimigoGato, venceu, hpRestante) {
-            alert(venceu ? "A luta acabou! Seu gato saiu vitorioso." : "A luta acabou! Seu gato foi nocauteado.");
-            
-            const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoPlayer.id);
+        async function aplicarRecompensasPvE(meuLutadorProcessado, inimigoGato, venceu) {
+            const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", meuLutadorProcessado.id);
             const claRef = doc(db, "Clas", jogadorUid);
             const claSnap = await getDoc(claRef);
             let claData = claSnap.data();
 
-            let updatesGato = { hpAtual: hpRestante };
+            let updatesGato = { hpAtual: meuLutadorProcessado.hpAtual };
+            let xpGanho = 0, moedasGanhas = 0, repGanha = 0;
             
             if (venceu) {
-                let vigor = gatoPlayer.vigor || 1;
-                let foco = gatoPlayer.foco || 1;
+                let vigor = meuLutadorProcessado.vigor || 1;
+                let foco = meuLutadorProcessado.foco || 1;
+                let nivelInimigo = inimigoGato.faixa || 1;
                 
-                let nivelInimigo = inimigoGato.faixa;
-                if (typeof nivelInimigo === 'string') nivelInimigo = parseInt(nivelInimigo.replace(/\D/g,'')) || 1; 
+                // REGRA DO BOSS: Recompensa Específica Fixa
+                if (inimigoGato.cpuId === "cpu5") {
+                    xpGanho = Math.floor(500 * (1 + (vigor / 100)));
+                    moedasGanhas = 1000;
+                    repGanha = 50; 
+                } else {
+                    xpGanho = Math.floor((15 + (nivelInimigo * 5)) * (1 + (vigor / 100)));
+                    moedasGanhas = Math.floor((10 + (nivelInimigo * 2)) * (1 + (foco / 100)));
+                    repGanha = 2 + Math.floor(nivelInimigo / 4);
+                }
 
-                let xpGanho = Math.floor((15 + (nivelInimigo * 5)) * (1 + (vigor / 100)));
-                let moedasGanhas = Math.floor((10 + (nivelInimigo * 2)) * (1 + (foco / 100)));
-                let repGanha = 2 + Math.floor(nivelInimigo / 4);
-
-                updatesGato.xpAtual = (gatoPlayer.xpAtual || 0) + xpGanho;
+                updatesGato.xpAtual = (meuLutadorProcessado.xpAtual || 0) + xpGanho;
                 
                 await updateDoc(claRef, { 
                     moedas: (claData.moedas || 0) + moedasGanhas,
                     reputacao: Math.min(500, (claData.reputacao || 0) + repGanha)
                 });
-                alert(`Recompensas:\nXP: +${xpGanho}\nMoedas: +${moedasGanhas}\nReputação: +${repGanha}`);
             }
 
-            if (hpRestante <= 0) {
+            let hpPerdidoFormat = Math.round(meuLutadorProcessado.hpInicial - meuLutadorProcessado.hpAtual);
+            if (meuLutadorProcessado.hpAtual <= 0) {
                 updatesGato.estado = "Doente";
                 updatesGato.doenteDesde = Date.now();
-                alert(`O estado de ${gatoPlayer.nome} é crítico. Ele foi enviado à Enfermaria.`);
-            } else if (hpRestante < gatoPlayer.hpMax && gatoPlayer.estado !== 'Em Missão') {
+            } else if (meuLutadorProcessado.hpAtual < meuLutadorProcessado.hpMax && updatesGato.estado !== 'Em Missão') {
                 updatesGato.estado = "Descansando";
                 updatesGato.ultimaAtualizacao = Date.now();
-                alert(`${gatoPlayer.nome} sofreu dano e foi enviado ao Dormitório para Descansar.`);
             }
-
             await updateDoc(gatoRef, updatesGato);
-            window.location.reload(); 
+
+            // PREENCHE O MODAL RELATÓRIO
+            document.getElementById('tituloRelatorio').textContent = venceu ? "VITÓRIA!" : "DERROTA";
+            document.getElementById('tituloRelatorio').style.color = venceu ? "#4CAF50" : "#cc3333";
+            document.getElementById('subRelatorio').textContent = venceu ? "Seu gato superou o desafio." : "Seu gato foi enviado à enfermaria.";
+            
+            document.getElementById('relHp').textContent = `-${hpPerdidoFormat}`;
+            document.getElementById('relXp').textContent = venceu ? `+${xpGanho}` : "0";
+            document.getElementById('relMoedas').textContent = venceu ? `+${moedasGanhas}` : "0";
+            document.getElementById('relRep').textContent = venceu ? `+${repGanha}` : "0";
+
+            document.getElementById('modalRelatorio').style.display = 'flex';
+        }
+
+        // ==========================================
+        // 5. PVP LOBBY (Mantido igual)
+        // ==========================================
+        document.getElementById('btnFicarOnline').onclick = async () => {
+            const btn = document.getElementById('btnFicarOnline');
+            btn.textContent = "Aguardando Oponentes...";
+            btn.disabled = true;
+            btn.style.backgroundColor = "#7b7b7b";
+
+            salaAtiva = jogadorUid;
+            isHost = true;
+            
+            await setDoc(doc(db, "ArenaLive", jogadorUid), {
+                hostId: jogadorUid, hostName: claNome, status: 'waiting', guestId: null, guestName: null, hostCat: null, guestCat: null, roteiro: null
+            });
+            escutarMinhaSala(jogadorUid);
+        };
+
+        function escutarListaPvP() {
+            unsubscribeListaPvP = onSnapshot(collection(db, "ArenaLive"), (snapshot) => {
+                const listaDiv = document.getElementById('listaJogadoresOnline');
+                listaDiv.innerHTML = '';
+                snapshot.forEach(docSnap => {
+                    const sala = docSnap.data();
+                    if (sala.status === 'waiting' && sala.hostId !== jogadorUid) {
+                        const card = document.createElement('div');
+                        card.className = 'card-adv';
+                        card.innerHTML = `<div class="info-adv"><h4>Clã: ${sala.hostName}</h4><p>Buscando Batalha</p></div><button class="btn-desafiar">Desafiar</button>`;
+                        card.querySelector('button').onclick = () => desafiarJogador(sala.hostId);
+                        listaDiv.appendChild(card);
+                    }
+                });
+            });
+        }
+
+        async function desafiarJogador(hostId) {
+            isHost = false;
+            salaAtiva = hostId;
+            await updateDoc(doc(db, "ArenaLive", hostId), { status: 'selecting', guestId: jogadorUid, guestName: claNome });
+            escutarMinhaSala(hostId);
+        }
+
+        function escutarMinhaSala(salaId) {
+            if(unsubscribeSala) unsubscribeSala();
+            
+            unsubscribeSala = onSnapshot(doc(db, "ArenaLive", salaId), async (docSnap) => {
+                if (!docSnap.exists()) {
+                    if (document.getElementById('telaBatalha').style.display !== 'flex') {
+                        alert("O adversário fechou a sala!"); window.location.reload();
+                    }
+                    return;
+                }
+                const sala = docSnap.data();
+
+                if (sala.status === 'selecting' && document.getElementById('modalSeletor').style.display === 'none') {
+                    const qualCatFalta = isHost ? sala.hostCat : sala.guestCat;
+                    if (!qualCatFalta) abrirSeletorGato(false); 
+                }
+
+                if (sala.status === 'selecting' && sala.hostCat && sala.guestCat && isHost) {
+                    await updateDoc(doc(db, "ArenaLive", salaId), { status: 'calculando' });
+                    const roteiro = simularMatematicaBatalha(sala.hostCat, sala.guestCat);
+                    await updateDoc(doc(db, "ArenaLive", salaId), { status: 'fighting', roteiro: roteiro });
+                }
+
+                if (sala.status === 'fighting' && sala.roteiro) {
+                    window.pularBatalha = false;
+                    if(unsubscribeSala) unsubscribeSala(); 
+                    document.getElementById('telaLobby').style.display = 'none';
+                    document.getElementById('telaBatalha').style.display = 'flex';
+                    const meuLutador = isHost ? sala.hostCat : sala.guestCat;
+                    const inimigoLutador = isHost ? sala.guestCat : sala.hostCat;
+                    reproduzirRoteiroBatalha(meuLutador, inimigoLutador, sala.roteiro, salaId);
+                }
+            });
+        }
+
+        async function selecionarGatoPvP(meuGato) {
+            const catPreparado = prepararLutador(meuGato, false);
+            const campo = isHost ? 'hostCat' : 'guestCat';
+            await updateDoc(doc(db, "ArenaLive", salaAtiva), { [campo]: catPreparado });
+            document.getElementById('telaLobby').innerHTML = `<h3 style="color:#dfc495; text-align:center; margin-top:50px;">Aguardando o oponente escolher o gato...</h3>`;
         }
     </script>
 </body>
