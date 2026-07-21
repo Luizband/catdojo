@@ -29,7 +29,7 @@ const claDosCaninos = [
     { 
       id: "cpu5", cla: "Clã dos Caninos", nome: "General Akita", foto: "imagens/cpu05.png", 
       faixa: 20, slots: 6, 
-      forca: 80, agilidade: 50, resistencia: 100, foco: 40, vigor: 60, recompensa: "Lendária",
+      forca: 80, agilidade: 50, resistencia: 100, foco: 40, vigor: 60, recompensa: "Lendária (Boss)",
       habilidadesEquipadas: ["O Rei dos Becos", "Quebra-Costelas", "Instinto Assassino", "Postura do Arqueado", "Soco Quebra-Telha", "Rabo de Arraia"]
     }
 ];
