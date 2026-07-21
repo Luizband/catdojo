@@ -66,11 +66,12 @@ self.addEventListener('fetch', (e) => {
 // 4. O CÓDIGO DO MENSAGEIRO (Escuta as notificações com o jogo fechado)
 // =========================================================================
 messaging.onBackgroundMessage((payload) => {
-  console.log('Mensagem recebida do robô com o jogo fechado:', payload);
+  console.log('Mensagem de dados recebida do robô:', payload);
   
-  const notificationTitle = payload.notification.title;
+  // Agora ele lê de payload.data em vez de payload.notification
+  const notificationTitle = payload.data.title;
   const notificationOptions = {
-    body: payload.notification.body,
+    body: payload.data.body,
     icon: './imagens/logo.png' 
   };
 
