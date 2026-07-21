@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CatDojo - Arena</title>
+    <style>
+        /* RESET BÁSICO E CORES PADRÃO DO SEU PROJETO */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        html, body { background-color: #2c2c2c; display: flex; justify-content: center; position: fixed; top: 0; bottom: 0; left: 0; right: 0; width: 100%; overflow: hidden; }
+        #app { width: 100%; max-width: 414px; height: 100%; position: relative; display: flex; flex-direction: column; background-image: url('imagens/fundodormitorio.png'); background-size: cover; background-position: center; }
+        #app::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.7); z-index: 1; }
+        .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+
+        header { background-color: #dfc495; padding: 10px; text-align: center; border-bottom: 3px solid #5a4231; font-weight: bold; font-size: 1.2em; color: #2a2a2a; text-transform: uppercase; }
+        nav { background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; padding: 10px 5px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none;}
+        .nav-item img { width: 40px; margin-bottom: 3px; }
+
+        /* LOBBY E ABAS */
+        .abas-arena { display: flex; width: 100%; background: #5a4231; }
+        .aba { flex: 1; padding: 12px; text-align: center; color: #dfc495; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; }
+        .aba.ativa { border-bottom: 3px solid #d27d46; color: #f1ddb0; background: #4a3b32; }
+
+        .lista-container { flex: 1; overflow-y: auto; padding: 15px; display: none; }
+        .lista-container.ativa { display: flex; flex-direction: column; gap: 10px; }
+
+        /* CARDS DE ADVERSÁRIOS */
+        .card-adv { background-color: #dfc495; border: 3px solid #5a4231; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 10px; }
+        .card-adv img { width: 60px; height: 60px; border-radius: 8px; border: 2px solid #5a4231; object-fit: cover; background: #fff;}
+        .info-adv { flex: 1; }
+        .info-adv h4 { color: #2a2a2a; margin-bottom: 3px; text-transform: uppercase; font-size: 0.9em; }
+        .info-adv p { font-size: 0.75em; color: #5a4231; font-weight: bold; }
+        .btn-desafiar { background-color: #d27d46; color: white; border: 2px solid #5a4231; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; }
+        .btn-desafiar:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+
+        /* O PALCO DA BATALHA */
+        #telaBatalha { display: none; flex-direction: column; height: 100%; background: url('imagens/fundotatame.png') center/cover; position: relative; }
+        .barra-topo { background: rgba(0,0,0,0.8); padding: 10px; display: flex; justify-content: space-between; color: white; font-weight: bold; font-size: 0.8em; border-bottom: 2px solid #dfc495;}
+        
+        .lutadores-area { flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 20px; position: relative; }
+        .lutador-box { display: flex; flex-direction: column; align-items: center; width: 45%; position: relative; }
+        .sprite-gato { width: 120px; height: 120px; object-fit: contain; transition: all 0.3s ease; position: relative; z-index: 10;}
+        
+        /* BARRAS DE STATUS NA BATALHA */
+        .status-batalha { width: 100%; background: #2c2c2c; border: 2px solid #dfc495; border-radius: 6px; padding: 5px; margin-top: 10px; }
+        .nome-lutador { color: #f1ddb0; font-size: 0.8em; text-align: center; margin-bottom: 5px; font-weight: bold;}
+        .bar-wrap { width: 100%; background: #000; height: 12px; border-radius: 4px; border: 1px solid #5a4231; overflow: hidden; margin-bottom: 3px; position: relative; }
+        .fill-hp { height: 100%; background: #cc3333; width: 100%; transition: width 0.3s; }
+        .fill-pa { height: 100%; background: #3399ff; width: 0%; transition: width 0.3s; }
+        .text-bar { position: absolute; top: 0; width: 100%; text-align: center; font-size: 0.65em; color: white; line-height: 12px; font-weight: bold; }
+
+        .log-batalha { height: 150px; background: rgba(0,0,0,0.85); border-top: 3px solid #dfc495; color: white; overflow-y: auto; padding: 10px; font-size: 0.8em; }
+        .log-batalha p { margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 3px; }
+
+        /* ANIMAÇÕES VISUAIS */
+        @keyframes animAtaqueEsq { 0% { transform: translateX(0); } 50% { transform: translateX(50px) scale(1.1); z-index: 20;} 100% { transform: translateX(0); } }
+        @keyframes animAtaqueDir { 0% { transform: translateX(0); } 50% { transform: translateX(-50px) scale(1.1); z-index: 20;} 100% { transform: translateX(0); } }
+        @keyframes animDano { 0% { filter: brightness(1); transform: translateX(0); } 20% { filter: brightness(0.3) sepia(1) hue-rotate(-50deg) saturate(5); transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-5px); } 100% { filter: brightness(1); transform: translateX(0); } }
+        @keyframes animEsquiva { 0% { transform: translateX(0); opacity: 1; } 50% { transform: translateX(-30px); opacity: 0.5; } 100% { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
+
+        .atacando-esq { animation: animAtaqueEsq 0.4s ease forwards; }
+        .atacando-dir { animation: animAtaqueDir 0.4s ease forwards; }
+        .tomando-dano { animation: animDano 0.4s ease forwards; }
+        .esquivando { animation: animEsquiva 0.5s ease forwards; }
+
+        .dano-flutuante { position: absolute; color: #ff4444; font-weight: bold; font-size: 1.5em; text-shadow: 2px 2px 0 #000; animation: fadeUp 1s forwards; pointer-events: none; z-index: 100;}
+        .critico-flutuante { color: #ffbb00; font-size: 2em; text-transform: uppercase; }
+        .esquiva-flutuante { color: #aaa; font-size: 1.2em; font-style: italic; }
+
+        /* MODAL DE SELEÇÃO DE GATO */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .painel-modal { background: #dfc495; border: 3px solid #5a4231; border-radius: 12px; width: 90%; max-height: 80vh; padding: 20px; overflow-y: auto; text-align: center; }
+        .btn-fechar { background: #cc3333; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: right; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="conteudo-app" id="telaLobby">
+            <header>ARENA CATDOJO</header>
+            
+            <div class="abas-arena">
+                <div class="aba ativa" onclick="mudarAba('pve')">PvE (Desafios)</div>
+                <div class="aba" onclick="mudarAba('pvp')">PvP (Ao Vivo)</div>
+            </div>
+
+            <!-- LISTA PVE (O OFFLINE) -->
+            <div id="aba-pve" class="lista-container ativa">
+                <!-- Injetado via JS -->
+            </div>
+
+            <!-- LISTA PVP (O ONLINE) -->
+            <div id="aba-pvp" class="lista-container">
+                <p style="color: #dfc495; text-align: center; font-weight: bold; margin-top: 20px;">Procurando Mestres online...</p>
+                <!-- O backend do PvP entra aqui futuramente -->
+            </div>
+
+            <nav>
+                <div class="nav-item" onclick="window.location.href='dojo.html'"><img src="icones/Dojo.png" alt="Dojo">DOJO</div>
+                <div class="nav-item" onclick="window.location.href='dormitorio.html'"><img src="icones/descanso.png" alt="Dormitório">DORM</div>
+                <div class="nav-item"><img src="icones/arena.png" alt="Arena">ARENA</div>
+            </nav>
+        </div>
+
+        <!-- TELA DE BATALHA -->
+        <div id="telaBatalha">
+            <div class="barra-topo">
+                <span id="txtTurno">Turno: 1</span>
+                <span style="color:#d27d46; cursor:pointer;" onclick="fugirDaLuta()">FUGIR DA LUTA</span>
+            </div>
+            
+            <div class="lutadores-area">
+                <!-- LUTADOR 1 (JOGADOR) -->
+                <div class="lutador-box" id="boxLutador1">
+                    <img src="" class="sprite-gato" id="imgLutador1">
+                    <div class="status-batalha">
+                        <div class="nome-lutador" id="nomeLutador1">Meu Gato</div>
+                        <div class="bar-wrap"><div class="fill-hp" id="hpLutador1"></div><span class="text-bar" id="txtHp1"></span></div>
+                        <div class="bar-wrap"><div class="fill-pa" id="paLutador1"></div><span class="text-bar" id="txtPa1"></span></div>
+                    </div>
+                </div>
+
+                <div style="font-size: 2em; font-weight: bold; color: #dfc495; text-shadow: 2px 2px #000;">VS</div>
+
+                <!-- LUTADOR 2 (CPU) -->
+                <div class="lutador-box" id="boxLutador2">
+                    <img src="" class="sprite-gato" id="imgLutador2" style="transform: scaleX(-1);">
+                    <div class="status-batalha">
+                        <div class="nome-lutador" id="nomeLutador2">CPU</div>
+                        <div class="bar-wrap"><div class="fill-hp" id="hpLutador2"></div><span class="text-bar" id="txtHp2"></span></div>
+                        <div class="bar-wrap"><div class="fill-pa" id="paLutador2"></div><span class="text-bar" id="txtPa2"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="log-batalha" id="caixaDeLog">
+                <p style="color: #dfc495;">A batalha começou!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE ESCOLHER GATO -->
+    <div class="modal" id="modalSeletor">
+        <div class="painel-modal">
+            <button class="btn-fechar" onclick="document.getElementById('modalSeletor').style.display='none'">X</button>
+            <h3 style="color: #2a2a2a; margin-bottom: 15px; text-transform: uppercase;">Escolha seu Campeão</h3>
+            <div id="listaMeusGatos" style="display: flex; flex-direction: column; gap: 10px; text-align: left;"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDocs, collection, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
+        let jogadorUid = null;
+        let meusGatos = [];
+        let inimigoSelecionado = null;
+
+        // ==========================================
+        // 1. BANCO DE DADOS DE CPUS (PVE)
+        // ==========================================
+        const LISTA_NPCS = [
+            { id: "cpu1", nome: "Gato de Rua", foto: "imagens/cpu01.png", faixa: 1, slots: 2, 
+              forca: 2, agilidade: 1, resistencia: 2, foco: 1, vigor: 1, recompensa: "Baixa" },
+            { id: "cpu2", nome: "Líder do Beco", foto: "imagens/cpu02.png", faixa: 5, slots: 2, 
+              forca: 10, agilidade: 5, resistencia: 12, foco: 5, vigor: 5, recompensa: "Média" },
+            { id: "cpu3", nome: "Guarda Sombrio", foto: "imagens/cpu03.png", faixa: 9, slots: 4, 
+              forca: 25, agilidade: 15, resistencia: 30, foco: 10, vigor: 15, recompensa: "Alta" },
+            { id: "cpu4", nome: "Tenente Tigre", foto: "imagens/cpu04.png", faixa: 14, slots: 4, 
+              forca: 45, agilidade: 30, resistencia: 50, foco: 20, vigor: 35, recompensa: "Épica" },
+            { id: "cpu5", nome: "Shogun Gato", foto: "imagens/cpu05.png", faixa: 20, slots: 6, 
+              forca: 80, agilidade: 50, resistencia: 100, foco: 40, vigor: 60, recompensa: "Lendária" }
+        ];
+
+        window.mudarAba = (aba) => {
+            document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
+            document.querySelectorAll('.lista-container').forEach(el => el.classList.remove('ativa'));
+            event.target.classList.add('ativa');
+            document.getElementById(`aba-${aba}`).classList.add('ativa');
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                jogadorUid = user.uid;
+                carregarListaPvE();
+                await carregarMeusGatos();
+            }
+        });
+
+        function carregarListaPvE() {
+            const divPve = document.getElementById('aba-pve');
+            divPve.innerHTML = '';
+            
+            LISTA_NPCS.forEach(npc => {
+                const card = document.createElement('div');
+                card.className = 'card-adv';
+                card.innerHTML = `
+                    <img src="${npc.foto}" alt="Adv">
+                    <div class="info-adv">
+                        <h4>${npc.nome}</h4>
+                        <p>Nível: ${npc.faixa} | Prêmio: ${npc.recompensa}</p>
+                    </div>
+                    <button class="btn-desafiar">Lutar</button>
+                `;
+                card.querySelector('button').onclick = () => abrirSeletorGato(npc);
+                divPve.appendChild(card);
+            });
+        }
+
+        async function carregarMeusGatos() {
+            meusGatos = [];
+            const gatosSnap = await getDocs(collection(db, "Clas", jogadorUid, "Gatos"));
+            gatosSnap.forEach(doc => {
+                let gato = { id: doc.id, ...doc.data() };
+                // Apenas gatos vivos e que não estão doentes ou em missão
+                if (gato.estado !== 'Morto' && gato.estado !== 'Em Missão' && gato.estado !== 'Doente') {
+                    meusGatos.push(gato);
+                }
+            });
+        }
+
+        function abrirSeletorGato(npc) {
+            inimigoSelecionado = npc;
+            const listaDiv = document.getElementById('listaMeusGatos');
+            listaDiv.innerHTML = '';
+
+            if(meusGatos.length === 0) {
+                listaDiv.innerHTML = "<p style='color:#cc3333; font-weight:bold;'>Você não tem gatos aptos para lutar! (Cure-os ou chame-os de volta)</p>";
+            }
+
+            meusGatos.forEach(gato => {
+                const btn = document.createElement('div');
+                btn.className = 'card-adv';
+                btn.style.cursor = 'pointer';
+                btn.innerHTML = `
+                    <img src="${gato.foto}">
+                    <div class="info-adv">
+                        <h4>${gato.nome}</h4>
+                        <p>HP: ${Math.round(gato.hpAtual)}/${gato.hpMax}</p>
+                    </div>
+                `;
+                btn.onclick = () => iniciarBatalha(gato, inimigoSelecionado);
+                listaDiv.appendChild(btn);
+            });
+
+            document.getElementById('modalSeletor').style.display = 'flex';
+        }
+
+        window.fugirDaLuta = () => {
+            alert("Você não pode fugir agora!");
+        }
+
+        // ==========================================
+        // 2. O MOTOR DO AUTO-BATTLER
+        // ==========================================
+        
+        function rolarDado(chance) { return (Math.random() * 100) <= chance; }
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        function prepararLutador(dados, isCpu = false) {
+            const res = dados.resistencia || dados.atributos?.resistencia || 1;
+            const vig = dados.vigor || dados.atributos?.vigor || 1;
+            const forca = dados.forca || dados.atributos?.forca || 1;
+            const agi = dados.agilidade || dados.atributos?.agilidade || 1;
+            const foco = dados.foco || dados.atributos?.foco || 1;
+            
+            const hpMax = isCpu ? (250 + (res * 15)) : dados.hpMax;
+            
+            return {
+                id: dados.id, nome: dados.nome, foto: dados.foto, isCpu: isCpu,
+                hpAtual: isCpu ? hpMax : dados.hpAtual, hpMax: hpMax,
+                paAtual: 0, 
+                paMax: 100 + Math.floor(vig / 2),
+                recargaPA: 5 + Math.floor(vig / 4),
+                ataqueBruto: forca * 2.5,
+                resistencia: res,
+                agilidade: agi,
+                foco: foco,
+                esquivaPct: (agi / (agi + 100)) * 100,
+                criticoPct: (foco / (foco + 100)) * 100,
+                // Simplificação temporária: Técnicas de Ataque Básico se não tiver equipado
+                tecnicaPadrao: { nome: "Ataque Básico", custo_pa: 0, danoPct: 100, geraPa: 15 }
+            };
+        }
+
+        function atualizarHUD(lado, lutador) {
+            document.getElementById(`hpLutador${lado}`).style.width = `${(lutador.hpAtual / lutador.hpMax) * 100}%`;
+            document.getElementById(`txtHp${lado}`).textContent = `${Math.round(lutador.hpAtual)} / ${lutador.hpMax}`;
+            document.getElementById(`paLutador${lado}`).style.width = `${(lutador.paAtual / lutador.paMax) * 100}%`;
+            document.getElementById(`txtPa${lado}`).textContent = `${Math.round(lutador.paAtual)} PA`;
+        }
+
+        function escreverLog(msg, cor = "#fff") {
+            const log = document.getElementById('caixaDeLog');
+            log.innerHTML = `<p style="color: ${cor}">${msg}</p>` + log.innerHTML;
+        }
+
+        function animarTextoFlutuante(lado, texto, classe) {
+            const box = document.getElementById(`boxLutador${lado}`);
+            const span = document.createElement('span');
+            span.className = `dano-flutuante ${classe}`;
+            span.textContent = texto;
+            // Posição aleatória perto do gato
+            span.style.top = `${Math.random() * 40 + 20}%`;
+            span.style.left = `${Math.random() * 40 + 20}%`;
+            box.appendChild(span);
+            setTimeout(() => span.remove(), 1000);
+        }
+
+        async function iniciarBatalha(meuGatoRaw, cpuRaw) {
+            document.getElementById('modalSeletor').style.display = 'none';
+            document.getElementById('telaLobby').style.display = 'none';
+            document.getElementById('telaBatalha').style.display = 'flex';
+
+            let l1 = prepararLutador(meuGatoRaw, false);
+            let l2 = prepararLutador(cpuRaw, true);
+
+            document.getElementById('imgLutador1').src = l1.foto;
+            document.getElementById('nomeLutador1').textContent = l1.nome;
+            document.getElementById('imgLutador2').src = l2.foto;
+            document.getElementById('nomeLutador2').textContent = l2.nome;
+
+            atualizarHUD(1, l1); atualizarHUD(2, l2);
+            document.getElementById('caixaDeLog').innerHTML = '';
+            escreverLog(`A luta entre ${l1.nome} e ${l2.nome} começou!`, '#d27d46');
+
+            // LOOP DE BATALHA
+            let turno = 1;
+            while(l1.hpAtual > 0 && l2.hpAtual > 0) {
+                document.getElementById('txtTurno').textContent = `Turno: ${turno}`;
+                await sleep(1000); // Pausa dramática entre turnos
+
+                // Lógica de quem ataca primeiro baseada na agilidade pode ir aqui, mas vamos fazer L1 ataca L2, depois L2 ataca L1.
+                await executarAcao(l1, l2, 1, 2);
+                if (l2.hpAtual <= 0) break;
+
+                await sleep(1000);
+                
+                await executarAcao(l2, l1, 2, 1);
+                if (l1.hpAtual <= 0) break;
+
+                // Fim do turno, regenera PA
+                l1.paAtual = Math.min(l1.paMax, l1.paAtual + l1.recargaPA);
+                l2.paAtual = Math.min(l2.paMax, l2.paAtual + l2.recargaPA);
+                atualizarHUD(1, l1); atualizarHUD(2, l2);
+                turno++;
+            }
+
+            // PÓS-BATALHA
+            await sleep(1500);
+            if (l1.hpAtual > 0) {
+                escreverLog(`🏆 VITÓRIA! ${l1.nome} venceu!`, '#4CAF50');
+                await finalizarLuta(meuGatoRaw, cpuRaw, true, l1.hpAtual);
+            } else {
+                escreverLog(`💀 DERROTA... ${l1.nome} desmaiou.`, '#cc3333');
+                await finalizarLuta(meuGatoRaw, cpuRaw, false, 0);
+            }
+        }
+
+        async function executarAcao(atacante, defensor, idAtacante, idDefensor) {
+            // Escolhe a técnica (Simplificado para o Básico por enquanto)
+            let tech = atacante.tecnicaPadrao;
+            atacante.paAtual = Math.min(atacante.paMax, atacante.paAtual + tech.geraPa);
+            
+            // Animação de Avanço
+            const animClass = idAtacante === 1 ? 'atacando-esq' : 'atacando-dir';
+            const imgAtk = document.getElementById(`imgLutador${idAtacante}`);
+            imgAtk.classList.add(animClass);
+            setTimeout(() => imgAtk.classList.remove(animClass), 400);
+
+            await sleep(200); // Tempo do soco chegar
+
+            // Rolagem de Esquiva
+            if (rolarDado(defensor.esquivaPct)) {
+                escreverLog(`${atacante.nome} usou ${tech.nome}, mas ${defensor.nome} ESQUIVOU!`);
+                const imgDef = document.getElementById(`imgLutador${idDefensor}`);
+                imgDef.classList.add('esquivando');
+                animarTextoFlutuante(idDefensor, "Esquivou!", "esquiva-flutuante");
+                setTimeout(() => imgDef.classList.remove('esquivando'), 500);
+                atualizarHUD(idAtacante, atacante);
+                return;
+            }
+
+            // Multiplicador de Defesa
+            let multDefesa = 100 / (100 + defensor.resistencia);
+            let danoFinal = (atacante.ataqueBruto * (tech.danoPct / 100)) * multDefesa;
+
+            // Rolagem de Crítico
+            let isCrit = false;
+            if (rolarDado(atacante.criticoPct)) {
+                danoFinal *= 1.5;
+                isCrit = true;
+            }
+
+            danoFinal = Math.max(1, Math.floor(danoFinal)); // Mínimo de 1 de dano
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - danoFinal);
+
+            // Efeitos Visuais do Dano
+            const imgDef = document.getElementById(`imgLutador${idDefensor}`);
+            imgDef.classList.add('tomando-dano');
+            setTimeout(() => imgDef.classList.remove('tomando-dano'), 400);
+            
+            if (isCrit) {
+                animarTextoFlutuante(idDefensor, `-${danoFinal} CRÍTICO!`, "critico-flutuante");
+                escreverLog(`💥 CRÍTICO! ${atacante.nome} causou ${danoFinal} de dano!`, '#ffbb00');
+            } else {
+                animarTextoFlutuante(idDefensor, `-${danoFinal}`, "");
+                escreverLog(`${atacante.nome} atacou causando ${danoFinal} de dano.`);
+            }
+
+            atualizarHUD(idAtacante, atacante);
+            atualizarHUD(idDefensor, defensor);
+        }
+
+        async function finalizarLuta(gatoPlayer, npc, venceu, hpRestante) {
+            alert(venceu ? "Vitória! Recompensas em breve..." : "Derrota! Seu gato foi para a Enfermaria.");
+            
+            // Lógica Pós-Batalha Firebase
+            const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoPlayer.id);
+            const claRef = doc(db, "Clas", jogadorUid);
+            const claSnap = await getDoc(claRef);
+            let claData = claSnap.data();
+
+            let updatesGato = { hpAtual: hpRestante };
+            
+            // FÓRMULAS DE RECOMPENSA
+            if (venceu) {
+                let vigor = gatoPlayer.atributos?.vigor || 1;
+                let foco = gatoPlayer.atributos?.foco || 1;
+                let xpGanho = Math.floor((15 + (npc.faixa * 5)) * (1 + (vigor / 100)));
+                let moedasGanhas = Math.floor((10 + (npc.faixa * 2)) * (1 + (foco / 100)));
+                let repGanha = 2 + Math.floor(npc.faixa / 4);
+
+                updatesGato.xpAtual = (gatoPlayer.xpAtual || 0) + xpGanho;
+                
+                await updateDoc(claRef, { 
+                    moedas: (claData.moedas || 0) + moedasGanhas,
+                    reputacao: Math.min(500, (claData.reputacao || 0) + repGanha)
+                });
+                alert(`Ganhos:\nXP: +${xpGanho}\nMoedas: +${moedasGanhas}\nReputação: +${repGanha}`);
+            }
+
+            // Se o HP zerou (perdeu), vai pra enfermaria
+            if (hpRestante <= 0) {
+                updatesGato.estado = "Doente";
+                updatesGato.doenteDesde = Date.now();
+            } else if (hpRestante < gatoPlayer.hpMax && gatoPlayer.estado !== 'Em Missão') {
+                // Força o status descansando se voltou machucado (Regra do GDD PvE)
+                updatesGato.estado = "Descansando";
+                updatesGato.ultimaAtualizacao = Date.now();
+            }
+
+            await updateDoc(gatoRef, updatesGato);
+            
+            // Retorna ao Lobby
+            window.location.reload(); 
+        }
+
+    </script>
+</body>
+</html>
