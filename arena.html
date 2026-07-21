@@ -298,9 +298,6 @@
             }
         });
 
-        // ==========================================
-        // 2. MONTAGEM DA LISTA PVE E SELEÇÃO
-        // ==========================================
         function carregarListaNpcs() {
             const containerHtml = document.getElementById('listaInimigosHtml');
             containerHtml.innerHTML = '';
@@ -308,13 +305,17 @@
             LISTA_NPCS.forEach(npc => {
                 const card = document.createElement('div');
                 card.className = 'card-adv';
-                // Mostra a Faixa ao invés de texto "Nível"
+                
+                // Força o número da faixa a ter dois dígitos (1 vira "01", 20 continua "20")
+                let numImgFaixa = String(npc.faixa).padStart(2, '0');
+
+                // Agora ele puxa imagens/${numImgFaixa}.png
                 card.innerHTML = `
                     <img src="${npc.foto}">
                     <div class="info-adv">
                         <h4>${npc.nome}</h4>
                         <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                            <img src="imagens/faixa${npc.faixa}.png" onerror="this.src='icones/treino.png'" style="width:25px; height:8px; border:none; border-radius:2px;"> 
+                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="width:25px; height:8px; border:none; border-radius:2px;"> 
                             <span style="font-size:0.7em; color:#5a4231; font-weight:bold;">Rank: ${npc.faixa}</span>
                         </div>
                     </div>
