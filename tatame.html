@@ -815,15 +815,12 @@
                 let peArtesUpdate = gato.peArtes || {};
                 peArtesUpdate[t.arteKey] = (peArtesUpdate[t.arteKey] || 0) + peGanho;
                 
-                let novaFome = gato.fome - (horas * 5);
-                if (novaFome < 0) novaFome = 0;
+                // REMOVIDO: A subtração forçada da fome, do estado e da ultimaAtualizacao!
+                // O sistema de tempo real do Dormitório já cuida disso perfeitamente em segundo plano.
 
                 await updateDoc(gatoRef, { 
                     xpAtual: (gato.xpAtual || 0) + xpGanho,
-                    peArtes: peArtesUpdate,
-                    fome: novaFome,
-                    estado: novaFome === 0 ? 'Doente' : 'Saudável',
-                    ultimaAtualizacao: Date.now()
+                    peArtes: peArtesUpdate
                 });
 
                 const claRef = doc(db, "Clas", jogadorUid);
