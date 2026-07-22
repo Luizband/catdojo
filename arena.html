@@ -117,31 +117,7 @@
             <!-- LISTA DE CLÃS (PVE) -->
             <div id="aba-pve" class="lista-container ativa">
                 <div id="vistaClas">
-                    <h3 style="color: #dfc495; text-align: center; margin-bottom: 10px;">Dojos Rivais</h3>
-                    
-                    <div class="card-adv" onclick="abrirListaNpcs('Clã dos Caninos')">
-                        <img src="imagens/cla01.png" onerror="this.src='icones/Dojo.png'">
-                        <div class="info-adv">
-                            <h4>Clã dos Caninos</h4>
-                        </div>
-                        <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
-                    </div>
-                    
-                    <div class="card-adv" onclick="abrirListaNpcs('Clã da Presa')">
-                        <img src="imagens/cla02.png" onerror="this.src='icones/Dojo.png'">
-                        <div class="info-adv">
-                            <h4>Clã da Presa</h4>
-                        </div>
-                        <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
-                    </div>
-
-                    <div class="card-adv" onclick="abrirListaNpcs('Clã Archea')">
-                        <img src="imagens/cla03.png" onerror="this.src='icones/Dojo.png'">
-                        <div class="info-adv">
-                            <h4>Clã Archea</h4>
-                        </div>
-                        <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
-                    </div>
+                    <!-- Gerado dinamicamente via JS -->
                 </div>
 
                 <!-- LISTA DE NPCS DENTRO DO CLÃ (Oculta Inicialmente) -->
@@ -232,9 +208,9 @@
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDocs, collection, doc, updateDoc, getDoc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // NOVO: arrayUnion adicionado na importação abaixo
+        import { getDocs, collection, doc, updateDoc, getDoc, setDoc, deleteDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
-        // IMPORTANDO OS DADOS EXTERNOS
         import { LISTA_NPCS } from './npcs.js';
         import { ARTES_MARCIAIS } from './artes-marciais.js';
         
@@ -242,6 +218,7 @@
         let claNome = "Mestre";
         let reputacaoAtual = 0; 
         let meusGatos = [];
+        let npcsDerrotados = []; // NOVO: Armazena os IDs dos NPCs que você já venceu
         
         // Variáveis de Controle Batalha Visual
         let velMult = 1;
@@ -304,9 +281,10 @@
                 if (claSnap.exists()) {
                     claNome = claSnap.data().nomeCla || "Mestre";
                     reputacaoAtual = claSnap.data().reputacao || 0;
+                    npcsDerrotados = claSnap.data().npcsDerrotados || []; // Puxa do banco quem já apanhou
                 }
                 
-                carregarListaNpcs();
+                renderizarClas(); // Desenha o menu com os checkmarks
                 await carregarMeusGatos();
                 escutarListaPvP();
             } else {
@@ -314,11 +292,42 @@
             }
         });
 
+        function renderizarClas() {
+            const vistaClas = document.getElementById('vistaClas');
+            vistaClas.innerHTML = '<h3 style="color: #dfc495; text-align: center; margin-bottom: 10px;">Dojos Rivais</h3>';
+            
+            const listaClas = [
+                { id: 'Clã dos Caninos', img: 'imagens/cla01.png' },
+                { id: 'Clã da Presa', img: 'imagens/cla02.png' },
+                { id: 'Clã Archea', img: 'imagens/cla03.png' }
+            ];
+
+            listaClas.forEach(cla => {
+                // Checa se todos os NPCs desse clã específico estão dentro do array npcsDerrotados
+                const npcsDesteCla = LISTA_NPCS.filter(n => n.cla === cla.id);
+                const todosDerrotados = npcsDesteCla.length > 0 && npcsDesteCla.every(n => npcsDerrotados.includes(n.id));
+
+                // Se todos foram derrotados, injeta o check verde na frente do nome
+                const checkHtml = todosDerrotados ? `<img src="icones/check.png" style="width: 24px; height: 24px; border: none; background: transparent; margin-left: 8px;">` : '';
+
+                const card = document.createElement('div');
+                card.className = 'card-adv';
+                card.onclick = () => abrirListaNpcs(cla.id);
+                card.innerHTML = `
+                    <img src="${cla.img}" onerror="this.src='icones/Dojo.png'">
+                    <div class="info-adv">
+                        <h4 style="display: flex; align-items: center; margin: 0;">${cla.id} ${checkHtml}</h4>
+                    </div>
+                    <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
+                `;
+                vistaClas.appendChild(card);
+            });
+        }
+        
         function carregarListaNpcs(claSelecionado) {
             const containerHtml = document.getElementById('listaInimigosHtml');
             containerHtml.innerHTML = '';
             
-            // Filtra a lista total de NPCs para mostrar apenas os do clã clicado
             const npcsDoCla = LISTA_NPCS.filter(npc => npc.cla === claSelecionado);
 
             npcsDoCla.forEach(npc => {
@@ -326,36 +335,62 @@
                 card.className = 'card-adv';
                 
                 let numImgFaixa = String(npc.faixa).padStart(2, '0');
-                
-                // Tratamento especial se o personagem for um Boss
+                let derrotado = npcsDerrotados.includes(npc.id);
+
+                // Monta a foto (com o X e fundo cinza se estiver derrotado)
+                let imgHtml = '';
+                if (derrotado) {
+                    imgHtml = `<div style="position:relative; width:60px; height:60px; flex-shrink:0;">
+                                  <img src="${npc.foto}" style="width:100%; height:100%; filter:grayscale(100%); opacity:0.5; border-radius:8px; border:2px solid #5a4231; background:#fff;">
+                                  <img src="icones/x.png" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:35px; height:35px; border:none; background:transparent; z-index:2;">
+                               </div>`;
+                } else {
+                    imgHtml = `<img src="${npc.foto}" ${npc.isBoss ? 'style="border-color: #ffbb00;"' : ''}>`;
+                }
+
+                // Monta o Botão (Cinza e Desativado se derrotado)
+                let btnHtml = derrotado 
+                    ? `<button class="btn-desafiar" disabled style="background-color:#7b7b7b; border-color:#4a4a4a; color:#ccc; box-shadow:none;">Derrotado</button>`
+                    : `<button class="btn-desafiar" ${npc.isBoss ? 'style="background-color: #ffc107; color: #856404; border-color: #ffbb00;"' : ''}>Lutar</button>`;
+
                 if (npc.isBoss) {
-                    card.style.borderColor = '#ffbb00';
-                    card.style.backgroundColor = '#fff3cd'; // Fundo levemente dourado
+                    if (!derrotado) {
+                        card.style.borderColor = '#ffbb00';
+                        card.style.backgroundColor = '#fff3cd';
+                    } else {
+                        card.style.borderColor = '#5a4231';
+                        card.style.backgroundColor = '#d3c3a3'; // Desbotado
+                    }
                     
                     card.innerHTML = `
-                        <img src="${npc.foto}" style="border-color: #ffbb00;">
+                        ${imgHtml}
                         <div class="info-adv">
-                            <h4 style="color: #856404;">${npc.nome}</h4>
-                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain;"> 
-                            <div style="margin-top: 5px; font-size: 0.8em; color: #cc3333; font-weight: bold; display: flex; align-items: center; gap: 4px;">
-                                <img src="icones/rep.png" style="width: 14px; height: 14px; border: none;"> -${npc.custoRep}
-                                <span title="Derrotar o Líder concede recompensa maciça!" style="margin-left: 5px; color: #4CAF50; cursor: help; border-bottom: 1px dotted #4CAF50;">&#9432; Recompensa: ${npc.moedasBoss} Moedas</span>
+                            <h4 style="color: ${derrotado ? '#5a4231' : '#856404'};">${npc.nome}</h4>
+                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain; ${derrotado ? 'filter:grayscale(100%); opacity:0.6;' : ''}"> 
+                            <div style="margin-top: 5px; font-size: 0.8em; color: ${derrotado ? '#555' : '#cc3333'}; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                                <img src="icones/rep.png" style="width: 14px; height: 14px; border: none; ${derrotado ? 'filter:grayscale(100%);' : ''}"> -${npc.custoRep}
+                                <span style="margin-left: 5px; color: ${derrotado ? '#555' : '#4CAF50'};">&#9432; Recompensa: ${npc.moedasBoss}</span>
                             </div>
                         </div>
-                        <button class="btn-desafiar" style="background-color: #ffc107; color: #856404; border-color: #ffbb00;">Lutar</button>
+                        ${btnHtml}
                     `;
                 } else {
+                    if (derrotado) {
+                        card.style.backgroundColor = '#d3c3a3'; // Desbotado
+                    }
                     card.innerHTML = `
-                        <img src="${npc.foto}">
+                        ${imgHtml}
                         <div class="info-adv">
-                            <h4>${npc.nome}</h4>
-                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain;"> 
+                            <h4 style="color: ${derrotado ? '#5a4231' : '#2a2a2a'}">${npc.nome}</h4>
+                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain; ${derrotado ? 'filter:grayscale(100%); opacity:0.6;' : ''}"> 
                         </div>
-                        <button class="btn-desafiar">Lutar</button>
+                        ${btnHtml}
                     `;
                 }
                 
-                card.querySelector('button').onclick = () => abrirSeletorGato(true, npc);
+                if (!derrotado) {
+                    card.querySelector('button').onclick = () => abrirSeletorGato(true, npc);
+                }
                 containerHtml.appendChild(card);
             });
         }
@@ -746,9 +781,11 @@
 
                 updatesGato.xpAtual = (meuLutadorProcessado.xpAtual || 0) + xpGanho;
                 
+                // NOVO: Adiciona o ID do inimigo derrotado à lista de npcsDerrotados usando arrayUnion
                 await updateDoc(claRef, { 
                     moedas: (claData.moedas || 0) + moedasGanhas,
-                    reputacao: Math.min(500, (claData.reputacao || 0) + repGanha)
+                    reputacao: Math.min(500, (claData.reputacao || 0) + repGanha),
+                    npcsDerrotados: arrayUnion(inimigoGato.cpuId)
                 });
             }
 
@@ -762,6 +799,7 @@
             }
             await updateDoc(gatoRef, updatesGato);
 
+            // PREENCHE O MODAL RELATÓRIO
             document.getElementById('tituloRelatorio').textContent = venceu ? "VITÓRIA!" : "DERROTA";
             document.getElementById('tituloRelatorio').style.color = venceu ? "#4CAF50" : "#cc3333";
             document.getElementById('subRelatorio').textContent = venceu ? "Seu gato superou o desafio." : "Seu gato foi enviado à enfermaria.";
