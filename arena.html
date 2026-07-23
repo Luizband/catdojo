@@ -34,8 +34,6 @@
         .info-adv h4 { color: #2a2a2a; margin-bottom: 3px; text-transform: uppercase; font-size: 0.9em; }
         .info-adv p { font-size: 0.75em; color: #5a4231; font-weight: bold; }
         
-        .badge-dificuldade { display: inline-block; padding: 3px 6px; border-radius: 4px; font-size: 0.7em; color: white; background: #4CAF50; }
-        
         .btn-desafiar { background-color: #d27d46; color: white; border: 2px solid #5a4231; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; }
         .btn-desafiar:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
         .btn-ficar-online { background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 4px 0px #2E7D32; width: 100%; text-transform: uppercase; margin-bottom: 15px; flex-shrink: 0;}
@@ -43,7 +41,6 @@
         /* O PALCO DA BATALHA */
         #telaBatalha { display: none; flex-direction: column; height: 100%; background: url('imagens/fundoarena.png') center/cover; position: relative; z-index: 3;}
         
-        /* CONTROLES DE VELOCIDADE */
         .barra-controles { background: rgba(0,0,0,0.85); padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #dfc495;}
         .btn-speed { background: #5a4231; color: #dfc495; border: 1px solid #dfc495; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-speed.ativo { background: #d27d46; color: white; }
@@ -53,7 +50,6 @@
         .lutador-box { display: flex; flex-direction: column; align-items: center; width: 48%; position: relative; }
         .sprite-gato { width: 110px; height: 110px; object-fit: contain; transition: all 0.3s ease; position: relative; z-index: 10;}
         
-        /* BARRAS DE STATUS NA BATALHA */
         .status-batalha { width: 100%; background: #2c2c2c; border: 2px solid #dfc495; border-radius: 6px; padding: 5px; margin-top: 5px; }
         .nome-lutador { color: #f1ddb0; font-size: 0.75em; text-align: center; margin-bottom: 5px; font-weight: bold; text-transform: uppercase;}
         .bar-wrap { width: 100%; background: #000; height: 10px; border-radius: 4px; border: 1px solid #5a4231; overflow: hidden; margin-bottom: 3px; position: relative; }
@@ -61,20 +57,14 @@
         .fill-pa { height: 100%; background: #3399ff; width: 0%; transition: width 0.3s; }
         .text-bar { position: absolute; top: 0; width: 100%; text-align: center; font-size: 0.6em; color: white; line-height: 10px; font-weight: bold; }
 
-        /* SLOTS DE HABILIDADES (Substituindo o Log) */
         .area-slots { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 8px; }
         .slot-hab { 
             background: #4a3b32; border: 1px solid #dfc495; border-radius: 4px; 
             padding: 4px; text-align: center; font-size: 0.55em; color: #f1ddb0; 
             font-weight: bold; position: relative; height: 35px; display: flex; 
-            align-items: center; justify-content: center; overflow: hidden;
-            transition: all 0.2s ease;
+            align-items: center; justify-content: center; overflow: hidden; transition: all 0.2s ease;
         }
-        .slot-mask {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
-            font-size: 2em; color: white; z-index: 2; opacity: 0; pointer-events: none;
-        }
+        .slot-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; font-size: 2em; color: white; z-index: 2; opacity: 0; pointer-events: none; }
         .slot-mask.ativo { opacity: 1; }
         .slot-hab.usando { background: #d27d46; color: white; transform: scale(1.1); box-shadow: 0 0 10px #ffbb00; z-index: 5;}
 
@@ -89,22 +79,59 @@
         .atacando-dir { animation: animAtaqueDir 0.3s ease forwards; }
         .tomando-dano { animation: animDano 0.3s ease forwards; }
         .esquivando { animation: animEsquiva 0.4s ease forwards; }
-
         .dano-flutuante { position: absolute; color: #ff4444; font-weight: bold; font-size: 1.5em; text-shadow: 2px 2px 0 #000; animation: fadeUp 1s forwards; pointer-events: none; z-index: 100;}
         .critico-flutuante { color: #ffbb00; font-size: 1.8em; text-transform: uppercase; }
         .esquiva-flutuante { color: #aaa; font-size: 1.2em; font-style: italic; }
 
-        /* MODAIS */
+        /* MODAIS GERAIS */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .painel-modal { background: #dfc495; border: 3px solid #5a4231; border-radius: 12px; width: 90%; max-height: 80vh; padding: 20px; overflow-y: auto; text-align: center; }
         .btn-fechar { background: #cc3333; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: right; font-weight: bold; cursor: pointer; }
         
-        .info-relatorio { background: #f1ddb0; border: 2px solid #5a4231; border-radius: 8px; padding: 15px; margin-top: 15px; text-align: left;}
-        .info-relatorio p { margin-bottom: 8px; font-weight: bold; color: #4a3b32; font-size: 0.9em;}
-        .info-relatorio span { color: #2a2a2a; }
+        .modal-centro { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; }
+        .painel-centro { background: #f1ddb0; width: 85%; max-width: 320px; border: 3px solid #5a4231; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0px 10px 20px rgba(0,0,0,0.5); }
+        .botoes-centro { display: flex; gap: 10px; justify-content: center; margin-top: 15px;}
+        .btn-centro { flex: 1; padding: 10px; background: #dfc495; border: 2px solid #5a4231; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; color: #2a2a2a; text-transform: uppercase; }
+        .btn-centro:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+        .btn-centro.cancelar { background: transparent; border: 2px dashed #a68a61; box-shadow: none; }
+
+        /* MODAL DE HISTÓRIA */
+        #modalHistoria { z-index: 3000; flex-direction: column; background: #1a1a1a; padding: 0; justify-content: flex-start; }
+        #historiaImg { width: 100%; height: 50%; background-size: cover; background-position: center; background-repeat: no-repeat; border-bottom: 4px solid #5a4231; }
+        .caixa-texto-historia { flex: 1; width: 100%; padding: 20px; box-sizing: border-box; position: relative; background-color: #2c2c2c; overflow-y: auto;}
+        #historiaTexto { color: #f1ddb0; font-size: 1.05em; font-family: 'Courier New', Courier, monospace; font-weight: bold; line-height: 1.5em; text-shadow: 1px 1px 2px #000; white-space: pre-wrap;}
+        #btnPularHistoria { position: absolute; bottom: 20px; right: 20px; background-color: #d27d46; color: white; border: 2px solid #5a4231; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; text-transform: uppercase; z-index: 10;}
+        #btnPularHistoria:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+
+        #toastContainer { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast-msg { background-color: #2c2c2c; color: #f1ddb0; padding: 12px 24px; border: 2px solid #dfc495; border-radius: 8px; font-weight: bold; text-align: center; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); animation: fadeInOut 2s forwards; text-transform: uppercase; font-size: 0.85em; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(-10px); } 10% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
+
     </style>
 </head>
-<body>
+<body onclick="tocarMusicaArena()">
+    <audio id="bgmArena" loop src="audios/arena.mp3"></audio>
+
+    <div id="toastContainer"></div>
+    
+    <div class="modal-centro" id="modalConfirmacao">
+        <div class="painel-centro">
+            <p id="textoConfirmacao" style="color: #2a2a2a; font-weight: bold; font-size: 1.05em;"></p>
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" id="btnCancelarConfirm">Cancelar</button>
+                <button class="btn-centro" id="btnAceitarConfirm">Sim, Pular</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalHistoria">
+        <div id="historiaImg"></div>
+        <div class="caixa-texto-historia">
+            <p id="historiaTexto"></p>
+            <button id="btnPularHistoria">Pular >></button>
+        </div>
+    </div>
+
     <div id="app">
         <div class="conteudo-app" id="telaLobby">
             <header>ARENA CATDOJO</header>
@@ -114,20 +141,16 @@
                 <div class="aba" onclick="mudarAba('pvp')">PvP</div>
             </div>
 
-            <!-- LISTA DE CLÃS (PVE) -->
             <div id="aba-pve" class="lista-container ativa">
                 <div id="vistaClas">
-                    <!-- Gerado dinamicamente via JS -->
-                </div>
+                    </div>
 
-                <!-- LISTA DE NPCS DENTRO DO CLÃ (Oculta Inicialmente) -->
                 <div id="vistaNpcs" style="display: none; flex-direction: column; gap: 10px;">
                     <button onclick="voltarParaClas()" style="padding: 8px; background: #5a4231; color: #dfc495; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">&larr; Voltar aos Clãs</button>
                     <div id="listaInimigosHtml"></div>
                 </div>
             </div>
 
-            <!-- LISTA PVP -->
             <div id="aba-pvp" class="lista-container">
                 <button class="btn-ficar-online" id="btnFicarOnline">Entrar na Fila PvP</button>
                 <div id="listaJogadoresOnline" style="display: flex; flex-direction: column; gap: 10px;"></div>
@@ -140,7 +163,6 @@
             </nav>
         </div>
 
-        <!-- TELA DE BATALHA -->
         <div id="telaBatalha">
             <div class="barra-controles">
                 <span id="txtTurno" style="color: white; font-weight: bold;">Turno: 1</span>
@@ -152,7 +174,6 @@
             </div>
             
             <div class="lutadores-area">
-                <!-- LUTADOR 1 -->
                 <div class="lutador-box" id="boxLutador1">
                     <img src="" class="sprite-gato" id="imgLutador1">
                     <div class="status-batalha">
@@ -165,7 +186,6 @@
 
                 <div style="font-size: 1.5em; font-weight: bold; color: #dfc495; text-shadow: 2px 2px #000; position: absolute; left: 50%; top: 30%; transform: translateX(-50%);">VS</div>
 
-                <!-- LUTADOR 2 -->
                 <div class="lutador-box" id="boxLutador2">
                     <img src="" class="sprite-gato" id="imgLutador2" style="transform: scaleX(-1);">
                     <div class="status-batalha">
@@ -179,7 +199,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE ESCOLHER GATO -->
     <div class="modal" id="modalSeletor">
         <div class="painel-modal">
             <button class="btn-fechar" onclick="cancelarSelecao()">X</button>
@@ -188,17 +207,16 @@
         </div>
     </div>
 
-    <!-- NOVO: MODAL RELATÓRIO PÓS-LUTA (PvE) -->
     <div class="modal" id="modalRelatorio">
         <div class="painel-modal">
             <h2 id="tituloRelatorio" style="text-transform: uppercase; margin-bottom: 5px;">RESULTADO</h2>
             <p id="subRelatorio" style="color: #5a4231; font-weight: bold; font-size: 0.9em;"></p>
             
-            <div class="info-relatorio">
-                <p>HP Perdido: <span id="relHp"></span></p>
-                <p>XP Recebido: <span id="relXp" style="color: #3399ff;"></span></p>
-                <p>Moedas: <span id="relMoedas" style="color: #d27d46;"></span></p>
-                <p>Reputação: <span id="relRep" style="color: #4CAF50;"></span></p>
+            <div style="background: #f1ddb0; border: 2px solid #5a4231; border-radius: 8px; padding: 15px; margin-top: 15px; text-align: left;">
+                <p style="margin-bottom: 8px; font-weight: bold; color: #4a3b32;">HP Perdido: <span id="relHp" style="color:#2a2a2a;"></span></p>
+                <p style="margin-bottom: 8px; font-weight: bold; color: #4a3b32;">XP Recebido: <span id="relXp" style="color: #3399ff;"></span></p>
+                <p style="margin-bottom: 8px; font-weight: bold; color: #4a3b32;">Moedas: <span id="relMoedas" style="color: #d27d46;"></span></p>
+                <p style="margin-bottom: 8px; font-weight: bold; color: #4a3b32;">Reputação: <span id="relRep" style="color: #4CAF50;"></span></p>
             </div>
             
             <button onclick="window.location.reload()" style="background-color: #d27d46; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 1.1em;">Voltar ao Dojo</button>
@@ -208,33 +226,114 @@
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // NOVO: arrayUnion adicionado na importação abaixo
         import { getDocs, collection, doc, updateDoc, getDoc, setDoc, deleteDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
         import { LISTA_NPCS } from './npcs.js';
         import { ARTES_MARCIAIS } from './artes-marciais.js';
+        // IMPORTANTE: Puxando o roteiro externo das cenas para não poluir este arquivo
+        import { HISTORIAS_ARENA } from './historia-arena.js'; 
         
         let jogadorUid = null;
         let claNome = "Mestre";
         let reputacaoAtual = 0; 
         let meusGatos = [];
-        let npcsDerrotados = []; // NOVO: Armazena os IDs dos NPCs que você já venceu
+        let npcsDerrotados = []; 
+        let treinosAtivos = [];
         
-        // Variáveis de Controle Batalha Visual
         let velMult = 1;
         window.pularBatalha = false;
         
-        // Variáveis PvP
         let salaAtiva = null;
         let isHost = false;
         let unsubscribeSala = null;
         let unsubscribeListaPvP = null;
         let inimigoPveAtual = null;
+        
+        let typingInterval = null;
+        let historiaCompletada = false;
+
+        // Toca Música Global
+        window.tocarMusicaArena = () => {
+            const bgm = document.getElementById('bgmArena');
+            if (bgm.paused) {
+                bgm.volume = 0.4;
+                bgm.play().catch(e => console.log("Áudio bloqueado até interação."));
+            }
+        };
+
+        window.mostrarToast = (mensagem) => {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div'); toast.className = 'toast-msg'; toast.textContent = mensagem;
+            container.appendChild(toast); setTimeout(() => toast.remove(), 2500);
+        };
+
+        function pedirConfirmacao(mensagem, callback) {
+            document.getElementById('textoConfirmacao').textContent = mensagem;
+            document.getElementById('modalConfirmacao').style.display = 'flex';
+            document.getElementById('btnAceitarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; callback(); };
+            document.getElementById('btnCancelarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; };
+        }
+
+        // ==========================================
+        // FLUXO DE HISTÓRIA (Visual Novel)
+        // ==========================================
+        function iniciarHistoria(npcId, tipo) {
+            return new Promise((resolve) => {
+                // Checa se o NPC tem história antes ou depois, puxando do arquivo externo
+                if (!HISTORIAS_ARENA || !HISTORIAS_ARENA[npcId] || !HISTORIAS_ARENA[npcId][tipo]) { 
+                    resolve(); return; 
+                } 
+
+                const cenaImg = HISTORIAS_ARENA[npcId][tipo].cena;
+                const textoCompleto = HISTORIAS_ARENA[npcId][tipo].texto;
+
+                document.getElementById('historiaImg').style.backgroundImage = `url('${cenaImg}')`;
+                document.getElementById('historiaTexto').textContent = '';
+                document.getElementById('modalHistoria').style.display = 'flex';
+                
+                let charIndex = 0;
+                historiaCompletada = false;
+                if (typingInterval) clearInterval(typingInterval);
+
+                const btnPular = document.getElementById('btnPularHistoria');
+                btnPular.textContent = "PULAR >>";
+
+                // Efeito máquina de escrever
+                typingInterval = setInterval(() => {
+                    document.getElementById('historiaTexto').textContent += textoCompleto.charAt(charIndex);
+                    charIndex++;
+                    // Faz a rolagem automática acompanhar o texto
+                    const caixa = document.querySelector('.caixa-texto-historia');
+                    caixa.scrollTop = caixa.scrollHeight;
+
+                    if (charIndex >= textoCompleto.length) {
+                        clearInterval(typingInterval);
+                        historiaCompletada = true;
+                        btnPular.textContent = "AVANÇAR >>";
+                    }
+                }, 30);
+
+                btnPular.onclick = () => {
+                    if (historiaCompletada) {
+                        document.getElementById('modalHistoria').style.display = 'none';
+                        resolve();
+                    } else {
+                        pedirConfirmacao("Você quer mesmo pular a história?", () => {
+                            clearInterval(typingInterval);
+                            historiaCompletada = true;
+                            document.getElementById('modalHistoria').style.display = 'none';
+                            resolve();
+                        });
+                    }
+                };
+            });
+        }
 
         // ==========================================
         // 1. CONTROLES DE INTERFACE
         // ==========================================
         window.mudarAba = (aba) => {
+            tocarMusicaArena();
             document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
             document.querySelectorAll('.lista-container').forEach(el => el.classList.remove('ativa'));
             event.target.classList.add('ativa');
@@ -242,10 +341,12 @@
         };
 
         window.abrirListaNpcs = (nomeDoCla) => {
+            tocarMusicaArena();
             document.getElementById('vistaClas').style.display = 'none';
             document.getElementById('vistaNpcs').style.display = 'flex';
-            carregarListaNpcs(nomeDoCla); // Chama o construtor com o filtro
+            carregarListaNpcs(nomeDoCla); 
         };
+        
         window.voltarParaClas = () => {
             document.getElementById('vistaNpcs').style.display = 'none';
             document.getElementById('vistaClas').style.display = 'block';
@@ -257,10 +358,7 @@
             document.getElementById(`btnSpd${v}`).classList.add('ativo');
         };
 
-        async function waitFast(ms) {
-            if (window.pularBatalha) return; 
-            await new Promise(r => setTimeout(r, ms / velMult));
-        }
+        async function waitFast(ms) { if (!window.pularBatalha) await new Promise(r => setTimeout(r, ms / velMult)); }
 
         window.cancelarSelecao = async () => {
             document.getElementById('modalSeletor').style.display = 'none';
@@ -281,10 +379,11 @@
                 if (claSnap.exists()) {
                     claNome = claSnap.data().nomeCla || "Mestre";
                     reputacaoAtual = claSnap.data().reputacao || 0;
-                    npcsDerrotados = claSnap.data().npcsDerrotados || []; // Puxa do banco quem já apanhou
+                    npcsDerrotados = claSnap.data().npcsDerrotados || [];
+                    treinosAtivos = claSnap.data().treinosAtivos || [];
                 }
                 
-                renderizarClas(); // Desenha o menu com os checkmarks
+                renderizarClas();
                 await carregarMeusGatos();
                 escutarListaPvP();
             } else {
@@ -292,6 +391,7 @@
             }
         });
 
+        // DESENHA CLÃS COM BLOQUEIO PROGRESSIVO
         function renderizarClas() {
             const vistaClas = document.getElementById('vistaClas');
             vistaClas.innerHTML = '<h3 style="color: #dfc495; text-align: center; margin-bottom: 10px;">Dojos Rivais</h3>';
@@ -302,105 +402,134 @@
                 { id: 'Clã Archea', img: 'imagens/cla03.png' }
             ];
 
+            let claAnteriorCompleto = true; // O 1º é sempre aberto
+
             listaClas.forEach(cla => {
-                // Checa se todos os NPCs desse clã específico estão dentro do array npcsDerrotados
                 const npcsDesteCla = LISTA_NPCS.filter(n => n.cla === cla.id);
                 const todosDerrotados = npcsDesteCla.length > 0 && npcsDesteCla.every(n => npcsDerrotados.includes(n.id));
 
-                // Se todos foram derrotados, injeta o check verde na frente do nome
                 const checkHtml = todosDerrotados ? `<img src="icones/check.png" style="width: 24px; height: 24px; border: none; background: transparent; margin-left: 8px;">` : '';
 
                 const card = document.createElement('div');
                 card.className = 'card-adv';
-                card.onclick = () => abrirListaNpcs(cla.id);
-                card.innerHTML = `
-                    <img src="${cla.img}" onerror="this.src='icones/Dojo.png'">
-                    <div class="info-adv">
-                        <h4 style="display: flex; align-items: center; margin: 0;">${cla.id} ${checkHtml}</h4>
-                    </div>
-                    <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
-                `;
+                
+                if (!claAnteriorCompleto) {
+                    card.style.filter = "grayscale(100%)";
+                    card.style.opacity = "0.6";
+                    card.style.cursor = "not-allowed";
+                    card.innerHTML = `
+                        <img src="${cla.img}" onerror="this.src='icones/Dojo.png'">
+                        <div class="info-adv"><h4 style="display: flex; align-items: center; margin: 0; color:#5a4231;">${cla.id} 🔒</h4></div>
+                    `;
+                } else {
+                    card.onclick = () => abrirListaNpcs(cla.id);
+                    card.innerHTML = `
+                        <img src="${cla.img}" onerror="this.src='icones/Dojo.png'">
+                        <div class="info-adv"><h4 style="display: flex; align-items: center; margin: 0;">${cla.id} ${checkHtml}</h4></div>
+                        <span style="color: #5a4231; font-weight: bold;">&rarr;</span>
+                    `;
+                }
                 vistaClas.appendChild(card);
+                claAnteriorCompleto = todosDerrotados;
             });
         }
-        
+
+        // DESENHA INIMIGOS COM BLOQUEIO PROGRESSIVO E MÁSCARA "X"
         function carregarListaNpcs(claSelecionado) {
             const containerHtml = document.getElementById('listaInimigosHtml');
             containerHtml.innerHTML = '';
             
             const npcsDoCla = LISTA_NPCS.filter(npc => npc.cla === claSelecionado);
+            let npcAnteriorDerrotado = true; // O primeiro da lista é sempre liberado
 
             npcsDoCla.forEach(npc => {
                 const card = document.createElement('div');
                 card.className = 'card-adv';
-                
                 let numImgFaixa = String(npc.faixa).padStart(2, '0');
+                
                 let derrotado = npcsDerrotados.includes(npc.id);
+                let bloqueado = !npcAnteriorDerrotado && !derrotado;
 
-                // Monta a foto (com o X e fundo cinza se estiver derrotado)
                 let imgHtml = '';
+                let btnHtml = '';
+
+                // Se já derrotou, fica cinza, com X e botão inabilitado
                 if (derrotado) {
                     imgHtml = `<div style="position:relative; width:60px; height:60px; flex-shrink:0;">
                                   <img src="${npc.foto}" style="width:100%; height:100%; filter:grayscale(100%); opacity:0.5; border-radius:8px; border:2px solid #5a4231; background:#fff;">
                                   <img src="icones/x.png" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:35px; height:35px; border:none; background:transparent; z-index:2;">
                                </div>`;
-                } else {
+                    btnHtml = `<button class="btn-desafiar" disabled style="background-color:#7b7b7b; border-color:#4a4a4a; color:#ccc; box-shadow:none;">Derrotado</button>`;
+                    card.style.backgroundColor = '#d3c3a3'; 
+                } 
+                // Se o anterior não caiu, fica cinza e bloqueado
+                else if (bloqueado) {
+                    imgHtml = `<img src="${npc.foto}" style="filter:grayscale(100%); opacity:0.6;">`;
+                    btnHtml = `<button class="btn-desafiar" disabled style="background-color:#7b7b7b; border-color:#4a4a4a; color:#ccc; box-shadow:none;">Bloqueado</button>`;
+                    card.style.backgroundColor = '#d3c3a3';
+                } 
+                // Se está liberado pra lutar!
+                else {
                     imgHtml = `<img src="${npc.foto}" ${npc.isBoss ? 'style="border-color: #ffbb00;"' : ''}>`;
+                    btnHtml = `<button class="btn-desafiar" ${npc.isBoss ? 'style="background-color: #ffc107; color: #856404; border-color: #ffbb00;"' : ''}>Lutar</button>`;
+                    if (npc.isBoss) { card.style.borderColor = '#ffbb00'; card.style.backgroundColor = '#fff3cd'; }
                 }
 
-                // Monta o Botão (Cinza e Desativado se derrotado)
-                let btnHtml = derrotado 
-                    ? `<button class="btn-desafiar" disabled style="background-color:#7b7b7b; border-color:#4a4a4a; color:#ccc; box-shadow:none;">Derrotado</button>`
-                    : `<button class="btn-desafiar" ${npc.isBoss ? 'style="background-color: #ffc107; color: #856404; border-color: #ffbb00;"' : ''}>Lutar</button>`;
-
                 if (npc.isBoss) {
-                    if (!derrotado) {
-                        card.style.borderColor = '#ffbb00';
-                        card.style.backgroundColor = '#fff3cd';
-                    } else {
-                        card.style.borderColor = '#5a4231';
-                        card.style.backgroundColor = '#d3c3a3'; // Desbotado
-                    }
-                    
                     card.innerHTML = `
                         ${imgHtml}
                         <div class="info-adv">
-                            <h4 style="color: ${derrotado ? '#5a4231' : '#856404'};">${npc.nome}</h4>
-                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain; ${derrotado ? 'filter:grayscale(100%); opacity:0.6;' : ''}"> 
-                            <div style="margin-top: 5px; font-size: 0.8em; color: ${derrotado ? '#555' : '#cc3333'}; font-weight: bold; display: flex; align-items: center; gap: 4px;">
-                                <img src="icones/rep.png" style="width: 14px; height: 14px; border: none; ${derrotado ? 'filter:grayscale(100%);' : ''}"> -${npc.custoRep}
-                                <span style="margin-left: 5px; color: ${derrotado ? '#555' : '#4CAF50'};">&#9432; Recompensa: ${npc.moedasBoss}</span>
+                            <h4 style="color: ${derrotado || bloqueado ? '#5a4231' : '#856404'};">${npc.nome}</h4>
+                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain; ${derrotado || bloqueado ? 'filter:grayscale(100%); opacity:0.6;' : ''}"> 
+                            <div style="margin-top: 5px; font-size: 0.8em; color: ${derrotado || bloqueado ? '#555' : '#cc3333'}; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                                <img src="icones/rep.png" style="width: 14px; height: 14px; border: none; ${derrotado || bloqueado ? 'filter:grayscale(100%);' : ''}"> -${npc.custoRep}
+                                <span style="margin-left: 5px; color: ${derrotado || bloqueado ? '#555' : '#4CAF50'};">&#9432; Recompensa: ${npc.moedasBoss}</span>
                             </div>
                         </div>
                         ${btnHtml}
                     `;
                 } else {
-                    if (derrotado) {
-                        card.style.backgroundColor = '#d3c3a3'; // Desbotado
-                    }
                     card.innerHTML = `
                         ${imgHtml}
                         <div class="info-adv">
-                            <h4 style="color: ${derrotado ? '#5a4231' : '#2a2a2a'}">${npc.nome}</h4>
-                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain; ${derrotado ? 'filter:grayscale(100%); opacity:0.6;' : ''}"> 
+                            <h4 style="color: ${derrotado || bloqueado ? '#5a4231' : '#2a2a2a'}">${npc.nome}</h4>
+                            <img src="imagens/${numImgFaixa}.png" onerror="this.src='icones/treino.png'" style="height: 28px; width: auto; border: none; background: transparent; box-shadow: none; margin-top: 2px; border-radius: 0; display: block; object-fit: contain; ${derrotado || bloqueado ? 'filter:grayscale(100%); opacity:0.6;' : ''}"> 
                         </div>
                         ${btnHtml}
                     `;
                 }
                 
-                if (!derrotado) {
-                    card.querySelector('button').onclick = () => abrirSeletorGato(true, npc);
+                if (!derrotado && !bloqueado) {
+                    card.querySelector('button').onclick = () => tentarDesafio(npc);
                 }
                 containerHtml.appendChild(card);
+                npcAnteriorDerrotado = derrotado;
             });
         }
+
+        window.tentarDesafio = async (npc) => {
+            tocarMusicaArena();
+            // Trava do Boss caso não tenha reputação
+            if (npc.isBoss && reputacaoAtual < npc.custoRep) {
+                mostrarToast(`Fama Insuficiente! Você precisa de ${npc.custoRep} de Reputação para enfrentar o ${npc.nome}.`);
+                return;
+            }
+            // Dispara a Cena PRE LUTA (se houver) e aguarda terminar antes de escolher o gato
+            await iniciarHistoria(npc.id, 'pre');
+            abrirSeletorGato(true, npc);
+        };
         
         async function carregarMeusGatos() {
             meusGatos = [];
+            // Monta lista de IDs que estão no tatame (alunos e professores)
+            const gatosOcupados = treinosAtivos.map(t => t.gatoId).concat(treinosAtivos.filter(t => t.profId).map(t => t.profId));
+
             const gatosSnap = await getDocs(collection(db, "Clas", jogadorUid, "Gatos"));
-            gatosSnap.forEach(doc => {
-                let gato = { id: doc.id, ...doc.data() };
-                if (gato.estado !== 'Morto' && gato.estado !== 'Em Missão' && gato.estado !== 'Doente') {
+            gatosSnap.forEach(docSnap => {
+                let gato = { id: docSnap.id, ...docSnap.data() };
+                // O FILTRO DE OURO: Só passa Saudável E que NÃO está na lista de treinos ativos. 
+                // Isso automaticamente veta doentes, mortos, com fome, em missão e descansando.
+                if (gato.estado === 'Saudável' && !gatosOcupados.includes(gato.id)) {
                     meusGatos.push(gato);
                 }
             });
@@ -409,19 +538,11 @@
         function abrirSeletorGato(isPvE, npcData = null) {
             inimigoPveAtual = npcData;
             
-            // TRAVA DO BOSS DINÂMICA: Exige a reputação definida no npcData
-            if (isPvE && npcData.isBoss) {
-                if (reputacaoAtual < npcData.custoRep) {
-                    alert(`Fama Insuficiente! Você precisa de ${npcData.custoRep} de Reputação para desafiar o ${npcData.nome}. Você tem: ${reputacaoAtual}`);
-                    return;
-                }
-            }
-
             const listaDiv = document.getElementById('listaMeusGatos');
             listaDiv.innerHTML = '';
 
             if(meusGatos.length === 0) {
-                listaDiv.innerHTML = "<p style='color:#cc3333; font-weight:bold;'>Você não tem gatos aptos para lutar!</p>";
+                listaDiv.innerHTML = "<p style='color:#cc3333; font-weight:bold;'>Você não tem gatos disponíveis, saudáveis ou livres de treinos para lutar!</p>";
             }
 
             meusGatos.forEach(gato => {
@@ -434,7 +555,7 @@
                 btn.onclick = async () => {
                     document.getElementById('modalSeletor').style.display = 'none';
                     if(isPvE) {
-                        // Desconta reputação se for o boss baseado no custo específico
+                        // Só desconta a reputação agora que ele escolheu o gato e aceitou lutar
                         if (inimigoPveAtual.isBoss) {
                             const claRef = doc(db, "Clas", jogadorUid);
                             reputacaoAtual -= inimigoPveAtual.custoRep;
@@ -450,7 +571,7 @@
         }
 
         // ==========================================
-        // 3. MOTOR MATEMÁTICO (Simulação Invisível)
+        // 3. MOTOR MATEMÁTICO (Mantido Intacto)
         // ==========================================
         function rolarDado(chance) { return (Math.random() * 100) <= chance; }
 
@@ -461,22 +582,17 @@
             const agi = dados.agilidade || dados.atributos?.agilidade || 1;
             const foco = dados.foco || dados.atributos?.foco || 1;
             
-            const hpMax = isCpu ? (250 + (res * 15)) : dados.hpMax;
+            const hpMax = isCpu ? dados.hpMax || (250 + (res * 15)) : dados.hpMax;
             let habilidades = dados.habilidadesEquipadas || [];
             
             return {
                 id: dados.id, nome: dados.nome, foto: dados.foto, isCpu: isCpu, cpuId: dados.id,
                 hpAtual: isCpu ? hpMax : dados.hpAtual, hpMax: hpMax, hpInicial: isCpu ? hpMax : dados.hpAtual,
                 faixa: dados.faixa || (isCpu ? dados.faixa : 1),
-                paAtual: 0, 
-                paMax: 100 + Math.floor(vig / 2),
-                recargaPA: 5 + Math.floor(vig / 4),
-                ataqueBruto: forca * 2.5,
-                resistencia: res, agilidade: agi, foco: foco,
-                esquivaPct: (agi / (agi + 100)) * 100,
-                criticoPct: (foco / (foco + 100)) * 100,
-                habilidadesEquipadas: habilidades,
-                cooldowns: {}, 
+                paAtual: 0, paMax: 100 + Math.floor(vig / 2), recargaPA: 5 + Math.floor(vig / 4),
+                ataqueBruto: forca * 2.5, resistencia: res, agilidade: agi, foco: foco,
+                esquivaPct: (agi / (agi + 100)) * 100, criticoPct: (foco / (foco + 100)) * 100,
+                habilidadesEquipadas: habilidades, cooldowns: {}, 
                 tecnicaPadrao: { nome: "Arranhão Básico", custo_pa: 0, danoPct: 80, geraPa: 15, tipo: "Ataque" }
             };
         }
@@ -503,26 +619,18 @@
                     let turnoLiberacao = atacante.cooldowns[techDB.nome] || 0;
                     if (turno < turnoLiberacao) continue; 
 
-                    if (atacante.paAtual >= techDB.custo_pa) {
-                        techEscolhida = techDB;
-                        break; 
-                    }
+                    if (atacante.paAtual >= techDB.custo_pa) { techEscolhida = techDB; break; }
                 }
             }
-
             if (!techEscolhida) techEscolhida = atacante.tecnicaPadrao;
 
             atacante.paAtual -= (techEscolhida.custo_pa || 0);
-            
             if (techEscolhida === atacante.tecnicaPadrao) gerouPa = techEscolhida.geraPa;
             else if (techEscolhida.desc && techEscolhida.desc.includes("gera 10 PA")) gerouPa = 10;
             else if (techEscolhida.desc && techEscolhida.desc.includes("gera 15 PA")) gerouPa = 15;
             
             atacante.paAtual = Math.min(atacante.paMax, atacante.paAtual + gerouPa);
-
-            if (techEscolhida.recarga > 0) {
-                atacante.cooldowns[techEscolhida.nome] = turno + techEscolhida.recarga + 1;
-            }
+            if (techEscolhida.recarga > 0) { atacante.cooldowns[techEscolhida.nome] = turno + techEscolhida.recarga + 1; }
 
             let evadiu = rolarDado(defensor.esquivaPct);
             let critico = false;
@@ -535,38 +643,29 @@
 
                 danoFinal = (atacante.ataqueBruto * danoPct) * multDefesa;
                 if (rolarDado(atacante.criticoPct)) { danoFinal *= 1.5; critico = true; }
-                
                 danoFinal = Math.max(1, Math.floor(danoFinal));
                 defensor.hpAtual = Math.max(0, defensor.hpAtual - danoFinal);
             }
 
-            // Precisamos clonar os cooldowns para o estado do turno para desenhar na tela depois
             let estadoCd = {};
             for(let key in atacante.cooldowns) estadoCd[key] = atacante.cooldowns[key];
 
-            return {
-                tipo: "ataque", turno: turno, atacanteCod: codLutador,
-                nomeTecnica: techEscolhida.nome, esquiva: evadiu, critico: critico, dano: danoFinal,
-                hpDefensor: defensor.hpAtual, cooldownsAtualizados: estadoCd
-            };
+            return { tipo: "ataque", turno: turno, atacanteCod: codLutador, nomeTecnica: techEscolhida.nome, esquiva: evadiu, critico: critico, dano: danoFinal, hpDefensor: defensor.hpAtual, cooldownsAtualizados: estadoCd };
         }
 
         function simularMatematicaBatalha(l1, l2) {
             let roteiro = [];
             let turno = 1;
-
             while (l1.hpAtual > 0 && l2.hpAtual > 0 && turno < 100) { 
                 let acaoL1 = processarGolpeMatematico(l1, l2, turno, 'A');
                 roteiro.push(acaoL1);
                 if (l2.hpAtual <= 0) break;
-
                 let acaoL2 = processarGolpeMatematico(l2, l1, turno, 'B');
                 roteiro.push(acaoL2);
                 if (l1.hpAtual <= 0) break;
 
                 l1.paAtual = Math.min(l1.paMax, l1.paAtual + l1.recargaPA);
                 l2.paAtual = Math.min(l2.paMax, l2.paAtual + l2.recargaPA);
-                
                 roteiro.push({ tipo: "fimTurno", turno: turno, paL1: l1.paAtual, paL2: l2.paAtual });
                 turno++;
             }
@@ -574,23 +673,17 @@
         }
 
         // ==========================================
-        // 4. REPRODUTOR VISUAL & SLOTS
+        // 4. REPRODUTOR VISUAL
         // ==========================================
         function criarUiSlots(lado, lutador) {
             const container = document.getElementById(`slotsLutador${lado}`);
             container.innerHTML = '';
-            
             let arr = lutador.habilidadesEquipadas.length > 0 ? lutador.habilidadesEquipadas : [lutador.tecnicaPadrao.nome];
             arr.forEach((nomeHab, idx) => {
                 let nomeString = typeof nomeHab === 'object' ? nomeHab.nomeTecnica : nomeHab;
                 let idSlot = `slot_${lado}_${idx}`;
-                
                 let el = document.createElement('div');
-                el.className = 'slot-hab';
-                el.id = idSlot;
-                el.setAttribute('data-nome', nomeString);
-                
-                // Nome resumido p/ caber
+                el.className = 'slot-hab'; el.id = idSlot; el.setAttribute('data-nome', nomeString);
                 el.innerHTML = `<span>${nomeString}</span><div class="slot-mask" id="mask_${idSlot}"></div>`;
                 container.appendChild(el);
             });
@@ -598,31 +691,20 @@
 
         function atualizarSlots(lado, cooldownsNoTurno, turnoAtual) {
             const container = document.getElementById(`slotsLutador${lado}`);
-            const slots = container.querySelectorAll('.slot-hab');
-            
-            slots.forEach(slot => {
+            container.querySelectorAll('.slot-hab').forEach(slot => {
                 let nomeHab = slot.getAttribute('data-nome');
                 let mask = slot.querySelector('.slot-mask');
-                
                 let turnoLivre = cooldownsNoTurno[nomeHab] || 0;
                 let falta = turnoLivre - turnoAtual;
-                
-                if (falta > 0) {
-                    mask.textContent = falta;
-                    mask.classList.add('ativo');
-                } else {
-                    mask.classList.remove('ativo');
-                }
+                if (falta > 0) { mask.textContent = falta; mask.classList.add('ativo'); } 
+                else { mask.classList.remove('ativo'); }
             });
         }
 
         function piscarSlot(lado, nomeHab) {
-            const container = document.getElementById(`slotsLutador${lado}`);
-            const slots = container.querySelectorAll('.slot-hab');
-            slots.forEach(slot => {
+            document.getElementById(`slotsLutador${lado}`).querySelectorAll('.slot-hab').forEach(slot => {
                 if (slot.getAttribute('data-nome') === nomeHab) {
-                    slot.classList.add('usando');
-                    setTimeout(() => slot.classList.remove('usando'), 600 / velMult);
+                    slot.classList.add('usando'); setTimeout(() => slot.classList.remove('usando'), 600 / velMult);
                 }
             });
         }
@@ -635,13 +717,9 @@
         }
 
         function animarTextoFlutuante(lado, texto, classe) {
-            const box = document.getElementById(`boxLutador${lado}`);
-            const span = document.createElement('span');
-            span.className = `dano-flutuante ${classe}`;
-            span.textContent = texto;
-            span.style.top = `${Math.random() * 40 + 20}%`;
-            span.style.left = `${Math.random() * 40 + 20}%`;
-            box.appendChild(span);
+            const span = document.createElement('span'); span.className = `dano-flutuante ${classe}`; span.textContent = texto;
+            span.style.top = `${Math.random() * 40 + 20}%`; span.style.left = `${Math.random() * 40 + 20}%`;
+            document.getElementById(`boxLutador${lado}`).appendChild(span);
             setTimeout(() => span.remove(), 1000);
         }
 
@@ -656,12 +734,10 @@
 
             atualizarHUD(1, meuGato); atualizarHUD(2, inimigoGato);
             criarUiSlots(1, meuGato); criarUiSlots(2, inimigoGato);
-            
             await waitFast(800);
 
             for (const acao of roteiro) {
                 if (window.pularBatalha) {
-                    // Fast-forward do estado final
                     if (acao.tipo === "fimTurno") {
                         meuGato.paAtual = codMeuLado === 'A' ? acao.paL1 : acao.paL2;
                         inimigoGato.paAtual = codMeuLado === 'A' ? acao.paL2 : acao.paL1;
@@ -669,7 +745,7 @@
                         let objDefensor = (acao.atacanteCod === codMeuLado) ? inimigoGato : meuGato;
                         objDefensor.hpAtual = acao.hpDefensor;
                     }
-                    continue; // Pula as animações
+                    continue; 
                 }
 
                 if (acao.tipo === "fimTurno") {
@@ -677,8 +753,7 @@
                     meuGato.paAtual = codMeuLado === 'A' ? acao.paL1 : acao.paL2;
                     inimigoGato.paAtual = codMeuLado === 'A' ? acao.paL2 : acao.paL1;
                     atualizarHUD(1, meuGato); atualizarHUD(2, inimigoGato);
-                    await waitFast(400);
-                    continue;
+                    await waitFast(400); continue;
                 }
 
                 if (acao.tipo === "ataque") {
@@ -687,14 +762,12 @@
                     let objAtacante = idAtacante === 1 ? meuGato : inimigoGato;
                     let objDefensor = idDefensor === 1 ? meuGato : inimigoGato;
 
-                    // 1. Destaca o Slot usado e atualiza Cooldowns
                     piscarSlot(idAtacante, acao.nomeTecnica);
                     atualizarSlots(idAtacante, acao.cooldownsAtualizados, acao.turno);
 
                     const animClass = idAtacante === 1 ? 'atacando-esq' : 'atacando-dir';
                     const imgAtk = document.getElementById(`imgLutador${idAtacante}`);
                     imgAtk.classList.add(animClass);
-                    
                     await waitFast(250); 
 
                     if (acao.esquiva) {
@@ -714,25 +787,23 @@
 
                     setTimeout(() => imgAtk.classList.remove(animClass), 200);
                     atualizarHUD(idAtacante, objAtacante); atualizarHUD(idDefensor, objDefensor);
-                    
                     await waitFast(600);
                 }
             }
 
-            // Se pulou, atualiza a HUD no estado final
-            if (window.pularBatalha) {
-                atualizarHUD(1, meuGato); atualizarHUD(2, inimigoGato);
-            }
-
+            if (window.pularBatalha) { atualizarHUD(1, meuGato); atualizarHUD(2, inimigoGato); }
             await waitFast(1000);
             
-            if (salaIdParaDeletar && isHost) {
-                await deleteDoc(doc(db, "ArenaLive", salaIdParaDeletar));
-            }
+            if (salaIdParaDeletar && isHost) await deleteDoc(doc(db, "ArenaLive", salaIdParaDeletar));
 
             const venci = meuGato.hpAtual > 0;
-            // O modal só vale pro PvE. Pro PvP, continua com alert simples pra não cruzar lógicas
+            
             if (salaIdParaDeletar === null) {
+                // Roda a história Pós-Luta apenas se ele ganhar a luta!
+                if (venci) {
+                    await iniciarHistoria(inimigoGato.cpuId, 'post');
+                }
+                // Processa o banco de dados e abre a tela de recompensas/perdas
                 await aplicarRecompensasPvE(meuGato, inimigoGato, venci);
             } else {
                 alert(venci ? "VITÓRIA NO PVP!" : "DERROTA NO PVP!");
@@ -758,6 +829,7 @@
             const claSnap = await getDoc(claRef);
             let claData = claSnap.data();
 
+            // PUNIÇÃO ÚNICA: O gato só é atualizado com o HP que restou da batalha!
             let updatesGato = { hpAtual: meuLutadorProcessado.hpAtual };
             let xpGanho = 0, moedasGanhas = 0, repGanha = 0;
             
@@ -766,7 +838,6 @@
                 let foco = meuLutadorProcessado.foco || 1;
                 let nivelInimigo = inimigoGato.faixa || 1;
                 
-                // O Auto-Battler puxa os dados direto do npcs.js pela ID do cpu
                 const npcOriginal = LISTA_NPCS.find(n => n.id === inimigoGato.cpuId);
                 
                 if (npcOriginal && npcOriginal.isBoss) {
@@ -781,7 +852,6 @@
 
                 updatesGato.xpAtual = (meuLutadorProcessado.xpAtual || 0) + xpGanho;
                 
-                // NOVO: Adiciona o ID do inimigo derrotado à lista de npcsDerrotados usando arrayUnion
                 await updateDoc(claRef, { 
                     moedas: (claData.moedas || 0) + moedasGanhas,
                     reputacao: Math.min(500, (claData.reputacao || 0) + repGanha),
@@ -789,9 +859,10 @@
                 });
             }
 
+            // Gerencia se ele desmaiou (HP 0) ou se sobreviveu
             let hpPerdidoFormat = Math.round(meuLutadorProcessado.hpInicial - meuLutadorProcessado.hpAtual);
             if (meuLutadorProcessado.hpAtual <= 0) {
-                updatesGato.estado = "Doente";
+                updatesGato.estado = "Doente"; // Caiu, vai pra enfermaria
                 updatesGato.doenteDesde = Date.now();
             } else if (meuLutadorProcessado.hpAtual < meuLutadorProcessado.hpMax && updatesGato.estado !== 'Em Missão') {
                 updatesGato.estado = "Descansando";
@@ -799,7 +870,6 @@
             }
             await updateDoc(gatoRef, updatesGato);
 
-            // PREENCHE O MODAL RELATÓRIO
             document.getElementById('tituloRelatorio').textContent = venceu ? "VITÓRIA!" : "DERROTA";
             document.getElementById('tituloRelatorio').style.color = venceu ? "#4CAF50" : "#cc3333";
             document.getElementById('subRelatorio').textContent = venceu ? "Seu gato superou o desafio." : "Seu gato foi enviado à enfermaria.";
