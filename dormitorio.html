@@ -311,6 +311,18 @@
         .btn-centro:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
         .btn-centro.cancelar { background-color: transparent; border: 2px dashed #a68a61; box-shadow: none; }
 
+        /* NOVOS ESTILOS PARA SLOTS E HABILIDADES */
+        .nome-hab-slot {
+            font-size: 0.65em; color: #5a4231; font-weight: bold; text-transform: uppercase;
+            text-align: center; margin-top: 4px; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; width: 45px;
+        }
+        .slot-wrapper { display: flex; flex-direction: column; align-items: center; width: 45px; }
+        
+        .arte-item-dojo.marcada { border-color: #ffbb00; background-color: #fff3cd; }
+        .tecnica-row.marcada { border-color: #ffbb00; background-color: #4a3b32; }
+        .tecnica-row.marcada h5 { color: #ffbb00; }
+
     </style>
 </head>
 <body>
@@ -857,9 +869,6 @@
                 btnResetarStats.disabled = true;
             }
 
-            const boxSlots = document.getElementById('boxSlotsHabilidades');
-            boxSlots.innerHTML = '';
-
             let slotsLiberadosCount = 1;
             if (nivelExato >= 2) slotsLiberadosCount = 2;
             if (nivelExato >= 3) slotsLiberadosCount = 3;
@@ -867,37 +876,54 @@
 
             if (!gato.habilidadesEquipadas) { gato.habilidadesEquipadas = [null, null, null, null, null]; }
 
-            for (let i = 0; i < 5; i++) {
-                const slotDiv = document.createElement('div');
-                
-                if (i < slotsLiberadosCount) {
-                    slotDiv.className = "slot-habilidade slot-liberado";
-                    const habEquipada = gato.habilidadesEquipadas[i];
-                    
-                    if (habEquipada) {
-                        slotDiv.innerHTML = `<img src="${habEquipada.iconeArte}" title="${habEquipada.nomeTecnica}">`;
-                        slotDiv.style.borderColor = habEquipada.corArte;
+            // Cria uma função de renderizar que a gente pode chamar depois sem precisar fechar o modal
+            window.renderizarSlots = () => {
+                const boxSlots = document.getElementById('boxSlotsHabilidades');
+                boxSlots.innerHTML = '';
+
+                for (let i = 0; i < 5; i++) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'slot-wrapper';
+
+                    const slotDiv = document.createElement('div');
+                    const nomeText = document.createElement('div');
+                    nomeText.className = 'nome-hab-slot';
+
+                    if (i < slotsLiberadosCount) {
+                        slotDiv.className = "slot-habilidade slot-liberado";
+                        const habEquipada = gatoSelecionado.habilidadesEquipadas[i];
+                        
+                        if (habEquipada) {
+                            slotDiv.innerHTML = `<img src="${habEquipada.iconeArte}" title="${habEquipada.nomeTecnica}">`;
+                            slotDiv.style.borderColor = habEquipada.corArte;
+                            nomeText.textContent = habEquipada.nomeTecnica; // Escreve o nome
+                        } else {
+                            slotDiv.textContent = "+";
+                            nomeText.textContent = "Vazio";
+                        }
+                        
+                        slotDiv.onclick = () => {
+                            if (gatoSelecionado.estado === 'Doente') {
+                                mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
+                                return;
+                            }
+                            if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
+                                mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
+                                return;
+                            }
+                            abrirSeletorArtes(i);
+                        };
                     } else {
-                        slotDiv.textContent = "+";
+                        slotDiv.className = "slot-habilidade";
+                        slotDiv.textContent = "🔒";
+                        nomeText.textContent = "Bloqueado";
                     }
-                    
-                    slotDiv.onclick = () => {
-                        if (gatoSelecionado.estado === 'Doente') {
-                            mostrarToast("Este gato está doente! Precisa ser tratado na Enfermaria.");
-                            return;
-                        }
-                        if (treinosAtivos.some(t => t.gatoId === gatoSelecionado.id || t.profId === gatoSelecionado.id)) {
-                            mostrarToast("Esse gato está treinando no momento, aguarde ele finalizar.");
-                            return;
-                        }
-                        abrirSeletorArtes(i);
-                    };
-                } else {
-                    slotDiv.className = "slot-habilidade";
-                    slotDiv.textContent = "🔒";
+                    wrapper.appendChild(slotDiv);
+                    wrapper.appendChild(nomeText);
+                    boxSlots.appendChild(wrapper);
                 }
-                boxSlots.appendChild(slotDiv);
-            }
+            };
+            window.renderizarSlots(); // Chama a função para desenhar
 
             // Atualiza o botão de Descansar para "Acordar" caso o gato já esteja na cama
             const btnDescansar = document.getElementById('btnDescansar');
@@ -1182,22 +1208,37 @@
                 gatoSelecionado.peArtes = { garate: 0, meowjitsu: 0, catpoeira: 0, felinethai: 0, ronrondo: 0 };
             }
 
+            // Descobre se a habilidade atual do slot pertence a alguma arte para marcá-la na lista
+            let arteDestaque = null;
+            let habAtualNoSlot = gatoSelecionado.habilidadesEquipadas[slotIndex];
+            if (habAtualNoSlot) {
+                for (let estilo in ARTES_MARCIAIS) {
+                    if (ARTES_MARCIAIS[estilo].tecnicas.some(t => t.nome === habAtualNoSlot.nomeTecnica)) {
+                        arteDestaque = estilo;
+                        break;
+                    }
+                }
+            }
+
             Object.keys(ARTES_MARCIAIS).forEach((chave) => {
                 const arte = ARTES_MARCIAIS[chave];
                 const pontosGato = gatoSelecionado.peArtes[chave] || 0;
                 
-                // NOVO: Cálculo dinâmico da barra de PE baseado na próxima técnica
                 const progressoMax = obterProximoPontoHabilidade(pontosGato, chave); 
                 let pct = (pontosGato / progressoMax) * 100;
                 if (pct > 100) pct = 100;
 
                 const divArte = document.createElement('div');
-                divArte.className = 'arte-item-dojo';
+                divArte.className = `arte-item-dojo ${chave === arteDestaque ? 'marcada' : ''}`;
+                
+                let textoMarcado = chave === arteDestaque ? '<p style="color:#b30000; font-size:0.7em; margin:0; font-weight:bold;">➤ Arte Equipada Aqui</p>' : '';
+
                 divArte.innerHTML = `
                     <img src="${arte.icone}" class="arte-icone-lista" alt="Ícone">
                     <div class="arte-info-wrapper">
                         <h4>${arte.nome}</h4>
-                        <div class="arte-progresso-bg">
+                        ${textoMarcado}
+                        <div class="arte-progresso-bg" style="margin-top: 5px;">
                             <div class="arte-progresso-fill" style="width: ${pct}%; background-color: ${arte.cor};"></div>
                             <span class="arte-texto-pe">${pontosGato >= 4000 ? 'MÁXIMO' : 'PE: ' + pontosGato + '/' + progressoMax}</span>
                         </div>
@@ -1214,26 +1255,40 @@
             conteudoHabilidades.innerHTML = '';
 
             const pontosGato = gatoSelecionado.peArtes[chaveArte] || 0;
+            let arrayHabs = gatoSelecionado.habilidadesEquipadas || [];
 
             arte.tecnicas.forEach((tec) => {
                 const liberada = pontosGato >= tec.pe;
-                const row = document.createElement('div');
-                row.className = `tecnica-row ${liberada ? '' : 'bloqueada'}`;
                 
+                // Verifica se a técnica já está em ALGUM slot
+                const indexEquipado = arrayHabs.findIndex(h => h && h.nomeTecnica === tec.nome);
+                let isMarcada = indexEquipado !== -1;
+
+                const row = document.createElement('div');
+                row.className = `tecnica-row ${liberada ? '' : 'bloqueada'} ${isMarcada ? 'marcada' : ''}`;
+                
+                let textoExtra = isMarcada ? `<p style="color:#ffbb00; margin-top:3px; font-weight:bold;">➤ Equipada no Slot ${indexEquipado + 1}</p>` : '';
+
                 row.innerHTML = `
                     <img src="${arte.icone}" alt="Arte">
                     <div class="tecnica-info">
                         <h5>${tec.nome}</h5>
                         <p>${tec.desc}</p>
+                        ${textoExtra}
                     </div>
-                    <div class="tecnica-pe" style="color: ${liberada ? '#2a2a2a' : '#555'}">
+                    <div class="tecnica-pe" style="color: ${liberada ? (isMarcada ? '#ffbb00' : '#2a2a2a') : '#555'}">
                         Req: ${tec.pe} PE
                     </div>
                 `;
 
                 if (liberada) {
                     row.onclick = () => {
-                        pedirConfirmacao(`Deseja equipar "${tec.nome}" no Slot ${slotAtivoIndex + 1}?`, () => confirmarEquipamento(tec, arte));
+                        let msg = `Deseja equipar "${tec.nome}" no Slot ${slotAtivoIndex + 1}?`;
+                        // Manda o aviso de mover se o jogador clicar em algo já equipado!
+                        if (isMarcada && indexEquipado !== slotAtivoIndex) {
+                            msg = `"${tec.nome}" já está no Slot ${indexEquipado + 1}. Deseja MOVER para o Slot ${slotAtivoIndex + 1}?`;
+                        }
+                        pedirConfirmacao(msg, () => confirmarEquipamento(tec, arte));
                     };
                 }
                 conteudoHabilidades.appendChild(row);
@@ -1243,6 +1298,14 @@
         async function confirmarEquipamento(tecnica, arte) {
             try {
                 let novasHabilidades = [...gatoSelecionado.habilidadesEquipadas];
+
+                // 1. CHECAGEM DE DUPLICAÇÃO (Trava que remove do slot antigo)
+                const indexExistente = novasHabilidades.findIndex(h => h && h.nomeTecnica === tecnica.nome);
+                if (indexExistente !== -1 && indexExistente !== slotAtivoIndex) {
+                    novasHabilidades[indexExistente] = null; // Esvazia o slot antigo
+                }
+
+                // 2. Coloca no slot escolhido
                 novasHabilidades[slotAtivoIndex] = {
                     nomeTecnica: tecnica.nome,
                     iconeArte: arte.icone,
@@ -1254,8 +1317,10 @@
 
                 gatoSelecionado.habilidadesEquipadas = novasHabilidades;
                 modalHabilidades.style.display = 'none';
-                abrirPainelGato(gatoSelecionado); 
-                mostrarToast("Técnica equipada!");
+                
+                mostrarToast("Técnica alocada com sucesso!");
+                // Pinta os slots na tela sem fechar o painel do gato
+                if (window.renderizarSlots) window.renderizarSlots();
             } catch (e) { console.error(e); }
         }
 
