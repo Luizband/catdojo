@@ -462,7 +462,17 @@
         function pedirConfirmacao(mensagem, callback) {
             document.getElementById('textoConfirmacao').textContent = mensagem;
             document.getElementById('modalConfirmacao').style.display = 'flex';
-            document.getElementById('btnAceitarConfirm').onclick = () => { document.getElementById('modalConfirmacao').style.display = 'none'; callback(); };
+            
+            // O botão de confirmar fecha o modal e segue com a missão
+            document.getElementById('btnAceitarConfirm').onclick = () => { 
+                document.getElementById('modalConfirmacao').style.display = 'none'; 
+                callback(); 
+            };
+            
+            // CORREÇÃO: O botão de cancelar agora também fecha o modal!
+            document.getElementById('btnCancelarConfirm').onclick = () => { 
+                document.getElementById('modalConfirmacao').style.display = 'none'; 
+            };
         }
 
         document.getElementById('abaQuadro').onclick = () => {
