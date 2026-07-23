@@ -482,12 +482,13 @@
 
                 if (derrotado) {
                     imgHtml = `<div style="position:relative; width:60px; height:60px; flex-shrink:0;">
-                                  <img src="${npc.foto}" style="width:100%; height:100%; filter:grayscale(100%); opacity:0.5; border-radius:8px; border:2px solid #5a4231; background:#fff;">
-                                  <img src="icones/x.png" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:35px; height:35px; border:none; background:transparent; z-index:2;">
+                                  <img src="${npc.foto}" style="width:100%; height:100%; filter:grayscale(100%); opacity:0.5; border-radius:8px; border:2px solid #2E7D32; background:#fff;">
+                                  <img src="icones/x.png" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:50px; height:50px; border:none; background:transparent; z-index:2;">
                                </div>`;
                     btnHtml = `<button class="btn-desafiar" disabled style="background-color:#7b7b7b; border-color:#4a4a4a; color:#ccc; box-shadow:none;">Derrotado</button>`;
-                    card.style.backgroundColor = '#d3c3a3'; 
-                } 
+                    card.style.backgroundColor = '#a8d5a8'; // Fundo verde suave de "concluído"
+                    card.style.borderColor = '#2E7D32'; // Borda verde escuro para combinar
+                }
                 else if (bloqueado) {
                     imgHtml = `<img src="${npc.foto}" style="filter:grayscale(100%); opacity:0.6;">`;
                     btnHtml = `<button class="btn-desafiar" disabled style="background-color:#7b7b7b; border-color:#4a4a4a; color:#ccc; box-shadow:none;">Bloqueado</button>`;
