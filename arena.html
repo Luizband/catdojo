@@ -638,21 +638,39 @@
         function processarGolpeMatematico(atacante, defensor, turno, codLutador) {
             let techEscolhida = null;
             let gerouPa = 0;
+            let passivasAtacante = [];
+            let passivasDefensor = [];
 
+            // 1. Coleta Passivas e Pula elas na hora de escolher o golpe!
             if (atacante.habilidadesEquipadas.length > 0) {
                 for (let nomeString of atacante.habilidadesEquipadas) {
                     let techDB = buscarDadosDaTecnica(nomeString);
                     if (!techDB) continue;
 
+                    if (techDB.tipo === "Passiva") {
+                        passivasAtacante.push(techDB.nome);
+                        continue; // Passiva não é golpe, PULA pro próximo slot!
+                    }
+
                     let turnoLiberacao = atacante.cooldowns[techDB.nome] || 0;
                     if (turno < turnoLiberacao) continue; 
 
-                    if (atacante.paAtual >= techDB.custo_pa) { techEscolhida = techDB; break; }
+                    if (!techEscolhida && atacante.paAtual >= techDB.custo_pa) { 
+                        techEscolhida = techDB; // Acha o primeiro ataque válido
+                    }
                 }
             }
             if (!techEscolhida) techEscolhida = atacante.tecnicaPadrao;
 
-            // PA Custos e Geração flexível via Regex
+            // 2. Coleta Passivas do Defensor
+            if (defensor.habilidadesEquipadas.length > 0) {
+                for (let nomeString of defensor.habilidadesEquipadas) {
+                    let techDB = buscarDadosDaTecnica(nomeString);
+                    if (techDB && techDB.tipo === "Passiva") passivasDefensor.push(techDB.nome);
+                }
+            }
+
+            // 3. Paga Custos e Gera PA da Técnica
             atacante.paAtual -= (techEscolhida.custo_pa || 0);
             
             if (techEscolhida === atacante.tecnicaPadrao) {
@@ -661,7 +679,6 @@
                 let matchPa = techEscolhida.desc ? techEscolhida.desc.match(/gera (\d+) PA/) : null;
                 if (matchPa) gerouPa = parseInt(matchPa[1]);
             }
-            
             atacante.paAtual = Math.min(atacante.paMax, atacante.paAtual + gerouPa);
 
             if (techEscolhida.recarga > 0) {
@@ -672,15 +689,63 @@
             let critico = false;
             let danoFinal = 0;
 
-            if (!evadiu && techEscolhida.tipo !== "Buff" && techEscolhida.tipo !== "Cura" && techEscolhida.tipo !== "Defesa" && techEscolhida.tipo !== "Passiva") {
+            // ==========================================
+            // GATILHOS DE PASSIVA (PRÉ-DANO)
+            // ==========================================
+            let multDanoPassivo = 1.0;
+            let bateuDuasVezes = false;
+
+            if (passivasAtacante.includes("Dor Ignorada")) {
+                let hpPerdidoPct = 1 - (atacante.hpAtual / atacante.hpMax);
+                multDanoPassivo += (hpPerdidoPct * 0.30); // Feline Thai: ganha até +30% dano quanto menos HP tiver
+            }
+
+            if (passivasAtacante.includes("Vento Forte") && techEscolhida.nome === atacante.tecnicaPadrao.nome) {
+                if (rolarDado(15)) bateuDuasVezes = true; // Catpoeira: 15% de chance do ataque bater o dobro
+            }
+
+            // 4. Executa Dano
+            if (!evadiu && techEscolhida.tipo !== "Buff" && techEscolhida.tipo !== "Cura" && techEscolhida.tipo !== "Debuff") {
                 let multDefesa = 100 / (100 + defensor.resistencia);
                 let matchDano = techEscolhida.desc ? techEscolhida.desc.match(/Causa (\d+)%/) : null;
                 let danoPct = matchDano ? parseInt(matchDano[1]) / 100 : 1.0; 
 
-                danoFinal = (atacante.ataqueBruto * danoPct) * multDefesa;
-                if (rolarDado(atacante.criticoPct)) { danoFinal *= 1.5; critico = true; }
+                danoFinal = (atacante.ataqueBruto * danoPct) * multDefesa * multDanoPassivo;
+                if (bateuDuasVezes) danoFinal *= 2; 
+
+                if (rolarDado(atacante.criticoPct)) { 
+                    critico = true; 
+                    let multCrit = 1.5;
+                    if (passivasDefensor.includes("Pelagem Grossa")) multCrit = 1.35; // Meow-jitsu: Toma menos critico
+                    danoFinal *= multCrit; 
+                }
+                
                 danoFinal = Math.max(1, Math.floor(danoFinal));
                 defensor.hpAtual = Math.max(0, defensor.hpAtual - danoFinal);
+
+                // ==========================================
+                // GATILHOS DE PASSIVA (PÓS-ACERTO)
+                // ==========================================
+                if (passivasAtacante.includes("Foco Predatório")) {
+                    atacante.criticoPct += 2; // Garatê: Aumenta crítico permanentemente a cada golpe
+                }
+                if (critico && passivasAtacante.includes("Sede de Sangue")) {
+                    atacante.hpAtual = Math.min(atacante.hpMax, atacante.hpAtual + (danoFinal * 0.10)); // Lifesteal no crítico
+                }
+                if (critico && passivasDefensor.includes("Punhos de Aço")) {
+                    defensor.paAtual = Math.min(defensor.paMax, defensor.paAtual + 20); // Garatê: Ganha 20 PA ao sofrer crítico
+                }
+
+            } else if (evadiu) {
+                // ==========================================
+                // GATILHOS DE PASSIVA (NA ESQUIVA / ERRO)
+                // ==========================================
+                if (passivasAtacante.includes("Jiu-Gato")) {
+                    atacante.paAtual = Math.min(atacante.paMax, atacante.paAtual + (techEscolhida.custo_pa / 2)); // Devolve 50% do PA se errar
+                }
+                if (passivasDefensor.includes("Reflexo Malandro")) {
+                    defensor.paAtual = Math.min(defensor.paMax, defensor.paAtual + 5); // Ganha 5 PA grátis ao desviar
+                }
             }
 
             let estadoCd = {};
@@ -693,8 +758,6 @@
             let roteiro = [];
             let turno = 1;
             
-            // CORREÇÃO CRÍTICA DO CONGELAMENTO: Cópia profunda (Clone)
-            // Assim a simulação roda invisível e os objetos originais continuam com HP 100% para a animação!
             let l1 = JSON.parse(JSON.stringify(l1_orig));
             let l2 = JSON.parse(JSON.stringify(l2_orig));
 
@@ -707,8 +770,15 @@
                 roteiro.push(acaoL2);
                 if (l1.hpAtual <= 0) break;
 
-                l1.paAtual = Math.min(l1.paMax, l1.paAtual + l1.recargaPA);
-                l2.paAtual = Math.min(l2.paMax, l2.paAtual + l2.recargaPA);
+                // ==========================================
+                // GATILHOS DE PASSIVA (FIM DO TURNO)
+                // ==========================================
+                let extraPaL1 = l1.habilidadesEquipadas.includes("Calma Mental") ? 3 : 0;
+                let extraPaL2 = l2.habilidadesEquipadas.includes("Calma Mental") ? 3 : 0;
+
+                l1.paAtual = Math.min(l1.paMax, l1.paAtual + l1.recargaPA + extraPaL1);
+                l2.paAtual = Math.min(l2.paMax, l2.paAtual + l2.recargaPA + extraPaL2);
+                
                 roteiro.push({ tipo: "fimTurno", turno: turno, paL1: l1.paAtual, paL2: l2.paAtual });
                 turno++;
             }
