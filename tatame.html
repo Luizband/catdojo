@@ -824,7 +824,9 @@
                 });
 
                 const claRef = doc(db, "Clas", jogadorUid);
-                await updateDoc(claRef, { treinosAtivos: arrayRemove(t) });
+                const claSnap = await getDoc(claRef);
+                const treinosAtualizados = claSnap.data().treinosAtivos.filter(treino => treino.gatoId !== gato.id);
+                await updateDoc(claRef, { treinosAtivos: treinosAtualizados });
 
                 document.getElementById('modalRelatorioTreino').style.display = 'none';
                 mostrarToast(`${gato.nome} finalizou o treino!`);
