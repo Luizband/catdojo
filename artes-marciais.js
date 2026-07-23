@@ -7,14 +7,14 @@ export const ARTES_MARCIAIS = {
         tecnicas: [
             { nome: "Pata Frontal", pe: 50, custo_pa: 0, recarga: 0, tipo: "Ataque", desc: "Básico. Causa 100% de Dano e gera 10 PA." },
             { nome: "Bloqueio Duro", pe: 150, custo_pa: 15, recarga: 2, tipo: "Defesa", desc: "Aumenta Defesa em 30% no próximo turno." },
-            { nome: "Soco Quebra-Telha", pe: 300, custo_pa: 20, recarga: 1, tipo: "Ataque", desc: "Causa 130% do Dano." },
+            { nome: "Soco Quebra-Telha", pe: 300, custo_pa: 20, recarga: 1, tipo: "Ataque", desc: "Causa 130% de Dano." },
             { nome: "Foco Predatório", pe: 500, custo_pa: 0, recarga: 0, tipo: "Passiva", desc: "[Passiva] Cada golpe dado aumenta o Crítico em 2%." },
             { nome: "Garra Perfurante", pe: 800, custo_pa: 35, recarga: 2, tipo: "Ataque", desc: "Ignora 50% da Resistência inimiga." },
             { nome: "Postura do Arqueado", pe: 1200, custo_pa: 40, recarga: 4, tipo: "Buff", desc: "Aumenta Força em 40% por 3 turnos. (Garante 1 turno de vulnerabilidade do gato sem o buff)." },
-            { nome: "Voadora Pesada", pe: 1700, custo_pa: 50, recarga: 3, tipo: "Ataque", desc: "Causa 150% do Dano. 20% chance de atordoar." },
+            { nome: "Voadora Pesada", pe: 1700, custo_pa: 50, recarga: 3, tipo: "Ataque", desc: "Causa 150% de Dano. 20% chance de atordoar." },
             { nome: "Punhos de Aço", pe: 2300, custo_pa: 0, recarga: 0, tipo: "Passiva", desc: "[Passiva] Sempre que recebe dano crítico, ganha 20 PA." },
-            { nome: "Combo Tsunami", pe: 3000, custo_pa: 75, recarga: 4, tipo: "Ataque", desc: "Três golpes rápidos, cada um causa 80% do Dano." },
-            { nome: "O Tigre Oculto", pe: 4000, custo_pa: 100, recarga: 5, tipo: "Ataque Supremo", desc: "Causa 300% do Dano Base." }
+            { nome: "Combo Tsunami", pe: 3000, custo_pa: 75, recarga: 4, tipo: "Ataque", desc: "Três golpes rápidos, cada um causa 80% de Dano." },
+            { nome: "O Tigre Oculto", pe: 4000, custo_pa: 100, recarga: 5, tipo: "Ataque Supremo", desc: "Causa 300% de Dano." }
         ]
     },
     meowjitsu: {
@@ -56,7 +56,7 @@ export const ARTES_MARCIAIS = {
         cor: "#ff6600", 
         icone: "icones/felinethai.png",
         tecnicas: [
-            { nome: "Cotovelada", pe: 50, custo_pa: 0, recarga: 0, tipo: "Ataque", desc: "Básico. Causa 110% de Dano, mas gera só 5 PA." },
+            { nome: "Cotovelada", pe: 50, custo_pa: 0, recarga: 0, tipo: "Ataque", desc: "Básico. Causa 110% de Dano e gera 5 PA." },
             { nome: "Canelada", pe: 150, custo_pa: 20, recarga: 1, tipo: "Ataque", desc: "Causa 120% de Dano." },
             { nome: "Arranhão Profundo", pe: 300, custo_pa: 25, recarga: 2, tipo: "Ataque Especial", desc: "Causa 100% de Dano e inimigo perde 5% de HP todo turno (Sangramento)." },
             { nome: "Sede de Sangue", pe: 500, custo_pa: 0, recarga: 0, tipo: "Passiva", desc: "[Passiva] Todo dano crítico cura o gato em 10% do dano causado." },
@@ -65,7 +65,7 @@ export const ARTES_MARCIAIS = {
             { nome: "Quebra-Costelas", pe: 1700, custo_pa: 60, recarga: 5, tipo: "Ataque Especial", desc: "Causa 180% de Dano e destrói 20% da Defesa inimiga pro resto da luta." },
             { nome: "Dor Ignorada", pe: 2300, custo_pa: 0, recarga: 0, tipo: "Passiva", desc: "[Passiva] Quanto menor o HP do gato, mais dano ele causa (até +30%)." },
             { nome: "Chuva de Lâminas", pe: 3000, custo_pa: 85, recarga: 4, tipo: "Ataque Especial", desc: "Aplica 3 acúmulos de Sangramento de uma vez." },
-            { nome: "O Rei dos Becos", pe: 4000, custo_pa: 100, recarga: 5, tipo: "Ataque Supremo", desc: "Causa 350% de dano. O gato toma 15% de recuo no próprio HP." }
+            { nome: "O Rei dos Becos", pe: 4000, custo_pa: 100, recarga: 5, tipo: "Ataque Supremo", desc: "Causa 350% de Dano. O gato toma 15% de recuo no próprio HP." }
         ]
     },
     ronrondo: {
@@ -81,7 +81,7 @@ export const ARTES_MARCIAIS = {
             { nome: "Meditação", pe: 1200, custo_pa: 40, recarga: 3, tipo: "Cura", desc: "Cura 30% da Vida Máxima." },
             { nome: "Espelho d'Água", pe: 1700, custo_pa: 50, recarga: 3, tipo: "Defesa Especial", desc: "Devolve 100% do dano recebido no turno inimigo." },
             { nome: "Zen", pe: 2300, custo_pa: 0, recarga: 0, tipo: "Passiva", desc: "[Passiva] Imune a atordoamento e sangramento." },
-            { nome: "Palma do Destino", pe: 3000, custo_pa: 70, recarga: 4, tipo: "Ataque", desc: "Causa dano igual a 20% do HP Máximo do seu gato." },
+            { nome: "Palma do Destino", pe: 3000, custo_pa: 70, recarga: 4, tipo: "Ataque", desc: "Causa 200% de Dano (baseado no HP do gato)." },
             { nome: "O Velho e o Marlim", pe: 4000, custo_pa: 100, recarga: 99, tipo: "Suprema (Uso Único)", desc: "Cura 100% do HP e limpa debuffs. O gato fica exausto e não ganha PA por 2 turnos." }
         ]
     }
