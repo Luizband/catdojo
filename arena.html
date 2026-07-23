@@ -98,7 +98,7 @@
         /* MODAL DE HISTÓRIA */
         #modalHistoria { z-index: 3000; flex-direction: column; background: #1a1a1a; padding: 0; justify-content: flex-start; }
         #historiaImg { width: 100%; height: 50%; background-size: cover; background-position: center; background-repeat: no-repeat; border-bottom: 4px solid #5a4231; }
-        .caixa-texto-historia { flex: 1; width: 100%; padding: 20px; box-sizing: border-box; position: relative; background-color: #2c2c2c; overflow-y: auto;}
+        .caixa-texto-historia { flex: 1; width: 100%; padding: 20px; padding-bottom: 80px; box-sizing: border-box; position: relative; background-color: #2c2c2c; overflow-y: auto;}
         #historiaTexto { color: #f1ddb0; font-size: 1.05em; font-family: 'Courier New', Courier, monospace; font-weight: bold; line-height: 1.5em; text-shadow: 1px 1px 2px #000; white-space: pre-wrap;}
         #btnPularHistoria { position: absolute; bottom: 20px; right: 20px; background-color: #d27d46; color: white; border: 2px solid #5a4231; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; text-transform: uppercase; z-index: 10;}
         #btnPularHistoria:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
@@ -298,7 +298,7 @@
                 const btnPular = document.getElementById('btnPularHistoria');
                 btnPular.textContent = "PULAR >>";
 
-                // Efeito máquina de escrever
+                // Efeito máquina de escrever (Agora mais lento: 60ms)
                 typingInterval = setInterval(() => {
                     document.getElementById('historiaTexto').textContent += textoCompleto.charAt(charIndex);
                     charIndex++;
@@ -311,7 +311,7 @@
                         historiaCompletada = true;
                         btnPular.textContent = "AVANÇAR >>";
                     }
-                }, 30);
+                }, 60);
 
                 btnPular.onclick = () => {
                     if (historiaCompletada) {
@@ -514,8 +514,7 @@
                 mostrarToast(`Fama Insuficiente! Você precisa de ${npc.custoRep} de Reputação para enfrentar o ${npc.nome}.`);
                 return;
             }
-            // Dispara a Cena PRE LUTA (se houver) e aguarda terminar antes de escolher o gato
-            await iniciarHistoria(npc.id, 'pre');
+            // Não chama mais a história aqui! Apenas abre o seletor.
             abrirSeletorGato(true, npc);
         };
         
@@ -528,7 +527,6 @@
             gatosSnap.forEach(docSnap => {
                 let gato = { id: docSnap.id, ...docSnap.data() };
                 // O FILTRO DE OURO: Só passa Saudável E que NÃO está na lista de treinos ativos. 
-                // Isso automaticamente veta doentes, mortos, com fome, em missão e descansando.
                 if (gato.estado === 'Saudável' && !gatosOcupados.includes(gato.id)) {
                     meusGatos.push(gato);
                 }
@@ -555,12 +553,15 @@
                 btn.onclick = async () => {
                     document.getElementById('modalSeletor').style.display = 'none';
                     if(isPvE) {
-                        // Só desconta a reputação agora que ele escolheu o gato e aceitou lutar
                         if (inimigoPveAtual.isBoss) {
                             const claRef = doc(db, "Clas", jogadorUid);
                             reputacaoAtual -= inimigoPveAtual.custoRep;
                             await updateDoc(claRef, { reputacao: reputacaoAtual });
                         }
+                        
+                        // DISPARA A HISTÓRIA AQUI! (Logo após o gato ser escolhido e antes da pancadaria)
+                        await iniciarHistoria(inimigoPveAtual.id, 'pre');
+                        
                         iniciarBatalhaPvE(gato, inimigoPveAtual);
                     }
                     else selecionarGatoPvP(gato);
@@ -569,7 +570,7 @@
             });
             document.getElementById('modalSeletor').style.display = 'flex';
         }
-
+        
         // ==========================================
         // 3. MOTOR MATEMÁTICO (Mantido Intacto)
         // ==========================================
