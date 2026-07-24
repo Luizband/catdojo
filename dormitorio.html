@@ -210,7 +210,7 @@
         /* Slots de Batalha */
         .box-habilidades { margin-bottom: 20px; }
         .box-habilidades h4 { color: #2a2a2a; font-size: 0.9em; margin-bottom: 5px;}
-        .grid-slots { display: flex; gap: 10px; }
+        .grid-slots { display: flex; justify-content: space-evenly; width: 100%; gap: 5px; }
         .slot-habilidade { 
             width: 45px; height: 45px; background-color: #7b7b7b; border: 2px solid #5a4231; 
             border-radius: 8px; display: flex; align-items: center; justify-content: center; 
@@ -313,11 +313,12 @@
 
         /* NOVOS ESTILOS PARA SLOTS E HABILIDADES */
         .nome-hab-slot {
-            font-size: 0.65em; color: #5a4231; font-weight: bold; text-transform: uppercase;
-            text-align: center; margin-top: 4px; white-space: nowrap; overflow: hidden;
-            text-overflow: ellipsis; width: 45px;
+            font-size: 0.55em; color: #5a4231; font-weight: bold; text-transform: uppercase;
+            text-align: center; margin-top: 4px; width: 100%; 
+            word-wrap: break-word; line-height: 1.1; /* Permite quebrar a linha se o nome for grande */
         }
-        .slot-wrapper { display: flex; flex-direction: column; align-items: center; width: 45px; }
+        
+        .slot-wrapper { display: flex; flex-direction: column; align-items: center; width: 55px; }
         
         .arte-item-dojo.marcada { border-color: #ffbb00; background-color: #fff3cd; }
         .tecnica-row.marcada { border-color: #ffbb00; background-color: #4a3b32; }
@@ -1276,17 +1277,22 @@
                         <p>${tec.desc}</p>
                         ${textoExtra}
                     </div>
-                    <div class="tecnica-pe" style="color: ${liberada ? (isMarcada ? '#ffbb00' : '#2a2a2a') : '#555'}">
-                        Req: ${tec.pe} PE
+                    <div class="tecnica-pe" style="color: ${liberada ? (isMarcada ? '#ffbb00' : '#2a2a2a') : '#555'}; text-align: right;">
+                        Req: ${tec.pe} PE<br>
+                        <span style="color: #d27d46; font-size: 0.9em;">Custo: ${tec.custo_pa} PA</span>
                     </div>
                 `;
 
                 if (liberada) {
                     row.onclick = () => {
                         let msg = `Deseja equipar "${tec.nome}" no Slot ${slotAtivoIndex + 1}?`;
-                        // Manda o aviso de mover se o jogador clicar em algo já equipado!
-                        if (isMarcada && indexEquipado !== slotAtivoIndex) {
-                            msg = `"${tec.nome}" já está no Slot ${indexEquipado + 1}. Deseja MOVER para o Slot ${slotAtivoIndex + 1}?`;
+                        
+                        if (isMarcada) {
+                            if (indexEquipado === slotAtivoIndex) {
+                                msg = `Deseja DESEQUIPAR "${tec.nome}" do Slot ${slotAtivoIndex + 1}?`;
+                            } else {
+                                msg = `"${tec.nome}" já está no Slot ${indexEquipado + 1}. Deseja MOVER para o Slot ${slotAtivoIndex + 1}?`;
+                            }
                         }
                         pedirConfirmacao(msg, () => confirmarEquipamento(tec, arte));
                     };
@@ -1299,18 +1305,26 @@
             try {
                 let novasHabilidades = [...gatoSelecionado.habilidadesEquipadas];
 
-                // 1. CHECAGEM DE DUPLICAÇÃO (Trava que remove do slot antigo)
+                // Pega o índice de onde a habilidade clicada já está equipada
                 const indexExistente = novasHabilidades.findIndex(h => h && h.nomeTecnica === tecnica.nome);
-                if (indexExistente !== -1 && indexExistente !== slotAtivoIndex) {
-                    novasHabilidades[indexExistente] = null; // Esvazia o slot antigo
-                }
 
-                // 2. Coloca no slot escolhido
-                novasHabilidades[slotAtivoIndex] = {
-                    nomeTecnica: tecnica.nome,
-                    iconeArte: arte.icone,
-                    corArte: arte.cor
-                };
+                // LÓGICA DE DESEQUIPAR: Se clicou na que já está NESTE slot
+                if (indexExistente === slotAtivoIndex) {
+                    novasHabilidades[slotAtivoIndex] = null; // Esvazia o slot
+                    mostrarToast("Técnica desequipada!");
+                } else {
+                    // Se estiver em OUTRO slot, limpa de lá primeiro
+                    if (indexExistente !== -1) {
+                        novasHabilidades[indexExistente] = null;
+                    }
+                    // Coloca no slot escolhido
+                    novasHabilidades[slotAtivoIndex] = {
+                        nomeTecnica: tecnica.nome,
+                        iconeArte: arte.icone,
+                        corArte: arte.cor
+                    };
+                    mostrarToast("Técnica alocada com sucesso!");
+                }
 
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gatoSelecionado.id);
                 await updateDoc(gatoRef, { habilidadesEquipadas: novasHabilidades });
@@ -1318,12 +1332,10 @@
                 gatoSelecionado.habilidadesEquipadas = novasHabilidades;
                 modalHabilidades.style.display = 'none';
                 
-                mostrarToast("Técnica alocada com sucesso!");
                 // Pinta os slots na tela sem fechar o painel do gato
                 if (window.renderizarSlots) window.renderizarSlots();
             } catch (e) { console.error(e); }
         }
-
         // ==========================================
         // MOTOR DE DISTRIBUIÇÃO DE ATRIBUTOS
         // ==========================================
