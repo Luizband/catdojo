@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CatDojo - Tatame</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5a4231">
+    <style>
+        /* RESET BÁSICO E TRAVA DE ECRÃ */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        html, body { background-color: #2c2c2c; display: flex; justify-content: center; position: fixed; top: 0; bottom: 0; left: 0; right: 0; width: 100%; overflow: hidden; }
+
+        #app {
+            width: 100%; max-width: 414px; height: 100%; position: relative;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            background-color: #3e2723;
+            background-image: url('imagens/fundotatame.png');
+            background-size: cover; background-position: center;
+        }
+        #app::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.65); z-index: 1; }
+        .conteudo-app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+
+        /* CABEÇALHO PADRÃO (Estilo Pergaminho) */
+        header {
+            background-color: #dfc495; padding: 10px 15px; display: flex; justify-content: space-between;
+            border-bottom: 3px solid #5a4231; position: relative;
+        }
+        .perfil-info { display: flex; gap: 15px; flex: 1; }
+        .foto-cla {
+            position: absolute; top: 0; left: 0; bottom: 0; width: 90px;
+            background-color: transparent; border: none; border-radius: 0; box-shadow: none; overflow: hidden;
+        }
+        .dados-cla { margin-left: 90px; display: flex; flex-direction: column; justify-content: center; }
+        .dados-cla h2 { font-size: 1.25em; color: #2a2a2a; text-transform: uppercase; }
+        .dados-cla p { font-size: 1.0em; color: #2a2a2a; font-weight: bold; margin-bottom: 5px; }
+
+        .economia { display: flex; gap: 15px; font-size: 0.95em; font-weight: bold; color: #4a3b32; }
+        .economia div { display: flex; align-items: center; gap: 5px; }
+        .economia img { width: 23px; }
+
+        .botoes-topo { display: flex; flex-direction: column; gap: 5px; }
+        .botoes-topo img {
+            width: 40px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px;
+            padding: 4px; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; transition: all 0.1s;
+        }
+        .botoes-topo img:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+
+        .titulo-pagina { text-align: center; background-color: #5a4231; color: #f1ddb0; padding: 5px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #3e2723;}
+        .info-tatame { display: flex; justify-content: space-between; padding: 10px 15px; background: rgba(90, 66, 49, 0.85); color: #f1ddb0; font-size: 0.85em; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #3e2723;}
+
+        main { flex: 1; min-height: 0; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+
+        /* LISTA DE TREINOS */
+        .card-treino { background-color: #f1ddb0; border: 3px solid #5a4231; border-radius: 10px; padding: 12px; box-shadow: 0px 4px 0px #5a4231; position: relative;}
+        .treino-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 2px dashed #a68a61; padding-bottom: 5px;}
+        .treino-header h4 { color: #2a2a2a; text-transform: uppercase; font-size: 1.05em; display: flex; align-items: center; gap: 5px;}
+        .treino-header img { width: 24px; height: 24px; object-fit: contain;}
+        
+        .treino-detalhes { font-size: 0.85em; color: #5a4231; font-weight: bold; line-height: 1.4em;}
+        .prof-badge { display: inline-block; background: #4a3b32; color: #f1ddb0; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; margin-top: 4px;}
+
+        .barra-progresso-bg { width: 100%; height: 14px; background-color: #2c2c2c; border-radius: 7px; border: 2px solid #5a4231; overflow: hidden; margin-top: 10px;}
+        .barra-progresso-fill { height: 100%; background-color: #3399ff; width: 0%; transition: width 1s linear;}
+        .barra-progresso-fill.concluida { background-color: #4CAF50; }
+        .tempo-restante { font-size: 0.85em; font-weight: bold; color: #b30000; text-align: center; margin-top: 5px; }
+
+        .btn-acao { background-color: #4CAF50; color: white; border: 2px solid #2E7D32; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #2E7D32; width: 100%; text-transform: uppercase; font-size: 0.85em; margin-top: 10px;}
+        .btn-acao:active { box-shadow: 0px 0px 0px #2E7D32; transform: translateY(3px); }
+        .btn-acao.novo { background-color: #d27d46; border-color: #5a4231; box-shadow: 0px 4px 0px #5a4231; padding: 15px; font-size: 1em; margin-bottom: 20px;}
+        .btn-acao.novo:active { box-shadow: 0px 0px 0px #5a4231; }
+
+        /* MODAIS GERAIS */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: flex-end; }
+        .painel-modal { background-color: #f1ddb0; width: 100%; max-width: 414px; border-top: 4px solid #5a4231; border-radius: 20px 20px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; position: relative;}
+        .btn-fechar { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5em; color: #5a4231; cursor: pointer; font-weight: bold; z-index: 10;}
+        .titulo-modal { color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px; font-size: 1.1em; border-bottom: 2px dashed #a68a61; padding-bottom: 5px;}
+
+        /* SELEÇÃO DE ARTE MARCIAL E GATOS */
+        .lista-selecao { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;}
+        .item-selecao { background: #dfc495; border: 2px solid #5a4231; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 15px; cursor: pointer; box-shadow: 0px 3px 0px #5a4231;}
+        .item-selecao:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+        .item-selecao img { width: 45px; height: 45px; object-fit: contain; border-radius: 8px;}
+        .item-info { flex: 1; }
+        .item-info h5 { font-size: 1.05em; color: #2a2a2a; text-transform: uppercase; margin-bottom: 2px;}
+        .item-info p { font-size: 0.8em; color: #5a4231; font-weight: bold; }
+
+        /* BARRA FRACIONADA DE PE */
+        .barra-pe-bg { width: 100%; height: 16px; background-color: #2c2c2c; border-radius: 8px; border: 2px solid #5a4231; position: relative; overflow: hidden; margin-top: 5px;}
+        .barra-pe-fill { height: 100%; }
+        .barra-pe-txt { position: absolute; top: -1px; left: 0; width: 100%; text-align: center; font-size: 0.75em; color: white; font-weight: bold; text-shadow: 1px 1px 2px #000; line-height: 16px;}
+
+        /* CONFIGURAÇÃO DO TREINO */
+        .seletor-box { margin-bottom: 15px; }
+        .seletor-box label { display: block; font-weight: bold; color: #5a4231; margin-bottom: 5px; font-size: 0.85em; text-transform: uppercase;}
+        .seletor-input { width: 100%; padding: 10px; border: 2px solid #5a4231; border-radius: 8px; background: #e5cd9e; font-weight: bold; color: #2a2a2a; outline: none; font-size: 0.9em;}
+
+        .painel-estimativa { background-color: #2c2c2c; border: 2px solid #5a4231; border-radius: 8px; padding: 15px; color: #f1ddb0; margin-bottom: 15px;}
+        .linha-est { display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 6px; }
+
+        /* MODAL UPGRADE TATAME */
+        .box-upgrade { background: #dfc495; border: 2px dashed #5a4231; border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 15px;}
+        .stat-upgrade { display: flex; justify-content: space-around; margin-top: 10px; font-weight: bold; color: #2E7D32;}
+        .seta-up { color: #d27d46; font-size: 1.2em; font-weight: bold; margin: 10px 0; text-align: center;}
+
+        /* NAVEGAÇÃO INFERIOR */
+        nav { background-color: #e5cd9e; border-top: 3px solid #5a4231; display: flex; justify-content: space-around; flex-shrink: 0; padding: 10px 5px; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none; text-transform: uppercase; }
+        .nav-item img { width: 40px; margin-bottom: 3px; }
+        .nav-item.ativo img { filter: drop-shadow(0px 0px 8px #ffeb99); }
+
+        /* TOAST E MODAL CENTRO */
+        #toastContainer { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast-msg { background-color: #2c2c2c; color: #f1ddb0; padding: 12px 24px; border: 2px solid #dfc495; border-radius: 8px; font-weight: bold; text-align: center; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); animation: fadeInOut 2s forwards; text-transform: uppercase; font-size: 0.85em; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(-10px); } 10% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
+
+        .modal-centro { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .painel-centro { background-color: #f1ddb0; width: 85%; max-width: 320px; border: 3px solid #5a4231; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0px 10px 20px rgba(0,0,0,0.5); }
+        .botoes-centro { display: flex; gap: 10px; justify-content: center; margin-top: 15px;}
+        .btn-centro { flex: 1; padding: 10px; background-color: #dfc495; border: 2px solid #5a4231; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0px 3px 0px #5a4231; color: #2a2a2a; text-transform: uppercase; }
+        .btn-centro:active { box-shadow: 0px 0px 0px #5a4231; transform: translateY(3px); }
+        .btn-centro.cancelar { background-color: transparent; border: 2px dashed #a68a61; box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div id="toastContainer"></div>
+    
+    <div class="modal-centro" id="modalConfirmacao" style="z-index: 9000;">
+        <div class="painel-centro">
+            <p id="textoConfirmacao" style="color: #2a2a2a; font-weight: bold; font-size: 0.95em;"></p>
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" id="btnCancelarConfirm">Cancelar</button>
+                <button class="btn-centro" id="btnAceitarConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <div class="conteudo-app">
+            
+            <header>
+                <div class="perfil-info">
+                    <div class="foto-cla" id="fotoClaContainer">
+                        <span id="placeholderFoto">FOTO</span>
+                    </div>
+                    <div class="dados-cla">
+                        <h2 id="exibeNomeCla">CARREGANDO...</h2>
+                        <p id="exibeNomeMestre">Mestre...</p>
+                        <div class="economia">
+                            <div><img src="icones/moeda.png" alt="Moedas"> <span id="exibeMoedas">0</span></div>
+                            <div><img src="icones/rep.png" alt="Reputação"> <span id="exibeReputacao">0/500</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="botoes-topo">
+                    <img src="icones/lvlup.png" alt="Evoluir" id="btnAbrirUpgrade">
+                    <img src="icones/log.png" alt="Diário">
+                </div>
+            </header>
+
+            <div class="titulo-pagina">TATAME DE TREINO</div>
+            <div class="info-tatame">
+                <span id="txtTatameNivel">Nível: 1</span>
+                <span id="txtBonusAtual">15 XP | 10 PE /h</span>
+            </div>
+
+            <main>
+                <button class="btn-acao novo" id="btnAbrirArtes">+ Iniciar Novo Treino</button>
+                <div id="listaTreinosAtivos"></div>
+            </main>
+
+            <nav>
+                <div class="nav-item" onclick="window.location.href='dojo.html'">
+                    <img src="icones/Dojo.png" alt="Dojo">
+                    DOJO
+                </div>
+                <div class="nav-item" onclick="window.location.href='dormitorio.html'">
+                    <img src="icones/dormitorio.png" alt="Dormitório">
+                    DORMITÓRIO
+                </div>
+                <div class="nav-item" onclick="window.location.href='missoes.html'">
+                    <img src="icones/missao.png" alt="Missões">
+                    MISSÕES
+                </div>
+                <div class="nav-item" onclick="window.location.href='loja.html'">
+                    <img src="icones/loja.png" alt="Loja">
+                    LOJA
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- MODAL DE UPGRADE DO TATAME -->
+    <div class="modal-centro" id="modalUpgrade">
+        <div class="painel-centro" style="width: 90%; max-width: 350px;">
+            <h3 style="color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px dashed #a68a61; padding-bottom: 5px;">Evoluir Tatame</h3>
+            
+            <div class="box-upgrade" style="background: #2c2c2c; border-color: #5a4231; color: white;">
+                <p style="font-size: 0.8em; text-transform: uppercase; color: #dfc495;">Nível Atual (<span id="upgNivelAtual">1</span>)</p>
+                <div class="stat-upgrade" style="color: #f1ddb0;">
+                    <span><img src="icones/exp.png" width="16" style="vertical-align:bottom;"> <span id="upgXpAtual">15</span>/h</span>
+                    <span><img src="icones/treino.png" width="16" style="vertical-align:bottom;"> <span id="upgPeAtual">10</span>/h</span>
+                </div>
+            </div>
+
+            <div class="seta-up">▼</div>
+
+            <div class="box-upgrade" id="boxProximoNivel">
+                <p style="font-size: 0.8em; text-transform: uppercase; color: #5a4231;">Próximo Nível (<span id="upgNivelProx">2</span>)</p>
+                <div class="stat-upgrade">
+                    <span><img src="icones/exp.png" width="16" style="vertical-align:bottom;"> <span id="upgXpProx">20</span>/h</span>
+                    <span><img src="icones/treino.png" width="16" style="vertical-align:bottom;"> <span id="upgPeProx">12</span>/h</span>
+                </div>
+                <div style="margin-top: 15px; font-weight: bold; color: #b30000; display: flex; justify-content: center; align-items: center; gap: 5px;">
+                    Custo: <img src="icones/moeda.png" width="18"> <span id="upgCusto">300</span>
+                </div>
+            </div>
+
+            <div id="txtMaxLevel" style="display: none; color: #2E7D32; font-weight: bold; margin-bottom: 15px;">TATAME NO NÍVEL MÁXIMO!</div>
+
+            <div class="botoes-centro">
+                <button class="btn-centro cancelar" onclick="document.getElementById('modalUpgrade').style.display='none'">Voltar</button>
+                <button class="btn-centro" id="btnConfirmarUpgrade">Evoluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: SELECIONAR GATO -->
+    <div class="modal-overlay" id="modalGatos">
+        <div class="painel-modal">
+            <button class="btn-fechar" onclick="document.getElementById('modalGatos').style.display='none'">X</button>
+            <h3 class="titulo-modal">1. Escolha o Aluno</h3>
+            <div class="lista-selecao" id="listaGatosContainer"></div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SELECIONAR ARTE (COM BARRA DE PE FRACIONADA) -->
+    <div class="modal-overlay" id="modalArtes">
+        <div class="painel-modal">
+            <button class="btn-fechar" onclick="document.getElementById('modalArtes').style.display='none'">X</button>
+            <h3 class="titulo-modal">2. Selecione a Arte Marcial</h3>
+            <div class="lista-selecao" id="listaArtesContainer"></div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CONFIGURAR TREINO -->
+    <div class="modal-overlay" id="modalSetup">
+        <div class="painel-modal">
+            <button class="btn-fechar" onclick="document.getElementById('modalSetup').style.display='none'">X</button>
+            <h3 class="titulo-modal">3. Configurar Treino</h3>
+            
+            <div class="seletor-box">
+                <label>Intensidade do Treino</label>
+                <select class="seletor-input" id="selectTempo" onchange="calcularEstimativaTreino()">
+                    <option value="2">Treino Curto (2 Horas)</option>
+                    <option value="5">Treino Médio (5 Horas)</option>
+                    <option value="10">Treino Longo (10 Horas)</option>
+                </select>
+            </div>
+
+            <div class="seletor-box">
+                <label>Professor (Opcional)</label>
+                <select class="seletor-input" id="selectProf" onchange="calcularEstimativaTreino()">
+                    <option value="">Sem Professor (Ganho 1.0x)</option>
+                    <!-- Preenchido via JS -->
+                </select>
+            </div>
+
+            <div class="painel-estimativa">
+                <div class="linha-est" style="color: #dfc495; text-align: center; justify-content: center; margin-bottom: 10px; border-bottom: 1px solid #4a3b32; padding-bottom: 5px;">ESTIMATIVA DE RECOMPENSA</div>
+                <div class="linha-est">Experiência (XP): <span id="estXp" style="color: #3399ff;">-- XP</span></div>
+                <div class="linha-est">Pontos de Especialização: <span id="estPe" style="color: #4CAF50;">-- PE</span></div>
+            </div>
+
+            <button class="btn-acao" id="btnComecarTreino">Iniciar Treino</button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: RELATÓRIO DO TREINO -->
+    <div class="modal-centro" id="modalRelatorioTreino">
+        <div class="painel-centro" style="width: 90%; max-width: 350px;">
+            <h3 style="color: #2a2a2a; text-transform: uppercase; border-bottom: 2px dashed #a68a61; padding-bottom: 10px; margin-bottom: 15px;">Treino Concluído</h3>
+            
+            <img src="" id="relTreinoFoto" style="width: 80px; height: 80px; border-radius: 10px; border: 3px solid #5a4231; background: #fff; margin-bottom: 10px;">
+            <div style="font-size: 1.1em; font-weight: bold; color: #2a2a2a; text-transform: uppercase; margin-bottom: 15px;" id="relTreinoNome">NOME</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; text-align: left; margin-bottom: 15px;">
+                <div style="background: #e5cd9e; padding: 10px; border-radius: 8px; border: 2px solid #a68a61; font-weight: bold; color: #4a3b32; display: flex; justify-content: space-between;">
+                    <span><img src="icones/exp.png" style="width:16px; vertical-align:middle;"> XP Recebido:</span>
+                    <span id="relTreinoXp" style="color: #3399ff;">+0</span>
+                </div>
+                <div style="background: #e5cd9e; padding: 10px; border-radius: 8px; border: 2px solid #a68a61; font-weight: bold; color: #4a3b32; display: flex; justify-content: space-between;">
+                    <span><img src="icones/treino.png" style="width:16px; vertical-align:middle;"> PE Recebido:</span>
+                    <span id="relTreinoPe" style="color: #4CAF50;">+0</span>
+                </div>
+            </div>
+
+            <div id="relTreinoAvisos" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                <!-- Avisos de Level UP e Arte Marcial injetados via JS -->
+            </div>
+
+            <button class="btn-acao" id="btnColetarTreino" style="width: 100%;">Coletar Recompensas</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDoc, doc, updateDoc, collection, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { ARTES_MARCIAIS } from './artes-marciais.js';
+
+        // Tabela Exata do GDD
+        const TATAME_NIVEIS = {
+            1: { xp: 15, pe: 10, custo: 0 },
+            2: { xp: 20, pe: 12, custo: 300 },
+            3: { xp: 25, pe: 15, custo: 500 },
+            4: { xp: 30, pe: 18, custo: 1000 },
+            5: { xp: 40, pe: 25, custo: 2000 }
+        };
+
+        let jogadorUid = null;
+        let dadosGlobais = null;
+        let gatosDisponiveis = [];
+        let treinosAtivos = [];
+        let tatameNivel = 1;
+
+        // Controle de Fluxo
+        let arteSelecionada = null;
+        let gatoSelecionado = null;
+
+        window.mostrarToast = function(mensagem) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div'); toast.className = 'toast-msg'; toast.textContent = mensagem;
+            container.appendChild(toast); setTimeout(() => toast.remove(), 2500);
+        }
+
+        function pedirConfirmacao(mensagem, callback) {
+            document.getElementById('textoConfirmacao').textContent = mensagem;
+            document.getElementById('modalConfirmacao').style.display = 'flex';
+            
+            document.getElementById('btnAceitarConfirm').onclick = () => { 
+                document.getElementById('modalConfirmacao').style.display = 'none'; 
+                callback(); 
+            };
+            document.getElementById('btnCancelarConfirm').onclick = () => {
+                document.getElementById('modalConfirmacao').style.display = 'none';
+            };
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                jogadorUid = user.uid;
+                await carregarDados();
+                setInterval(atualizarRelogios, 1000);
+            } else { window.location.href = "index.html"; }
+        });
+
+        async function carregarDados() {
+            const docRef = doc(db, "Clas", jogadorUid);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                dadosGlobais = docSnap.data();
+                
+                let textoCla = dadosGlobais.nomeCla ? dadosGlobais.nomeCla.trim() : "DESCONHECIDO";
+                if (!textoCla.toUpperCase().startsWith("CLÃ") && !textoCla.toUpperCase().startsWith("CLA")) { textoCla = "CLÃ " + textoCla; }
+                document.getElementById('exibeNomeCla').textContent = textoCla.toUpperCase();
+
+                let textoMestre = dadosGlobais.nomeMestre ? dadosGlobais.nomeMestre.trim() : "...";
+                if (!textoMestre.toUpperCase().startsWith("MESTRE")) { textoMestre = "Mestre " + textoMestre; }
+                document.getElementById('exibeNomeMestre').textContent = textoMestre;
+
+                document.getElementById('exibeMoedas').textContent = dadosGlobais.moedas !== undefined ? dadosGlobais.moedas : 50;
+                document.getElementById('exibeReputacao').textContent = `${dadosGlobais.reputacao || 0}/500`;
+                
+                if (dadosGlobais.avatar) document.getElementById('fotoClaContainer').innerHTML = `<img src="${dadosGlobais.avatar}" style="display: block; width: 100%; height: 100%; object-fit: cover;">`;
+
+                tatameNivel = dadosGlobais.tatameNivel || 1;
+                treinosAtivos = dadosGlobais.treinosAtivos || [];
+                
+                document.getElementById('txtTatameNivel').textContent = `Nível: ${tatameNivel}`;
+                document.getElementById('txtBonusAtual').textContent = `${TATAME_NIVEIS[tatameNivel].xp} XP | ${TATAME_NIVEIS[tatameNivel].pe} PE /h`;
+            }
+
+            gatosDisponiveis = [];
+            const gatosRef = collection(db, "Clas", jogadorUid, "Gatos");
+            const qSnap = await getDocs(gatosRef);
+            qSnap.forEach(doc => {
+                let g = { id: doc.id, ...doc.data() };
+                gatosDisponiveis.push(g);
+            });
+
+            renderizarTreinos();
+        }
+
+        // ==========================================
+        // SISTEMA DE UPGRADE DO TATAME
+        // ==========================================
+        document.getElementById('btnAbrirUpgrade').onclick = () => {
+            document.getElementById('upgNivelAtual').textContent = tatameNivel;
+            document.getElementById('upgXpAtual').textContent = TATAME_NIVEIS[tatameNivel].xp;
+            document.getElementById('upgPeAtual').textContent = TATAME_NIVEIS[tatameNivel].pe;
+
+            if (tatameNivel < 5) {
+                const prox = tatameNivel + 1;
+                document.getElementById('upgNivelProx').textContent = prox;
+                document.getElementById('upgXpProx').textContent = TATAME_NIVEIS[prox].xp;
+                document.getElementById('upgPeProx').textContent = TATAME_NIVEIS[prox].pe;
+                document.getElementById('upgCusto').textContent = TATAME_NIVEIS[prox].custo;
+                
+                document.getElementById('boxProximoNivel').style.display = 'block';
+                document.getElementById('btnConfirmarUpgrade').style.display = 'block';
+                document.getElementById('txtMaxLevel').style.display = 'none';
+            } else {
+                document.getElementById('boxProximoNivel').style.display = 'none';
+                document.getElementById('btnConfirmarUpgrade').style.display = 'none';
+                document.getElementById('txtMaxLevel').style.display = 'block';
+            }
+            document.getElementById('modalUpgrade').style.display = 'flex';
+        };
+
+        document.getElementById('btnConfirmarUpgrade').onclick = () => {
+            const proxNivel = tatameNivel + 1;
+            const custo = TATAME_NIVEIS[proxNivel].custo;
+            
+            if ((dadosGlobais.moedas || 0) < custo) {
+                mostrarToast("Moedas insuficientes para evoluir!");
+                return;
+            }
+
+            pedirConfirmacao(`Gastar ${custo} moedas para evoluir o Tatame para o Nível ${proxNivel}?`, async () => {
+                try {
+                    const claRef = doc(db, "Clas", jogadorUid);
+                    await updateDoc(claRef, { 
+                        moedas: (dadosGlobais.moedas || 0) - custo,
+                        tatameNivel: proxNivel
+                    });
+                    
+                    document.getElementById('modalUpgrade').style.display = 'none';
+                    mostrarToast(`Tatame evoluído para o Nível ${proxNivel}!`);
+                    await carregarDados();
+                } catch(e) { console.error(e); }
+            });
+        };
+
+        // ==========================================
+        // LÓGICA DE CRIAÇÃO DE TREINO
+        // ==========================================
+        
+        // 1. O botão inicial agora abre a lista de gatos primeiro
+        document.getElementById('btnAbrirArtes').onclick = () => {
+            abrirSelecaoGato();
+        };
+
+        function abrirSelecaoGato() {
+            const container = document.getElementById('listaGatosContainer');
+            container.innerHTML = '';
+
+            // Filtra quem está ocupado 
+            const gatosOcupados = treinosAtivos.map(t => t.gatoId).concat(treinosAtivos.filter(t => t.profId).map(t => t.profId));
+            
+            // Flexibiliza o estado para não barrar gatos salvos sem acentuação no banco
+            const gatosLivres = gatosDisponiveis.filter(g => 
+                (g.estado === 'Saudável' || g.estado === 'Saudavel') && !gatosOcupados.includes(g.id)
+            );
+
+            if (gatosLivres.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#5a4231; font-weight:bold;">Nenhum gato livre e saudável disponível.</p>';
+            } else {
+                gatosLivres.forEach(g => {
+                    const nivelGato = g.nivel || 1;
+                    const imgFaixa = `imagens/${String(nivelGato).padStart(2, '0')}.png`;
+
+                    // Cálculo seguro de HP Max para gatos antigos da conta
+                    const hpMaxSeguro = g.hpMax || (250 + ((g.atributos?.resistencia || 1) * 15));
+                    const hpAtualSeguro = g.hpAtual !== undefined ? g.hpAtual : hpMaxSeguro;
+                    const precisaDescansar = hpAtualSeguro < (hpMaxSeguro / 2);
+
+                    const div = document.createElement('div');
+                    div.className = 'item-selecao';
+                    div.innerHTML = `
+                        <img src="${g.foto}" alt="Gato" style="background-color: #fff;">
+                        <div class="item-info">
+                            <h5 style="display: flex; align-items: center; gap: 6px;">
+                                ${g.nome} 
+                                <img src="${imgFaixa}" alt="Faixa" style="width: 28px; height: 28px; border-radius: 0; box-shadow: none; object-fit: contain;">
+                            </h5>
+                            <p style="color: ${precisaDescansar ? '#cc3333' : '#2E7D32'};">
+                                HP: ${Math.round(hpAtualSeguro)}/${hpMaxSeguro}
+                            </p>
+                        </div>
+                    `;
+                    div.onclick = () => {
+                        // Trava de HP consertada
+                        if (precisaDescansar) {
+                            mostrarToast(`${g.nome} precisa descansar mais antes de treinar!`);
+                            return;
+                        }
+
+                        gatoSelecionado = g;
+                        document.getElementById('modalGatos').style.display = 'none';
+                        abrirSelecaoArtes();
+                    };
+                    container.appendChild(div);
+                });
+            }
+            document.getElementById('modalGatos').style.display = 'flex';
+        }
+
+        // Função que lê os 10 níveis de técnicas do GDD para descobrir o progresso atual
+        function obterNivelEProximoPe(peAtual, arteKey) {
+            const tecnicas = ARTES_MARCIAIS[arteKey].tecnicas;
+            let nivel = 0;
+            let proximoPe = 4000; // Teto máximo
+
+            for (let i = 0; i < tecnicas.length; i++) {
+                if (peAtual >= tecnicas[i].pe) {
+                    nivel = i + 1;
+                } else {
+                    proximoPe = tecnicas[i].pe;
+                    break;
+                }
+            }
+            return { nivel, proximoPe };
+        }
+
+        function abrirSelecaoArtes() {
+            const container = document.getElementById('listaArtesContainer');
+            container.innerHTML = '';
+            
+            if (!gatoSelecionado.peArtes) gatoSelecionado.peArtes = {};
+
+            Object.keys(ARTES_MARCIAIS).forEach(chave => {
+                const arte = ARTES_MARCIAIS[chave];
+                const peAtual = gatoSelecionado.peArtes[chave] || 0;
+                
+                // Puxa o nível e o próximo alvo de PE com base no artes-marciais.js
+                const { nivel, proximoPe } = obterNivelEProximoPe(peAtual, chave);
+                
+                let pct = (peAtual / proximoPe) * 100;
+                if(pct > 100) pct = 100;
+
+                const div = document.createElement('div');
+                div.className = 'item-selecao';
+                div.innerHTML = `
+                    <img src="${arte.icone}" alt="${arte.nome}" style="background-color: ${arte.cor};">
+                    <div class="item-info">
+                        <h5>${arte.nome} <span style="font-size:0.7em; color:#5a4231;">(Nível ${nivel}/10)</span></h5>
+                        <div class="barra-pe-bg">
+                            <div class="barra-pe-fill" style="width: ${pct}%; background-color: ${arte.cor};"></div>
+                            <span class="barra-pe-txt">${peAtual >= 4000 ? 'MÁXIMO' : peAtual + ' / ' + proximoPe + ' PE'}</span>
+                        </div>
+                    </div>
+                `;
+                div.onclick = () => {
+                    arteSelecionada = chave;
+                    document.getElementById('modalArtes').style.display = 'none';
+                    abrirSetupTreino();
+                };
+                container.appendChild(div);
+            });
+            document.getElementById('modalArtes').style.display = 'flex';
+        }
+
+        function abrirSetupTreino() {
+            const selectProf = document.getElementById('selectProf');
+            selectProf.innerHTML = '<option value="">Sem Professor (Ganho 1.0x)</option>';
+            
+            const gatosOcupados = treinosAtivos.map(t => t.gatoId).concat(treinosAtivos.filter(t => t.profId).map(t => t.profId));
+            const professoresPossiveis = gatosDisponiveis.filter(g => 
+                g.estado === 'Saudável' && 
+                g.id !== gatoSelecionado.id && 
+                !gatosOcupados.includes(g.id) &&
+                ((g.idadeHoras || 0) >= 2160 || (g.nivel || 1) >= 20) // Só adultos ou faixas pretas podem ser professores
+            );
+
+            professoresPossiveis.forEach(p => {
+                let titulo = "Adulto (1.2x)";
+                const isAdulto = (p.idadeHoras || 0) >= 2160;
+                const isPreta = (p.nivel || 1) >= 20;
+                
+                if (isAdulto && isPreta) titulo = "Mestre Ancião (1.7x)";
+                else if (isPreta) titulo = "Faixa Preta (1.5x)";
+
+                selectProf.innerHTML += `<option value="${p.id}">${p.nome} - ${titulo}</option>`;
+            });
+
+            document.getElementById('modalSetup').style.display = 'flex';
+            window.calcularEstimativaTreino();
+        }
+
+        window.calcularEstimativaTreino = () => {
+            const horas = parseInt(document.getElementById('selectTempo').value);
+            const profId = document.getElementById('selectProf').value;
+            const baseTatame = TATAME_NIVEIS[tatameNivel];
+            
+            // TRAVA DE SEGURANÇA PARA EVITAR O NaN
+            const attrs = gatoSelecionado.atributos || {};
+            const vigor = attrs.vigor || 1;
+            const foco = attrs.foco || 1;
+
+            // Cálculo do Multiplicador do Professor (GDD)
+            let profMult = 1.0;
+            if (profId) {
+                const prof = gatosDisponiveis.find(g => g.id === profId);
+                const isAdulto = (prof.idadeHoras || 0) >= 2160; 
+                const isPreta = (prof.nivel || 1) >= 20;
+                
+                if (isAdulto && isPreta) profMult = 1.7;
+                else if (isPreta) profMult = 1.5;
+                else if (isAdulto) profMult = 1.2;
+            }
+
+            // Fórmulas usando as variáveis seguras
+            const xpCalculado = Math.floor((horas * baseTatame.xp) * (1 + (vigor / 100)) * profMult);
+            const peCalculado = Math.floor((horas * baseTatame.pe) * (1 + (foco / 100)));
+
+            document.getElementById('estXp').textContent = `+${xpCalculado} XP`;
+            document.getElementById('estPe').textContent = `+${peCalculado} PE`;
+        };
+
+        document.getElementById('btnComecarTreino').onclick = async () => {
+            const horas = parseInt(document.getElementById('selectTempo').value);
+            const profId = document.getElementById('selectProf').value || null;
+            
+            // Regra de Trava de Fome: O gato precisa ter fome para aguentar o tempo sem pausar (5 fome por hora)
+            if (gatoSelecionado.fome < (horas * 5)) {
+                mostrarToast(`O gato precisa de pelo menos ${horas * 5} de Saciedade para aguentar esse treino sem adoecer!`);
+                return;
+            }
+
+            const novoTreino = {
+                idTreino: `treino_${Date.now()}`,
+                gatoId: gatoSelecionado.id,
+                gatoNome: gatoSelecionado.nome,
+                profId: profId,
+                arteKey: arteSelecionada,
+                inicioMs: Date.now(),
+                duracaoMs: horas * 60 * 60 * 1000
+            };
+
+            try {
+                document.getElementById('modalSetup').style.display = 'none';
+                
+                // Salva no Banco
+                const claRef = doc(db, "Clas", jogadorUid);
+                await updateDoc(claRef, { treinosAtivos: arrayUnion(novoTreino) });
+                
+                mostrarToast(`${gatoSelecionado.nome} começou a treinar!`);
+                await carregarDados(); // Recarrega para mostrar o card
+            } catch (e) { console.error(e); }
+        };
+
+        // ==========================================
+        // RENDERIZAÇÃO E RESOLUÇÃO DOS TREINOS
+        // ==========================================
+        function renderizarTreinos() {
+            const container = document.getElementById('listaTreinosAtivos');
+            container.innerHTML = '';
+
+            if (treinosAtivos.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#f1ddb0; font-weight:bold; margin-top:20px; text-transform:uppercase;">Tatame Livre</p>';
+                return;
+            }
+
+            treinosAtivos.forEach((t, idx) => {
+                const arteObj = ARTES_MARCIAIS[t.arteKey];
+                
+                // Previne crash fantasma caso a chave da Arte Marcial seja deletada ou inválida
+                if (!arteObj) return; 
+
+                const div = document.createElement('div');
+                div.className = 'card-treino';
+                
+                // Busca o aluno treinando para pegar a faixa atual dele
+                const gatoTreinando = gatosDisponiveis.find(g => g.id === t.gatoId);
+                let imgFaixaAlunoHtml = '';
+                if (gatoTreinando) {
+                    const nivelAluno = gatoTreinando.nivel || 1;
+                    const imgFaixaAluno = `imagens/${String(nivelAluno).padStart(2, '0')}.png`;
+                    imgFaixaAlunoHtml = `<img src="${imgFaixaAluno}" style="width: 26px; height: 26px; object-fit: contain; margin-left: 5px;" alt="Faixa">`;
+                }
+
+                let profBadgeHtml = '';
+                if (t.profId) {
+                    const prof = gatosDisponiveis.find(g => g.id === t.profId);
+                    if (prof) {
+                        const nivelProf = prof.nivel || 1;
+                        const imgFaixaProf = `imagens/${String(nivelProf).padStart(2, '0')}.png`;
+                        profBadgeHtml = `<span class="prof-badge" style="display: inline-flex; align-items: center; gap: 4px;">Prof: ${prof.nome} <img src="${imgFaixaProf}" style="width: 16px; height: 16px; object-fit: contain;"></span>`;
+                    }
+                }
+
+                div.innerHTML = `
+                    <div class="treino-header">
+                        <h4><img src="${arteObj.icone}"> ${t.gatoNome} ${imgFaixaAlunoHtml}</h4>
+                        <span style="color:${arteObj.cor}; font-weight:bold; font-size:0.9em; text-transform:uppercase;">${arteObj.nome}</span>
+                    </div>
+                    <div class="treino-detalhes">
+                        Treinamento Intensivo<br>
+                        ${profBadgeHtml}
+                    </div>
+                    <div class="barra-progresso-bg">
+                        <div class="barra-progresso-fill" id="fill-${t.idTreino}"></div>
+                    </div>
+                    <div class="tempo-restante" id="timer-${t.idTreino}">Calculando...</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function atualizarRelogios() {
+            const agora = Date.now();
+            
+            treinosAtivos.forEach((t, idx) => {
+                const fim = t.inicioMs + t.duracaoMs;
+                let tempoRestanteMs = fim - agora;
+                let pct = ((agora - t.inicioMs) / t.duracaoMs) * 100;
+                
+                const elFill = document.getElementById(`fill-${t.idTreino}`);
+                const elTimer = document.getElementById(`timer-${t.idTreino}`);
+                
+                if (!elFill || !elTimer) return;
+
+                if (tempoRestanteMs <= 0) {
+                    elFill.style.width = '100%';
+                    elFill.classList.add('concluida');
+                    
+                    // A TRAVA: Só injeta o botão se ele ainda não existir na div
+                    if (!elTimer.hasAttribute('data-botao')) {
+                        elTimer.setAttribute('data-botao', 'true');
+                        elTimer.innerHTML = `Treino Concluído!<br><button class="btn-acao" onclick="prepararRelatorioTreino(${idx})" style="margin-top: 5px;">Visualizar Relatório</button>`;
+                    }
+                } else {
+                    elFill.style.width = `${pct}%`;
+                    const s = Math.floor(tempoRestanteMs / 1000);
+                    const h = Math.floor(s / 3600);
+                    const min = Math.floor((s % 3600) / 60);
+                    const sec = s % 60;
+                    elTimer.textContent = `${h}h ${min}m ${sec}s restantes`;
+                }
+            });
+        }
+
+        let relatorioTreinoAtual = null;
+
+        window.prepararRelatorioTreino = async (idxTreino) => {
+            const t = treinosAtivos[idxTreino];
+            const gato = gatosDisponiveis.find(g => g.id === t.gatoId);
+            if (!gato) return;
+
+            const horas = t.duracaoMs / (60 * 60 * 1000);
+            const baseTatame = TATAME_NIVEIS[tatameNivel];
+            
+            const attrs = gato.atributos || {};
+            const vigor = attrs.vigor || 1;
+            const foco = attrs.foco || 1;
+
+            let profMult = 1.0;
+            if (t.profId) {
+                const prof = gatosDisponiveis.find(g => g.id === t.profId);
+                if (prof) {
+                    const isAdulto = (prof.idadeHoras || 0) >= 2160;
+                    const isPreta = (prof.nivel || 1) >= 20;
+                    if (isAdulto && isPreta) profMult = 1.7;
+                    else if (isPreta) profMult = 1.5;
+                    else if (isAdulto) profMult = 1.2;
+                }
+            }
+
+            const xpGanho = Math.floor((horas * baseTatame.xp) * (1 + (vigor / 100)) * profMult);
+            const peGanho = Math.floor((horas * baseTatame.pe) * (1 + (foco / 100)));
+
+            // Verificar progressão
+            const xpAntigo = gato.xpAtual || 0;
+            const xpProxFaixa = gato.xpProxFaixa || 500;
+            const subiuFaixa = (xpAntigo + xpGanho) >= xpProxFaixa;
+
+            const peAntigo = (gato.peArtes && gato.peArtes[t.arteKey]) ? gato.peArtes[t.arteKey] : 0;
+            const nivelArteAntigo = obterNivelEProximoPe(peAntigo, t.arteKey).nivel;
+            const nivelArteNovo = obterNivelEProximoPe(peAntigo + peGanho, t.arteKey).nivel;
+            const subiuArte = nivelArteNovo > nivelArteAntigo;
+
+            relatorioTreinoAtual = { idxTreino, t, gato, xpGanho, peGanho, horas };
+
+            // Preencher UI do Modal
+            document.getElementById('relTreinoFoto').src = gato.foto;
+            document.getElementById('relTreinoNome').textContent = gato.nome;
+            document.getElementById('relTreinoXp').textContent = `+${xpGanho}`;
+            document.getElementById('relTreinoPe').textContent = `+${peGanho}`;
+
+            const avisosContainer = document.getElementById('relTreinoAvisos');
+            avisosContainer.innerHTML = '';
+
+            if (subiuFaixa) {
+                avisosContainer.innerHTML += `<div style="background: rgba(51, 153, 255, 0.2); border: 2px dashed #3399ff; color: #3399ff; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.85em; text-align: center;">🎉 Atingiu XP para Nova Faixa!</div>`;
+            }
+            if (subiuArte) {
+                avisosContainer.innerHTML += `<div style="background: rgba(76, 175, 80, 0.2); border: 2px dashed #4CAF50; color: #4CAF50; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.85em; text-align: center;">🥋 Alcançou o Nível ${nivelArteNovo} em ${ARTES_MARCIAIS[t.arteKey].nome}!</div>`;
+            }
+
+            document.getElementById('modalRelatorioTreino').style.display = 'flex';
+        };
+
+        document.getElementById('btnColetarTreino').onclick = async () => {
+            if (!relatorioTreinoAtual) return;
+            const btn = document.getElementById('btnColetarTreino');
+            btn.disabled = true;
+            btn.textContent = "Coletando...";
+
+            const { t, gato, xpGanho, peGanho, horas } = relatorioTreinoAtual;
+
+            try {
+                const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
+                let peArtesUpdate = gato.peArtes || {};
+                peArtesUpdate[t.arteKey] = (peArtesUpdate[t.arteKey] || 0) + peGanho;
+                
+                // REMOVIDO: A subtração forçada da fome, do estado e da ultimaAtualizacao!
+                // O sistema de tempo real do Dormitório já cuida disso perfeitamente em segundo plano.
+
+                await updateDoc(gatoRef, { 
+                    xpAtual: (gato.xpAtual || 0) + xpGanho,
+                    peArtes: peArtesUpdate
+                });
+
+                const claRef = doc(db, "Clas", jogadorUid);
+                const claSnap = await getDoc(claRef);
+                const treinosAtualizados = claSnap.data().treinosAtivos.filter(treino => treino.gatoId !== gato.id);
+                await updateDoc(claRef, { treinosAtivos: treinosAtualizados });
+
+                document.getElementById('modalRelatorioTreino').style.display = 'none';
+                mostrarToast(`${gato.nome} finalizou o treino!`);
+                
+                btn.disabled = false;
+                btn.textContent = "Coletar Recompensas";
+                relatorioTreinoAtual = null;
+
+                await carregarDados();
+            } catch (e) { 
+                console.error("Erro ao resgatar treino:", e); 
+                btn.disabled = false;
+                btn.textContent = "Coletar Recompensas";
+            }
+        };
+
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
+    </script>
+</body>
+</html>
