@@ -312,10 +312,10 @@
         // Tabela Exata do GDD
         const TATAME_NIVEIS = {
             1: { xp: 15, pe: 10, custo: 0 },
-            2: { xp: 20, pe: 12, custo: 300 },
-            3: { xp: 25, pe: 15, custo: 500 },
-            4: { xp: 30, pe: 18, custo: 1000 },
-            5: { xp: 40, pe: 25, custo: 2000 }
+            2: { xp: 16, pe: 12, custo: 300 },
+            3: { xp: 17, pe: 15, custo: 500 },
+            4: { xp: 18, pe: 18, custo: 1000 },
+            5: { xp: 20, pe: 25, custo: 2000 }
         };
 
         let jogadorUid = null;
@@ -567,20 +567,20 @@
             selectProf.innerHTML = '<option value="">Sem Professor (Ganho 1.0x)</option>';
             
             const gatosOcupados = treinosAtivos.map(t => t.gatoId).concat(treinosAtivos.filter(t => t.profId).map(t => t.profId));
+            
+            // FILTRO CORRIGIDO: Apenas gatos saudáveis, livres e IDOSOS (>= 2880 horas de vida / 4 meses) podem ensinar
             const professoresPossiveis = gatosDisponiveis.filter(g => 
                 g.estado === 'Saudável' && 
                 g.id !== gatoSelecionado.id && 
                 !gatosOcupados.includes(g.id) &&
-                ((g.idadeHoras || 0) >= 2160 || (g.nivel || 1) >= 20) // Só adultos ou faixas pretas podem ser professores
+                (g.idadeHoras || 0) >= 2880
             );
 
             professoresPossiveis.forEach(p => {
-                let titulo = "Adulto (1.2x)";
-                const isAdulto = (p.idadeHoras || 0) >= 2160;
+                let titulo = "Idoso (1.15x)";
                 const isPreta = (p.nivel || 1) >= 20;
                 
-                if (isAdulto && isPreta) titulo = "Mestre Ancião (1.7x)";
-                else if (isPreta) titulo = "Faixa Preta (1.5x)";
+                if (isPreta) titulo = "Mestre Ancião (1.30x)";
 
                 selectProf.innerHTML += `<option value="${p.id}">${p.nome} - ${titulo}</option>`;
             });
@@ -588,7 +588,7 @@
             document.getElementById('modalSetup').style.display = 'flex';
             window.calcularEstimativaTreino();
         }
-
+        
         window.calcularEstimativaTreino = () => {
             const horas = parseInt(document.getElementById('selectTempo').value);
             const profId = document.getElementById('selectProf').value;
@@ -756,20 +756,21 @@
             const vigor = attrs.vigor || 1;
             const foco = attrs.foco || 1;
 
+            // Cálculo do Multiplicador do Professor (GDD Atualizado)
             let profMult = 1.0;
             if (t.profId) {
                 const prof = gatosDisponiveis.find(g => g.id === t.profId);
                 if (prof) {
-                    const isAdulto = (prof.idadeHoras || 0) >= 2160;
                     const isPreta = (prof.nivel || 1) >= 20;
-                    if (isAdulto && isPreta) profMult = 1.7;
-                    else if (isPreta) profMult = 1.5;
-                    else if (isAdulto) profMult = 1.2;
+                    
+                    if (isPreta) profMult = 1.30;
+                    else profMult = 1.15;
                 }
             }
 
-            const xpGanho = Math.floor((horas * baseTatame.xp) * (1 + (vigor / 100)) * profMult);
-            const peGanho = Math.floor((horas * baseTatame.pe) * (1 + (foco / 100)));
+            // Fórmulas usando as variáveis seguras
+            const xpCalculado = Math.floor((horas * baseTatame.xp) * (1 + (vigor / 100)) * profMult);
+            const peCalculado = Math.floor((horas * baseTatame.pe) * (1 + (foco / 100)));
 
             // Verificar progressão
             const xpAntigo = gato.xpAtual || 0;
