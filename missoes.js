@@ -1,129 +1,129 @@
 // Base de dados oficial do Quadro de Missões do CatDojo
 export const MISSOES = {
     // ================= RANK D (Foco: Início, rotatividade rápida) =================
-    // Parâmetros: 1 Hora | 12 Moedas | 15 XP | 2 Reputação | Risco 15 | Custo 15% HP | Faixa 1 (Branca)
+    // Parâmetros: 1 Hora | 10 Moedas | 15 XP | 1 Reputação | Risco 15 | Custo 15% HP | Faixa 1 (Branca)
     D1: {
         id: "D1", rank: "D",
         nome: "O Treino da Folha Cadente",
         desc: "Pegar folhas de cerejeira com as garras antes que toquem o chão.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D2: {
         id: "D2", rank: "D",
         nome: "O Vagalume Enganador",
         desc: "Perseguir a luz mística nos jardins do templo sem fazer barulho.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D3: {
         id: "D3", rank: "D",
         nome: "Guarda da Ração Sagrada",
         desc: "Proteger as oferendas de peixe do pequeno santuário local.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D4: {
         id: "D4", rank: "D",
         nome: "Resgate do Novelo de Jade",
         desc: "Recuperar a relíquia redonda caída no lago de carpas koi.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D5: {
         id: "D5", rank: "D",
         nome: "Meditação no Pagode",
         desc: "Praticar a quietude absoluta e o ronronar focado nos degraus do templo.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D6: {
         id: "D6", rank: "D",
         nome: "Afugentar os Corvos Espiões",
         desc: "Expulsar as aves ninjas do clã rival que vigiam o pátio.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D7: {
         id: "D7", rank: "D",
         nome: "Busca nos Pergaminhos Antigos",
         desc: "Encontrar técnicas esquecidas na biblioteca empoeirada do mestre.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D8: {
         id: "D8", rank: "D",
         nome: "Mensageiro das Sombras",
         desc: "Entregar um recado secreto e selado ao mestre do dojo aliado vizinho.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D9: {
         id: "D9", rank: "D",
         nome: "O Susto no Monge Novato",
         desc: "Um teste clássico de furtividade felina saltando das sombras.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
     D10: {
         id: "D10", rank: "D",
         nome: "O Besouro Samurai",
         desc: "Capturar o inseto cascudo voador que desafia a agilidade dos iniciantes.",
-        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 12, xpBase: 15, repBase: 2, minFaixa: 1
+        tempoBase: 1, riscoBase: 15, custoHpPct: 15, moedasBase: 10, xpBase: 15, repBase: 1, minFaixa: 1
     },
 
     // ================= RANK C (Foco: Desafios diários) =================
-    // Parâmetros: 4 Horas | 45 Moedas | 60 XP | 5 Reputação | Risco 40 | Custo 35% HP | Faixa 3 (Cinza)
+    // Parâmetros: 4 Horas | 50 Moedas | 60 XP | 5 Reputação | Risco 40 | Custo 35% HP | Faixa 3 (Cinza)
     C1: {
         id: "C1", rank: "C",
         nome: "Travessia do Vale Nebuloso",
         desc: "Cruzar a ponte pênsil de bambu sem ser detectado pelos guardas.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C2: {
         id: "C2", rank: "C",
         nome: "Duelo dos Ronins",
         desc: "Bater de frente com gatos sem mestre que ameaçam as fronteiras.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C3: {
         id: "C3", rank: "C",
         nome: "Infiltração no Mercado de Seda",
         desc: "Recuperar suprimentos de ervas furtados pelos rivais.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C4: {
         id: "C4", rank: "C",
         nome: "Escolta do Herdeiro",
         desc: "Proteger um filhote da linhagem real durante uma perigosa viagem.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C5: {
         id: "C5", rank: "C",
         nome: "Confronto nos Telhados de Bambu",
         desc: "Resolver uma disputa territorial nas alturas com acrobacias.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C6: {
         id: "C6", rank: "C",
         nome: "O Canto da Lótus Noturna",
         desc: "Emitir o sinal sonoro de miados para reunir os aliados do clã.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C7: {
         id: "C7", rank: "C",
         nome: "A Trilha da Serpente",
         desc: "Perseguir um espião ágil e venenoso pelos bosques fechados.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C8: {
         id: "C8", rank: "C",
         nome: "Fuga das Águas Termais",
         desc: "Escapar da indesejada cerimônia de purificação (banho) das sacerdotisas.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C9: {
         id: "C9", rank: "C",
         nome: "Patrulha da Lua Crescente",
         desc: "Vigiar as fronteiras noturnas do xogunato felino.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
     C10: {
         id: "C10", rank: "C",
         nome: "A Perseguição dos Cães de Fu",
         desc: "Correr e desviar das estátuas de guarda de pedra que ganharam vida.",
-        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 45, xpBase: 60, repBase: 5, minFaixa: 3
+        tempoBase: 4, riscoBase: 40, custoHpPct: 35, moedasBase: 50, xpBase: 60, repBase: 5, minFaixa: 3
     },
 
     // ================= RANK B (Foco: Risco noturno, grande recompensa) =================
