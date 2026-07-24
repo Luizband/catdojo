@@ -516,6 +516,7 @@
         import { getDoc, doc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { ARTES_MARCIAIS } from './artes-marciais.js';
         import { ITENS } from './itens.js';
+        import { FAIXAS, calcularNivelPorXp } from './faixas.js';
 
         
 
@@ -677,30 +678,29 @@
                 }
 
                 // ==========================================
-                // NOVO: SISTEMA DE EVOLUÇÃO (LEVEL UP) E PREVENÇÃO
+                // SISTEMA DE EVOLUÇÃO (Tabela GDD faixas.js)
                 // ==========================================
-                gato.nivel = gato.nivel || 1;
                 gato.xpAtual = gato.xpAtual || 0;
-                gato.xpProxFaixa = gato.xpProxFaixa || 500;
-                gato.faixa = gato.faixa || "Branca";
-                gato.pontosLivres = gato.pontosLivres || 0;
+                const nivelAntigo = gato.nivel || 1;
                 
-                if (gato.xpAtual >= gato.xpProxFaixa && gato.nivel < 20) {
-                    gato.xpAtual = gato.xpAtual - gato.xpProxFaixa;
-                    gato.nivel = gato.nivel + 1;
+                const dadosNovoNivel = calcularNivelPorXp(gato.xpAtual);
+                
+                // Se o gato subiu de faixa (seja pelo tatame, missão, etc)
+                if (dadosNovoNivel.nivelAtual > nivelAntigo) {
+                    const niveisGanhos = dadosNovoNivel.nivelAtual - nivelAntigo;
                     
-                    const nomesFaixas = [
-                        "Branca", "Cinza/Branca", "Cinza", "Cinza/Amarela", "Amarela", 
-                        "Amarela/Laranja", "Laranja", "Laranja/Verde", "Verde", "Verde/Azul", 
-                        "Azul", "Azul/Roxa", "Roxa", "Roxa/Marrom", "Marrom", 
-                        "Marrom/Preta", "Preta", "Preta 1º Dan", "Preta 2º Dan", "Preta 3º Dan"
-                    ];
-                    gato.faixa = nomesFaixas[gato.nivel - 1] || `Nível ${gato.nivel}`;
-                    gato.pontosLivres = gato.pontosLivres + 7;
-                    gato.xpProxFaixa = gato.xpProxFaixa + 500; 
-
+                    gato.nivel = dadosNovoNivel.nivelAtual;
+                    gato.xpProxFaixa = dadosNovoNivel.xpProxFaixa;
+                    gato.faixa = FAIXAS[gato.nivel].cor;
+                    gato.pontosLivres = (gato.pontosLivres || 0) + (7 * niveisGanhos); 
+                    
                     precisaSalvar = true;
                     mostrarToast(`Subiu de Faixa! ${gato.nome} agora é Faixa ${gato.faixa}!`);
+                } else {
+                    // Mantém os dados sincronizados com a tabela oficial
+                    gato.nivel = dadosNovoNivel.nivelAtual;
+                    gato.xpProxFaixa = dadosNovoNivel.xpProxFaixa;
+                    gato.faixa = FAIXAS[gato.nivel].cor;
                 }
                 // ==========================================
 
@@ -828,7 +828,8 @@
             modalGato.style.display = 'flex';
 
             const nivelExato = gato.nivel || 1; 
-            document.getElementById('imgFaixaGato').src = `imagens/${String(nivelExato).padStart(2, '0')}.png`;
+            const dadosFaixa = FAIXAS[nivelExato] || FAIXAS[1];
+            document.getElementById('imgFaixaGato').src = dadosFaixa.imagem;
 
             document.getElementById('modalFoto').src = gato.foto;
             document.getElementById('modalNome').value = gato.nome;
@@ -844,8 +845,11 @@
             document.getElementById('txtFome').textContent = `${Math.round(gato.fome)}/100`;
             document.getElementById('fillFome').style.width = `${gato.fome}%`;
 
-            document.getElementById('txtXp').textContent = `${gato.xpAtual}/${gato.xpProxFaixa}`;
-            document.getElementById('fillXp').style.width = `${(gato.xpAtual / gato.xpProxFaixa) * 100}%`;
+            const xpMax = dadosFaixa.xpProxFaixa === Infinity ? "MÁX" : dadosFaixa.xpProxFaixa;
+            const pctXp = dadosFaixa.xpProxFaixa === Infinity ? 100 : Math.min(100, (gato.xpAtual / dadosFaixa.xpProxFaixa) * 100);
+            
+            document.getElementById('txtXp').textContent = `${gato.xpAtual}/${xpMax}`;
+            document.getElementById('fillXp').style.width = `${pctXp}%`;
 
             // Carrega os pontos reais com trava de segurança para gatos antigos
             atributosBase = { 
@@ -870,10 +874,7 @@
                 btnResetarStats.disabled = true;
             }
 
-            let slotsLiberadosCount = 1;
-            if (nivelExato >= 2) slotsLiberadosCount = 2;
-            if (nivelExato >= 3) slotsLiberadosCount = 3;
-            if (nivelExato >= 5) slotsLiberadosCount = 5;
+            const slotsLiberadosCount = FAIXAS[nivelExato].slotsBatalha;
 
             if (!gato.habilidadesEquipadas) { gato.habilidadesEquipadas = [null, null, null, null, null]; }
 
