@@ -308,6 +308,7 @@
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDoc, doc, updateDoc, collection, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { ARTES_MARCIAIS } from './artes-marciais.js';
+        import { FAIXAS, calcularNivelPorXp } from './faixas.js';
 
         const TATAME_NIVEIS = {
             1: { xp: 15, pe: 10, custo: 0 },
@@ -468,7 +469,7 @@
             } else {
                 gatosLivres.forEach(g => {
                     const nivelGato = g.nivel || 1;
-                    const imgFaixa = `imagens/${String(nivelGato).padStart(2, '0')}.png`;
+                    const imgFaixa = FAIXAS[nivelGato].imagem;;
 
                     // Cálculo seguro de HP Max para gatos antigos da conta
                     const hpMaxSeguro = g.hpMax || (250 + ((g.atributos?.resistencia || 1) * 15));
@@ -679,7 +680,7 @@
                 let imgFaixaAlunoHtml = '';
                 if (gatoTreinando) {
                     const nivelAluno = gatoTreinando.nivel || 1;
-                    const imgFaixaAluno = `imagens/${String(nivelAluno).padStart(2, '0')}.png`;
+                    const imgFaixaAluno = FAIXAS[nivelAluno].imagem;
                     imgFaixaAlunoHtml = `<img src="${imgFaixaAluno}" style="width: 26px; height: 26px; object-fit: contain; margin-left: 5px;" alt="Faixa">`;
                 }
 
@@ -688,7 +689,7 @@
                     const prof = gatosDisponiveis.find(g => g.id === t.profId);
                     if (prof) {
                         const nivelProf = prof.nivel || 1;
-                        const imgFaixaProf = `imagens/${String(nivelProf).padStart(2, '0')}.png`;
+                        const imgFaixaProf = FAIXAS[nivelProf].imagem;
                         profBadgeHtml = `<span class="prof-badge" style="display: inline-flex; align-items: center; gap: 4px;">Prof: ${prof.nome} <img src="${imgFaixaProf}" style="width: 16px; height: 16px; object-fit: contain;"></span>`;
                     }
                 }
@@ -775,16 +776,20 @@
 
             // Verificar progressão
             const xpAntigo = gato.xpAtual || 0;
-            const xpProxFaixa = gato.xpProxFaixa || 500;
-            const subiuFaixa = (xpAntigo + xpGanho) >= xpProxFaixa;
-
+            const xpNovo = xpAntigo + xpGanho;
+            const nivelAntigo = gato.nivel || 1;
+            
+            // Usa o nosso novo arquivo faixas.js para calcular matematicamente o nível
+            const dadosNovoNivel = calcularNivelPorXp(xpNovo);
+            const subiuFaixa = dadosNovoNivel.nivelAtual > nivelAntigo;
+            
             const peAntigo = (gato.peArtes && gato.peArtes[t.arteKey]) ? gato.peArtes[t.arteKey] : 0;
             const nivelArteAntigo = obterNivelEProximoPe(peAntigo, t.arteKey).nivel;
             const nivelArteNovo = obterNivelEProximoPe(peAntigo + peGanho, t.arteKey).nivel;
             const subiuArte = nivelArteNovo > nivelArteAntigo;
-
-            relatorioTreinoAtual = { idxTreino, t, gato, xpGanho, peGanho, horas };
-
+            
+            // ATENÇÃO: Adicionei o 'dadosNovoNivel' e 'subiuFaixa' no relatório para podermos salvar no banco depois!
+            relatorioTreinoAtual = { idxTreino, t, gato, xpGanho, peGanho, horas, dadosNovoNivel, subiuFaixa };
             // Preencher UI do Modal
             document.getElementById('relTreinoFoto').src = gato.foto;
             document.getElementById('relTreinoNome').textContent = gato.nome;
@@ -809,34 +814,44 @@
             const btn = document.getElementById('btnColetarTreino');
             btn.disabled = true;
             btn.textContent = "Coletando...";
-
-            const { t, gato, xpGanho, peGanho, horas } = relatorioTreinoAtual;
-
+        
+            // NOTA: Adicionei 'subiuFaixa' e 'dadosNovoNivel' aqui na desestruturação
+            const { t, gato, xpGanho, peGanho, horas, subiuFaixa, dadosNovoNivel } = relatorioTreinoAtual;
+        
             try {
                 const gatoRef = doc(db, "Clas", jogadorUid, "Gatos", gato.id);
                 let peArtesUpdate = gato.peArtes || {};
                 peArtesUpdate[t.arteKey] = (peArtesUpdate[t.arteKey] || 0) + peGanho;
                 
-                // REMOVIDO: A subtração forçada da fome, do estado e da ultimaAtualizacao!
-                // O sistema de tempo real do Dormitório já cuida disso perfeitamente em segundo plano.
-
-                await updateDoc(gatoRef, { 
+                // 1. Monta o pacote de atualização básico (o que sempre acontece)
+                let updateData = { 
                     xpAtual: (gato.xpAtual || 0) + xpGanho,
                     peArtes: peArtesUpdate
-                });
-
+                };
+        
+                // 2. A MÁGICA: Se o gato subiu de faixa, adicionamos os atributos do Level Up no pacote!
+                if (subiuFaixa) {
+                    updateData.nivel = dadosNovoNivel.nivelAtual;
+                    updateData.xpProxFaixa = dadosNovoNivel.xpProxFaixa;
+                    updateData.pontosAtributos = (gato.pontosAtributos || 0) + 7; // GDD: 7 pontos por faixa
+                }
+        
+                // 3. Envia o pacote final pro banco
+                await updateDoc(gatoRef, updateData);
+        
+                // --- DAQUI PRA BAIXO CONTINUA EXATAMENTE IGUAL AO SEU ---
                 const claRef = doc(db, "Clas", jogadorUid);
                 const claSnap = await getDoc(claRef);
                 const treinosAtualizados = claSnap.data().treinosAtivos.filter(treino => treino.gatoId !== gato.id);
                 await updateDoc(claRef, { treinosAtivos: treinosAtualizados });
-
+        
                 document.getElementById('modalRelatorioTreino').style.display = 'none';
                 mostrarToast(`${gato.nome} finalizou o treino!`);
                 
                 btn.disabled = false;
                 btn.textContent = "Coletar Recompensas";
                 relatorioTreinoAtual = null;
-
+        
                 await carregarDados();
             } catch (e) { 
                 console.error("Erro ao resgatar treino:", e); 
