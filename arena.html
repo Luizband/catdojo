@@ -19,6 +19,15 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75em; font-weight: bold; color: #4a3b32; cursor: pointer; text-decoration: none;}
         .nav-item img { width: 40px; margin-bottom: 3px; }
 
+        /* MODAL DE INFORMAÇÕES DE ATRIBUTOS E FÓRMULAS */
+        .abas-info { display: flex; overflow-x: auto; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid #a68a61; padding-bottom: 5px; scrollbar-width: none; }
+        .abas-info::-webkit-scrollbar { display: none; }
+        .aba-info { padding: 6px 12px; background: #dfc495; color: #5a4231; border: 2px solid #5a4231; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85em; white-space: nowrap; transition: 0.2s;}
+        .aba-info.ativa { background: #5a4231; color: #f1ddb0; }
+        .conteudo-info { display: none; text-align: left; font-size: 0.9em; color: #2a2a2a; }
+        .conteudo-info p { margin-bottom: 8px; line-height: 1.4; }
+        .conteudo-info span.destaque { font-weight: bold; color: #d27d46; }
+
         /* LOBBY E ABAS */
         .abas-arena { display: flex; width: 100%; background: #5a4231; flex-shrink: 0;}
         .aba { flex: 1; padding: 12px; text-align: center; color: #dfc495; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; }
@@ -150,6 +159,41 @@
     <audio id="bgmArena" loop src="audios/arena.mp3"></audio>
 
     <div id="toastContainer"></div>
+
+    <div class="modal" id="modalInfoGDD">
+        <div class="painel-modal" style="max-width: 350px;">
+            <button class="btn-fechar" onclick="document.getElementById('modalInfoGDD').style.display='none'">X</button>
+            <h3 style="color: #2a2a2a; margin-bottom: 15px; text-transform: uppercase;">Guia de Combate</h3>
+            
+            <div class="abas-info">
+                <div class="aba-info ativa" onclick="alternarAbaInfoArena('infoAtributos', this)">Atributos</div>
+                <div class="aba-info" onclick="alternarAbaInfoArena('infoFormulas', this)">Fórmulas</div>
+                <div class="aba-info" onclick="alternarAbaInfoArena('infoPA', this)">PA & XP</div>
+            </div>
+
+            <div id="infoAtributos" class="conteudo-info" style="display: block;">
+                <p><span class="destaque">Força:</span> Define o seu dano base em ataques e influencia o poder das Habilidades Ofensivas.</p>
+                <p><span class="destaque">Vigor:</span> Cada ponto concede +5 de HP Máximo e aumenta o XP ganho em 1%.</p>
+                <p><span class="destaque">Foco:</span> Cada ponto aumenta a chance de Crítico em 0.5% e acelera a regeneração de Pontos de Ação (PA) por turno.</p>
+                <p><span class="destaque">Agilidade:</span> Cada ponto aumenta a chance de Esquivar (evitar dano 100%) em 0.5%.</p>
+                <p><span class="destaque">Resistência:</span> Concede +15 de HP Máximo e Reduz todo dano recebido em 0.5% por ponto.</p>
+            </div>
+
+            <div id="infoFormulas" class="conteudo-info">
+                <p><span class="destaque">Ataque Básico:</span> Causa Força × 1.5 de Dano.</p>
+                <p><span class="destaque">Crítico:</span> Tem chance (Foco × 0.5%) de multiplicar o dano final do ataque/habilidade por 1.5x.</p>
+                <p><span class="destaque">Redução de Dano (Armadura):</span> Reduz o dano final baseado na Resistência (Resistência × 0.5%). Travado no máximo de 50% de redução.</p>
+                <p><span class="destaque">Vida (HP) Inicial:</span> O Gato nasce com 250 HP base. Cresce com Resistência (+15) e Vigor (+5).</p>
+            </div>
+
+            <div id="infoPA" class="conteudo-info">
+                <p><span class="destaque">Como funciona o PA?</span> Os Pontos de Ação são necessários para usar habilidades equipadas.</p>
+                <p><span class="destaque">Recuperação Passiva:</span> Todo turno o gato recupera 5 PA + Bônus do seu Foco.</p>
+                <p><span class="destaque">Ataque de Recarga:</span> Se o gato não tiver PA suficiente, ele usa um Ataque Básico. Bater com o ataque básico regenera +15 PA extras imediatamente.</p>
+                <p><span class="destaque">Ganho de XP:</span> Ao vencer, o gato ganha XP baseado na fórmula do GDD e sobe de faixa automaticamente, recebendo 7 Pontos Livres.</p>
+            </div>
+        </div>
+    </div>
     
     <div class="modal-centro" id="modalConfirmacao">
         <div class="painel-centro">
@@ -171,7 +215,12 @@
 
     <div id="app">
         <div class="conteudo-app" id="telaLobby">
-            <header>ARENA CATDOJO</header>
+            <header style="position: relative; display: flex; align-items: center; justify-content: center;">
+                ARENA CATDOJO
+                <button onclick="document.getElementById('modalInfoGDD').style.display='flex'" style="position: absolute; right: 15px; background: transparent; border: none; cursor: pointer;">
+                    <img src="icones/info.png" alt="Info" style="width: 24px; filter: drop-shadow(1px 1px 0px #fff);">
+                </button>
+            </header>
             
             <div class="abas-arena">
                 <div class="aba ativa" onclick="mudarAba('pve')">Desafios</div>
@@ -268,7 +317,7 @@
         import { LISTA_NPCS } from './npcs.js';
         import { ARTES_MARCIAIS } from './artes-marciais.js';
         import { FAIXAS } from './faixas.js';
-        import { HISTORIAS_ARENA } from './historia-arena.js'; 
+        import { HISTORIAS_ARENA } from './historia-arena.js';
         
         let jogadorUid = null;
         let claNome = "Mestre";
@@ -288,6 +337,13 @@
         
         let typingInterval = null;
         let historiaCompletada = false;
+
+        window.alternarAbaInfoArena = (idConteudo, elementoAba) => {
+            document.querySelectorAll('.conteudo-info').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.aba-info').forEach(el => el.classList.remove('ativa'));
+            document.getElementById(idConteudo).style.display = 'block';
+            elementoAba.classList.add('ativa');
+        };
 
         // Toca Música Global
         window.tocarMusicaArena = () => {
