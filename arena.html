@@ -172,25 +172,26 @@
             </div>
 
             <div id="infoAtributos" class="conteudo-info" style="display: block;">
-                <p><span class="destaque">Força:</span> Define o seu dano base em ataques e influencia o poder das Habilidades Ofensivas.</p>
-                <p><span class="destaque">Vigor:</span> Cada ponto concede +5 de HP Máximo e aumenta o XP ganho em 1%.</p>
-                <p><span class="destaque">Foco:</span> Cada ponto aumenta a chance de Crítico em 0.5% e acelera a regeneração de Pontos de Ação (PA) por turno.</p>
-                <p><span class="destaque">Agilidade:</span> Cada ponto aumenta a chance de Esquivar (evitar dano 100%) em 0.5%.</p>
-                <p><span class="destaque">Resistência:</span> Concede +15 de HP Máximo e Reduz todo dano recebido em 0.5% por ponto.</p>
+                <p><span class="destaque">Força:</span> Define o seu Dano Físico Bruto base em ataques e habilidades.</p>
+                <p><span class="destaque">Agilidade:</span> Determina quem ataca primeiro e dita a sua % de Evasão Total (Esquiva).</p>
+                <p><span class="destaque">Resistência:</span> É a sua sobrevivência. Define a sua Vida (HP Máximo) e a Mitigação do Dano inimigo.</p>
+                <p><span class="destaque">Foco:</span> Define a sua % de Chance de Acerto Crítico (Golpe Vital que dá 1.5x de dano).</p>
+                <p><span class="destaque">Vigor:</span> É a sua estamina (Bateria). Define a sua Recarga de Pontos de Ação (PA) por turno e aumenta o seu Limite Máximo de PA.</p>
             </div>
 
-            <div id="infoFormulas" class="conteudo-info">
-                <p><span class="destaque">Ataque Básico:</span> Causa Força × 1.5 de Dano.</p>
-                <p><span class="destaque">Crítico:</span> Tem chance (Foco × 0.5%) de multiplicar o dano final do ataque/habilidade por 1.5x.</p>
-                <p><span class="destaque">Redução de Dano (Armadura):</span> Reduz o dano final baseado na Resistência (Resistência × 0.5%). Travado no máximo de 50% de redução.</p>
-                <p><span class="destaque">Vida (HP) Inicial:</span> O Gato nasce com 250 HP base. Cresce com Resistência (+15) e Vigor (+5).</p>
+            <div id="infoFormulas" class="conteudo-info" style="display: none;">
+                <p><span class="destaque">Ataque Base:</span> Força × 2.5</p>
+                <p><span class="destaque">Vida (HP Máximo):</span> O gato nasce com 250 base + (Resistência × 15).</p>
+                <p><span class="destaque">Redução de Dano Inimigo:</span> 100 ÷ (100 + Resistência).</p>
+                <p><span class="destaque">Chance de Esquiva (%):</span> Agilidade ÷ (Agilidade + 100).</p>
+                <p><span class="destaque">Chance de Crítico (%):</span> Foco ÷ (Foco + 100).</p>
             </div>
 
-            <div id="infoPA" class="conteudo-info">
-                <p><span class="destaque">Como funciona o PA?</span> Os Pontos de Ação são necessários para usar habilidades equipadas.</p>
-                <p><span class="destaque">Recuperação Passiva:</span> Todo turno o gato recupera 5 PA + Bônus do seu Foco.</p>
-                <p><span class="destaque">Ataque de Recarga:</span> Se o gato não tiver PA suficiente, ele usa um Ataque Básico. Bater com o ataque básico regenera +15 PA extras imediatamente.</p>
-                <p><span class="destaque">Ganho de XP:</span> Ao vencer, o gato ganha XP baseado na fórmula do GDD e sobe de faixa automaticamente, recebendo 7 Pontos Livres.</p>
+            <div id="infoPA" class="conteudo-info" style="display: none;">
+                <p><span class="destaque">Teto Máximo de PA:</span> 100 + (Vigor ÷ 2). Garante que o gato consiga estocar energia para habilidades fortes.</p>
+                <p><span class="destaque">Recarga Passiva:</span> Todo fim de turno o gato recupera 5 PA + bônus do seu Vigor (Vigor ÷ 4).</p>
+                <p><span class="destaque">Ataque Básico (Geração extra):</span> O ataque básico não custa PA e gera PA bônus (ex: +10 ou +15) imediatamente ao atingir o inimigo.</p>
+                <p><span class="destaque">Bônus de Recompensas:</span> O XP recebido na Arena aumenta baseado no Vigor do seu gato. As Moedas ganhas aumentam baseadas no Foco.</p>
             </div>
         </div>
     </div>
