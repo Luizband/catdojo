@@ -75,6 +75,7 @@ export const ITENS = {
         preco: 30,
         espaco: { largura: 2, altura: 1 }, // 2 espaços na horizontal
         icone: "imagens/catnip.png",
+        rotacionar: true, // <-- ADICIONE ESTA LINHA
         desc: "Aumenta o ganho final de XP da missão em +50%."
     },
     churu: {
@@ -82,8 +83,9 @@ export const ITENS = {
         nome: "Churu",
         tipo: "missao",
         preco: 25,
-        espaco: { largura: 1, altura: 2 }, // 2 espaços na horizontal
+        espaco: { largura: 2, altura: 1 }, // 2 espaços na horizontal
         icone: "imagens/churu.png",
+        rotacionar: true, // <-- ADICIONE ESTA LINHA
         desc: "Aumenta o ganho final de Moedas da missão em +50%."
     },
     shuriken: {
