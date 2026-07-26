@@ -471,8 +471,8 @@
                 divItem.style.gridColumn = `${inst.x + 1} / span ${refDb.espaco.largura}`;
                 divItem.style.gridRow = `${inst.y + 1} / span ${refDb.espaco.altura}`;
             
-                // Nova lógica para deitar o item se necessário
-                const giro = refDb.rotacionar ? 'style="transform: rotate(90deg) scale(1.7);"' : '';
+                // Reduzimos o scale para 1 (ou 1.1 no máximo) para ele caber no slot
+                const giro = refDb.rotacionar ? 'style="transform: rotate(90deg) scale(1);"' : '';
                 divItem.innerHTML = `<img src="${refDb.icone}" alt="${refDb.nome}" ${giro}>`;
 
             // Eventos de Toque / Mouse para Arrastar
@@ -504,8 +504,8 @@
             ghostEl.style.width = `${celBaseW * refDb.espaco.largura}px`;
             ghostEl.style.height = `${celBaseH * refDb.espaco.altura}px`;
             
-            // Nova lógica para deitar o fantasma ao arrastar
-            const giroFantasma = refDb.rotacionar ? 'style="transform: rotate(90deg) scale(1.7);"' : '';
+            // Mesma coisa no fantasma
+            const giroFantasma = refDb.rotacionar ? 'style="transform: rotate(90deg) scale(1);"' : '';
             ghostEl.innerHTML = `<img src="${refDb.icone}" ${giroFantasma}>`;
             
             document.body.appendChild(ghostEl);
