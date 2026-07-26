@@ -1018,7 +1018,8 @@
                 let updateGato = {
                     estado: resultadoRelatorio.isDoente ? 'Doente' : 'Saudável',
                     hpAtual: resultadoRelatorio.novoHpAtual,
-                    xpAtual: resultadoRelatorio.novoXpAtual
+                    xpAtual: resultadoRelatorio.novoXpAtual,
+                    ultimaAtualizacao: Date.now() // <-- A CORREÇÃO ENTRA AQUI!
                 };
                 
                 // Se falhou feio, fica doente. Se teve sucesso, soma +1 missão no currículo do gato!
