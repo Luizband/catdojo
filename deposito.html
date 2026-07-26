@@ -470,8 +470,12 @@
                 divItem.className = 'item-instancia';
                 divItem.style.gridColumn = `${inst.x + 1} / span ${refDb.espaco.largura}`;
                 divItem.style.gridRow = `${inst.y + 1} / span ${refDb.espaco.altura}`;
-                
-                divItem.innerHTML = `<img src="${refDb.icone}" alt="${refDb.nome}">`;
+            
+                // Nova lógica para deitar o item se necessário
+                const giro = refDb.rotacionar ? 'style="transform: rotate(90deg) scale(1.7);"' : '';
+                divItem.innerHTML = `<img src="${refDb.icone}" alt="${refDb.nome}" ${giro}>`;
+
+            // Eventos de Toque / Mouse para Arrastar
 
                 // Eventos de Toque / Mouse para Arrastar
                 divItem.addEventListener('mousedown', (e) => iniciarDrag(e, inst, divItem));
@@ -499,7 +503,10 @@
             ghostEl.className = 'item-fantasma';
             ghostEl.style.width = `${celBaseW * refDb.espaco.largura}px`;
             ghostEl.style.height = `${celBaseH * refDb.espaco.altura}px`;
-            ghostEl.innerHTML = `<img src="${refDb.icone}">`;
+            
+            // Nova lógica para deitar o fantasma ao arrastar
+            const giroFantasma = refDb.rotacionar ? 'style="transform: rotate(90deg) scale(1.7);"' : '';
+            ghostEl.innerHTML = `<img src="${refDb.icone}" ${giroFantasma}>`;
             
             document.body.appendChild(ghostEl);
             elementOriginal.style.opacity = '0.3'; 
