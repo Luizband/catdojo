@@ -677,12 +677,23 @@
                     }
                 }
 
-                // ==========================================
+                                // ==========================================
                 // SISTEMA DE EVOLUÇÃO (Tabela GDD faixas.js)
                 // ==========================================
                 gato.xpAtual = gato.xpAtual || 0;
                 const nivelAntigo = gato.nivel || 1;
                 
+                // 🛑 NOVA TRAVA ANTI-REGRESSÃO (Correção do Bug)
+                // Como o sistema antigo zerava o XP, gatos velhos têm o banco de dados quebrado.
+                // Isso restaura o XP acumulado exigido para o nível que o gato JÁ TEM, impedindo a queda.
+                if (nivelAntigo > 1) {
+                    const xpMinimoParaNivelAntigo = FAIXAS[nivelAntigo - 1].xpProxFaixa;
+                    if (gato.xpAtual < xpMinimoParaNivelAntigo) {
+                        gato.xpAtual = xpMinimoParaNivelAntigo; 
+                        precisaSalvar = true; // Força o Firebase a salvar esse XP corrigido
+                    }
+                }
+
                 const dadosNovoNivel = calcularNivelPorXp(gato.xpAtual);
                 
                 // Se o gato subiu de faixa (seja pelo tatame, missão, etc)
@@ -697,12 +708,13 @@
                     precisaSalvar = true;
                     mostrarToast(`Subiu de Faixa! ${gato.nome} agora é Faixa ${gato.faixa}!`);
                 } else {
-                    // Mantém os dados sincronizados com a tabela oficial
+                    // Mantém os dados sincronizados com a tabela oficial (SEM REGREDIR)
                     gato.nivel = dadosNovoNivel.nivelAtual;
                     gato.xpProxFaixa = dadosNovoNivel.xpProxFaixa;
                     gato.faixa = FAIXAS[gato.nivel].cor;
                 }
                 // ==========================================
+
 
                 listaGatosData.push(gato);
 
