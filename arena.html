@@ -448,7 +448,9 @@
             document.getElementById(`btnSpd${v}`).classList.add('ativo');
         };
 
-        async function waitFast(ms) { if (!window.pularBatalha) await new Promise(r => setTimeout(r, ms / velMult)); }
+        // Adicionamos um multiplicador de * 1.5 (deixando 50% mais lento).
+        // Se quiser ainda mais lento, mude para * 2.0.
+        async function waitFast(ms) { if (!window.pularBatalha) await new Promise(r => setTimeout(r, (ms * 1.5) / velMult)); }
 
         window.cancelarSelecao = async () => {
             document.getElementById('modalSeletor').style.display = 'none';
@@ -893,7 +895,9 @@
         function piscarSlot(lado, nomeHab) {
             document.getElementById(`slotsLutador${lado}`).querySelectorAll('.slot-hab').forEach(slot => {
                 if (slot.getAttribute('data-nome') === nomeHab) {
-                    slot.classList.add('usando'); setTimeout(() => slot.classList.remove('usando'), 600 / velMult);
+                    slot.classList.add('usando'); 
+                    // Mudamos de 600 para 900 para acompanhar os 50% extras de tempo
+                    setTimeout(() => slot.classList.remove('usando'), 900 / velMult);
                 }
             });
         }
