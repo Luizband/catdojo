@@ -267,6 +267,7 @@
         
         import { LISTA_NPCS } from './npcs.js';
         import { ARTES_MARCIAIS } from './artes-marciais.js';
+        import { FAIXAS } from './faixas.js';
         import { HISTORIAS_ARENA } from './historia-arena.js'; 
         
         let jogadorUid = null;
@@ -983,7 +984,33 @@
                     repGanha = 2 + Math.floor(nivelInimigo / 4);
                 }
 
-                updatesGato.xpAtual = (meuLutadorProcessado.xpAtual || 0) + xpGanho;
+                // --- NOVA LÓGICA DE XP RELATIVO NA ARENA ---
+                let xpAtualBanco = (meuLutadorProcessado.xpAtual || 0) + xpGanho;
+                let nivelBanco = meuLutadorProcessado.nivel || 1;
+                let pontosLivresBanco = meuLutadorProcessado.pontosLivres || 0;
+                let xpProxFaixaBanco = FAIXAS[nivelBanco].xpProxFaixa;
+                let subiuFaixaBanco = false;
+        
+                // Calcula o "troco" e o level up antes de salvar
+                while (xpAtualBanco >= xpProxFaixaBanco && nivelBanco < 20) {
+                    xpAtualBanco -= xpProxFaixaBanco;
+                    nivelBanco++;
+                    pontosLivresBanco += 7;
+                    xpProxFaixaBanco = FAIXAS[nivelBanco].xpProxFaixa;
+                    subiuFaixaBanco = true;
+                }
+        
+                // Salva o XP (seja a soma normal ou o "troco" do level up)
+                updatesGato.xpAtual = xpAtualBanco;
+        
+                // Se o gato subiu de faixa na arena, adiciona os status novos no pacote de atualização!
+                if (subiuFaixaBanco) {
+                    updatesGato.nivel = nivelBanco;
+                    updatesGato.xpProxFaixa = xpProxFaixaBanco;
+                    updatesGato.faixa = FAIXAS[nivelBanco].cor;
+                    updatesGato.pontosLivres = pontosLivresBanco;
+                }
+                // -------------------------------------------
                 
                 await updateDoc(claRef, { 
                     moedas: (claData.moedas || 0) + moedasGanhas,
