@@ -823,20 +823,31 @@
                 let peArtesUpdate = gato.peArtes || {};
                 peArtesUpdate[t.arteKey] = (peArtesUpdate[t.arteKey] || 0) + peGanho;
                 
-                // 1. Monta o pacote de atualização básico (o que sempre acontece)
+                // 1. Calcula o XP bruto total
+                let novoXpAtual = (gato.xpAtual || 0) + xpGanho;
+                let novoNivel = gato.nivel || 1;
+                let tetoAtual = FAIXAS[novoNivel].xpProxFaixa;
+                let novosPontos = gato.pontosLivres || 0;
+                
+                // 2. A MÁGICA DE VERDADE: O motor de Level UP idêntico ao do Dormitório
+                // Tira o custo da faixa e deixa apenas o troco
+                while (novoXpAtual >= tetoAtual && novoNivel < 20) {
+                    novoXpAtual = novoXpAtual - tetoAtual;
+                    novoNivel++;
+                    novosPontos += 7;
+                    tetoAtual = FAIXAS[novoNivel].xpProxFaixa;
+                }
+                
+                // 3. Monta o pacote de atualização já com as deduções feitas
                 let updateData = { 
-                    xpAtual: (gato.xpAtual || 0) + xpGanho,
+                    xpAtual: novoXpAtual,
+                    nivel: novoNivel,
+                    xpProxFaixa: tetoAtual,
+                    pontosLivres: novosPontos,
                     peArtes: peArtesUpdate
                 };
         
-                // 2. A MÁGICA: Se o gato subiu de faixa, adicionamos os atributos do Level Up no pacote!
-                if (subiuFaixa) {
-                    updateData.nivel = dadosNovoNivel.nivelAtual;
-                    updateData.xpProxFaixa = dadosNovoNivel.xpProxFaixa;
-                    updateData.pontosLivres = (gato.pontosLivres || 0) + 7;
-                }
-        
-                // 3. Envia o pacote final pro banco
+                // 4. Envia o pacote final pro banco
                 await updateDoc(gatoRef, updateData);
         
                 // --- DAQUI PRA BAIXO CONTINUA EXATAMENTE IGUAL AO SEU ---
